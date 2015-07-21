@@ -23,7 +23,6 @@ class Annotation_Plugin {
 		
 		add_action( 'init', array( $this, 'plugin_init' ) );
 		
-		add_action( 'admin-init', array( $this, 'register_annotation_settings' ) );
 
 		add_action( 'admin_menu', array( $this, 'add_pages' ) );
 	
@@ -134,19 +133,19 @@ class Annotation_Plugin {
 	function add_pages() {
 		add_options_page( 'Annotation Plugin Options', 'Annotation Plugin Options', 
 			'manage_options', 'annotation-plugin-options', array( $this, 'options_page' ) );
+		add_action( 'admin-init', array( $this, 'register_annotation_settings' ) );
 		
 		add_object_page( 'Annotations', 'Annotations', 'publish_posts', 'annotations', 
 			array( $this, 'annotations_object_page' ), plugins_url( 'img/apa_small.jpg', __FILE__ ) );
 	}
 	
 	function register_annotation_settings() {
-		register_setting( 'annotation_options', 'annotation_plugin', 'annotate_validate_options' );
+		register_setting( 'annotation_options', 'annotate_url' );
+		register_setting( 'annotation_options', 'annotate_date' );
+		register_setting( 'annotation_options', 'annotate_email' );
+		register_setting( 'annotation_options', 'microdata' );
 	}
 	
-	function annotate_validate_options( $input ) {
-		return $input;
-	}
-
 	/**
 	 * The options page for the plugin.
 	 */
@@ -159,27 +158,27 @@ class Annotation_Plugin {
 		<h2>Annotation Plugin Settings</h2>
 		<p>Please select which annotations should be shown.</p>
 		<form method="POST" action="options.php">
-			<?php settings_fields( 'annotation_pluginoptions_options' ); ?>
-			<?php $options = get_option( 'annotation_plugin' ); ?>
+			<?php settings_fields( 'annotation_options' ); ?>
+			<?php do_settings_sections( 'annotation_options' ); ?>
 			<table class="form-table">
 				<tr valign="top">
 				<th scope="row">Annotate URLs?</th>
-				<td><input type="checkbox" name="annotation_plugin[annotate_url]" value="1" <?php checked( '1', $options['annotate_url'] ) ?> /></td>
+				<td><input type="checkbox" name="annotate_url" value="1" <?php checked( '1', get_option('annotate_url') ) ?> /></td>
 				</tr>
 				
 				<tr valign="top">
 				<th scope="row">Annotate dates?</th>
-				<td><input type="checkbox" name="annotation_plugin[annotate_date]" value="1" <?php checked( '1', $options['annotate_date'] ) ?> /></td>
+				<td><input type="checkbox" name="annotate_date" value="2" <?php checked( '2', get_option('annotate_date') ) ?> /></td>
 				</tr>
 				
 				<tr valign="top">
 				<th scope="row">Annotate e-mail addresses?</th>
-				<td><input type="checkbox" name="annotation_plugin[annotate_email]" value="1" <?php checked( '1', $options['annotate_email'] ) ?> /></td>
+				<td><input type="checkbox" name="annotate_email" value="3" <?php checked( '3', get_option('annotate_email') ) ?> /></td>
 				</tr>
 				
 				<tr valign="top">
 				<th scope="row">Add schema.org microdata to annotations?</th>
-				<td><input type="checkbox" name="annotation_plugin[microdata]" value="1" <?php checked( '1', $options['microdata'] ) ?> /></td>
+				<td><input type="checkbox" name="microdata" value="4" <?php checked( '4', get_option('microdata') ) ?> /></td>
 				</tr>
 			</table>
 		    

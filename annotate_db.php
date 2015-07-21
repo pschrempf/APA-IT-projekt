@@ -9,6 +9,7 @@ $posts = $wpdb->posts;
 if ( $_POST['function'] === 'add' ) {
 	$post_title = stripslashes( rawurldecode( $_POST['title'] ) );
 	$post_type = '%post%';
+	
 	$postids = $wpdb->get_col( $wpdb->prepare(
 		"
 		SELECT 	p.ID
@@ -44,10 +45,9 @@ if ( $_POST['function'] === 'add' ) {
 		"
 	, $_POST['name'] ) );
 
+	//delete links from all posts
 	foreach( $results as $result ) {
-		//delete link from content
 		$search = rawurlencode( $_POST['name'] );
-		
 		$content = preg_replace( "#<a href=\"localhost\/annotations\?search=$search\"[^>]+>.?<span.+?>(.+?)<\/span><\/a>#", '$1', $result->post_content );
 		
 		$update = array(
@@ -57,8 +57,8 @@ if ( $_POST['function'] === 'add' ) {
 		
 		wp_update_post( $update );
 	}
-
 	
+	//delete annotation from database
 	$wpdb->delete( $annotation_db, array( 'name' => $_POST['name'] ) );
 	
 	echo $_POST['name'];

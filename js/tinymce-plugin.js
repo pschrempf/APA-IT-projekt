@@ -1,5 +1,4 @@
 jQuery(document).ready(function(jQuery){
-	//alert('Annotation test running...');
 	
 	tinymce.PluginManager.add('annotate', function(editor, url) {
 		var wm = editor.windowManager;
@@ -9,11 +8,12 @@ jQuery(document).ready(function(jQuery){
 			title: 'Annotate',
 			tooltip: 'Annotate',
 			
-			//either have text or image here
-			text: 'Annotate', 
-			image: url + '/../img/apa.jpg', //maybe change with default image
+			/* Either have text or image here */
 			
-			//annotates if there is text in the editor
+			text: 'Annotate', 
+			//image: url + '/../img/apa.jpg',
+			
+			//on click annotate if there is text in the editor
 			onclick: function() {
 				//get text from editor
 				var content = editor.getContent();
@@ -105,7 +105,7 @@ jQuery(document).ready(function(jQuery){
 											addAnnotationToDB(post_title, element, db_annotate_url);
 											
 											content = content.replace(
-												new RegExp('([ ,.:\(_\-])(' + element.phrase + ')([ ,.:_\)\-])', 'g'), '$1'+microdata+"$3");
+												new RegExp('([ ,.:\(_\-])(' + element.phrase + ')([ ,.:_\)\-])', 'g'), '$1' + microdata + "$3");
 										}, this);
 										
 										//add article microdata
