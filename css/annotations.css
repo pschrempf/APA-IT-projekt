@@ -1,0 +1,83 @@
+.container {
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+#title {
+	text-align:	center; 
+	font-size:	2em;
+}
+
+.padded {
+	padding:	15px 0 0 0;
+}
+
+table#annotation-table {
+	border-collapse:	collapse;
+	margin-left:		auto;
+	margin-right:		auto;
+}
+
+tr.title {
+	background-color:	#788999; 
+}
+
+.title>th {
+	color:			white;	
+	border:			1px solid lightgray; 
+	border-bottom:	none;
+	font-size:		20px;
+	padding:		15px 10px;
+	font-weight: 	600;
+}
+
+.annotation>td {
+	min-width:	200px; 
+	padding:	15px 10px;
+	border:		1px solid black;
+	color:		gray;
+}
+
+.error {
+	font-style:	italic;
+}
+
+a {
+	text-decoration: none;
+}
+
+.inner-list {
+	list-style-type: circle;
+}
+
+h2 {
+	font-size: 	20px;
+	color:  	darkslateblue;
+}
+
+.annotation-details {
+	list-style-position: inside;
+	line-height: 150%;
+}
+
+img.triangle {
+	height: 10px;
+	width: 10px;
+	border: none;
+}
+
+.input {
+	min-width: 30px;
+	width: 50px;
+	max-width: 50px;
+	text-align: center;
+}
+
+#search {
+	height: 20px;
+	font-size: 15px;
+	width: 180px;
+	font-weight: normal;
+	float: right;
+	padding: 10px;
+	color: black;
+}
