@@ -390,8 +390,8 @@ class Annotation_Plugin {
 			<li>Type: <?php echo $annotations[0]->type ?></li>
 			<li>Posts: 
 				<ul class='inner-list annotation-details'>
-		<?php
 		
+		<?php
 		if ( is_page( 'annotations' ) ) {
 			$url = 'annotations?';
 		} else {
