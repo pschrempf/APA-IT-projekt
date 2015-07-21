@@ -16,12 +16,7 @@ jQuery(document).ready(function(jQuery){
 			//annotates if there is text in the editor
 			onclick: function() {
 				//get text from editor
-				
-				/*----- possible change to parser necessary!! -----*/
-				
-				var content = editor.getContent(
-					//{format : 'text'}
-				);
+				var content = editor.getContent();
 				
 				if ('' === content) {
 					wm.alert('Please enter text to be annotated!');
@@ -30,6 +25,7 @@ jQuery(document).ready(function(jQuery){
 					var ps_annotate_url = 'http://apapses5.apa.at:7070/fliptest_tmp/cgi-bin/ps_annotate';
 						
 					/* get info from OPTIONS PAGE */
+					
 					var data = {
 						contenttype: 'application/json',
 						reqid: 'request',

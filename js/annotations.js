@@ -33,30 +33,25 @@ jQuery(document).ready(function() {
 			var checkboxes = jQuery('input[class=anno]');
 			for (var i = 0; i < checkboxes.length; i++) {
 				if(checkboxes[i].checked) {
-					deleteAnnotationFromDB( checkboxes[i].value );
-					jQuery(`input[value='${checkboxes[i].value}']`).parent().parent().fadeOut(250);
+					var name = checkboxes[i].value;
+					jQuery(`input[value='${name}']`).parent().parent().addClass('delete');
+					
+					jQuery.ajax({
+						type: 'POST',
+						url: WORDPRESS.annotate_db, 
+						data: {
+							'function': 'delete',
+							'name': name
+						},
+						datatype: JSON,
+						success: function( response ) {
+							jQuery(`input[value='${response}']`).parent().parent().fadeOut(250);
+						}
+					});
+					
 					checkboxes[i].checked = false;
 				}
 			}
 		}
 	});
-	
-	
-	function deleteAnnotationFromDB(name) {
-		var data = {
-			'function': 'delete',
-			'name': name
-		};
-		
-		jQuery.ajax({
-			type: 'POST',
-			url: '/../wordpress/wp-content/plugins/annotation-plugin/annotate_db.php',  //must change this
-			data: data,
-			datatype: JSON,
-			success: function( response ) {
-				//ignore
-			}
-		});
-	}
-	
 });

@@ -8,15 +8,15 @@ $posts = $wpdb->posts;
 
 if ( $_POST['function'] === 'add' ) {
 	$post_title = stripslashes( rawurldecode( $_POST['title'] ) );
-	
+	$post_type = '%post%';
 	$postids = $wpdb->get_col( $wpdb->prepare(
 		"
 		SELECT 	p.ID
 		FROM 	$posts p
 		WHERE 	p.post_title = %s
-		AND 	p.post_type = 'post'
+		AND 	p.post_type LIKE %s
 		"
-	, $post_title ) );
+	, $post_title, $post_type ) );
 	
 	//check if no posts with specified title exist
 	if ( empty( $postids ) ) {
@@ -61,6 +61,7 @@ if ( $_POST['function'] === 'add' ) {
 	
 	$wpdb->delete( $annotation_db, array( 'name' => $_POST['name'] ) );
 	
+	echo $_POST['name'];
 }
 
 ?>
