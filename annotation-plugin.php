@@ -1,8 +1,4 @@
 <?php
-/**
- * @package Hello_World
- * @version Alpha
- */
 /*
 Plugin Name: Annotation Plugin
 Plugin URI: http://www.apa-it.at
@@ -13,19 +9,26 @@ Version: Alpha
 
 defined( 'ABSPATH' ) or wp_die( 'Plugin cannot be accessed correctly!' );  /*not sure if needed*/
 
+require_once( ABSPATH . 'wp-admin/includes/media.php' );
+require_once( ABSPATH . 'wp-admin/includes/file.php' );
+require_once( ABSPATH . 'wp-admin/includes/image.php' );
+
 class Annotation_Plugin {
+
+	private $option_name = 'annotation-plugin-options';
 
 	/**
 	 * Add and register various hooks, actions and filters.
 	 */
 	function __construct() {
-		register_activation_hook( __FILE__, array( $this, 'install' ) );
-		
-		add_action( 'init', array( $this, 'plugin_init' ) );
-		
-
-		add_action( 'admin_menu', array( $this, 'add_pages' ) );
+		add_action( 'admin_init', array( $this, 'annotation_settings_init' ) );
 	
+		add_action( 'admin_menu', array( $this, 'add_pages' ) );
+
+		register_activation_hook( __FILE__, array( $this, 'install' ) );
+
+		add_action( 'init', array( $this, 'plugin_init' ) );
+
 		add_filter( 'tiny_mce_before_init', array( $this, 'override_mce_options' ) );
 		
 		add_action( 'delete_post', array( $this, 'deleteAnnotation' ) );
@@ -115,7 +118,21 @@ class Annotation_Plugin {
 	}
 	
 	function add_annotate_button( $plugin_array ) {
-		$plugin_array['annotate'] = plugins_url( 'js/tinymce-plugin.js', __FILE__ );
+		wp_enqueue_script( 'tinymce', plugins_url( 'js/tinymce-plugin.js', __FILE__ ), array( 'jquery' ) );		
+		$options = get_option( $this->option_name );
+		wp_localize_script( 
+			'tinymce', 
+			'WORDPRESS', 
+			array( 
+				'annotate_db' => plugins_url( 'annotate_db.php', __FILE__ ),
+				'selection_form' => plugins_url( 'selection_form.html', __FILE__ ),
+				'annotate_url' => isset($options['annotate_url']) ? true : false,
+				'annotate_date' => isset($options['annotate_date']) ? true : false,
+				'annotate_email' => isset($options['annotate_email']) ? true : false,
+				'add_microdata' => isset($options['add_microdata']) ? true : false
+			) 
+		);
+		$plugin_array['annotate'] = plugins_url( 'js/tinymce-plugin.js', __FILE__ );		
 		return $plugin_array;
 	}
 	
@@ -131,19 +148,30 @@ class Annotation_Plugin {
 	 * Adds various pages to UI.
 	 */
 	function add_pages() {
-		add_options_page( 'Annotation Plugin Options', 'Annotation Plugin Options', 
-			'manage_options', 'annotation-plugin-options', array( $this, 'options_page' ) );
-		add_action( 'admin-init', array( $this, 'register_annotation_settings' ) );
+		add_options_page(
+			'Annotation Plugin Options', 
+			'Annotation Plugin Options', 
+			'manage_options', 
+			'annotation-plugin-options', 
+			array( $this, 'options_page' ) 
+		);
 		
-		add_object_page( 'Annotations', 'Annotations', 'publish_posts', 'annotations', 
-			array( $this, 'annotations_object_page' ), plugins_url( 'img/apa_small.jpg', __FILE__ ) );
+		add_object_page( 
+			'Annotations', 
+			'Annotations', 
+			'publish_posts', 
+			'annotations', 
+			array( $this, 'annotations_object_page' ), 
+			plugins_url( 'img/apa_small.jpg', __FILE__ ) 
+		);
 	}
 	
-	function register_annotation_settings() {
-		register_setting( 'annotation_options', 'annotate_url' );
-		register_setting( 'annotation_options', 'annotate_date' );
-		register_setting( 'annotation_options', 'annotate_email' );
-		register_setting( 'annotation_options', 'microdata' );
+	function annotation_settings_init() {
+		register_setting( 'annotation-plugin-options', $this->option_name, array( $this, 'validate_input' ) );
+	}
+	
+	function validate_input( $input ) {
+		return $input;
 	}
 	
 	/**
@@ -153,37 +181,55 @@ class Annotation_Plugin {
 		if ( ! current_user_can( 'manage_options' ) )  {
 			wp_die( 'You do not have sufficient permissions to access this page.' );
 		}
+		
+		$options = array( 
+			'annotate_url' => FALSE,
+			'annotate_date' => FALSE,
+			'annotate_email' => FALSE,
+			'add_microdata' => FALSE 
+		);
+		
+		$options = get_option( $this->option_name );
 		?>
 		<div class="wrap">
 		<h2>Annotation Plugin Settings</h2>
 		<p>Please select which annotations should be shown.</p>
-		<form method="POST" action="options.php">
-			<?php settings_fields( 'annotation_options' ); ?>
-			<?php do_settings_sections( 'annotation_options' ); ?>
+		<form method="post" action="options.php">
+			<?php settings_fields( 'annotation-plugin-options' ); ?>
 			<table class="form-table">
 				<tr valign="top">
-				<th scope="row">Annotate URLs?</th>
-				<td><input type="checkbox" name="annotate_url" value="1" <?php checked( '1', get_option('annotate_url') ) ?> /></td>
+					<th scope="row">Annotate URLs?</th>
+					<td>
+						<input type='checkbox' name='<?php echo $this->option_name . "[annotate_url]" ?>' value='yes' 
+							<?php if( isset( $options['annotate_url'] ) ) { checked( 'yes', $options['annotate_url'] ); } ?> >
+					</td>
 				</tr>
 				
 				<tr valign="top">
-				<th scope="row">Annotate dates?</th>
-				<td><input type="checkbox" name="annotate_date" value="2" <?php checked( '2', get_option('annotate_date') ) ?> /></td>
+					<th scope="row">Annotate dates?</th>
+					<td>
+						<input type='checkbox' name='<?php echo $this->option_name . "[annotate_date]" ?>' value='yes' 
+							<?php if( isset( $options['annotate_date'] ) ) { checked( 'yes', $options['annotate_date'] ); } ?> >
+					</td>
 				</tr>
 				
 				<tr valign="top">
-				<th scope="row">Annotate e-mail addresses?</th>
-				<td><input type="checkbox" name="annotate_email" value="3" <?php checked( '3', get_option('annotate_email') ) ?> /></td>
+					<th scope="row">Annotate email addresses?</th>
+					<td>
+						<input type='checkbox' name='<?php echo $this->option_name . "[annotate_email]" ?>' value='yes' 
+							<?php if( isset( $options['annotate_email'] ) ) { checked( 'yes', $options['annotate_email'] ); } ?> >
+					</td>
 				</tr>
 				
 				<tr valign="top">
-				<th scope="row">Add schema.org microdata to annotations?</th>
-				<td><input type="checkbox" name="microdata" value="4" <?php checked( '4', get_option('microdata') ) ?> /></td>
+					<th scope="row">Add schema.org microdata?</th>
+					<td>
+						<input type='checkbox' name='<?php echo $this->option_name . "[add_microdata]" ?>' value='yes' 
+							<?php if( isset( $options['add_microdata'] ) ) { checked( 'yes', $options['add_microdata'] ); } ?> >
+					</td>
 				</tr>
 			</table>
-		    
 			<?php submit_button(); ?>
-		
 		</form>
 		</div>
 		<?php 

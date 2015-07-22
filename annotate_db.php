@@ -48,7 +48,7 @@ if ( $_POST['function'] === 'add' ) {
 	//delete links from all posts
 	foreach( $results as $result ) {
 		$search = rawurlencode( $_POST['name'] );
-		$content = preg_replace( "#<a href=\"localhost\/annotations\?search=$search\"[^>]+>.?<span.+?>(.+?)<\/span><\/a>#", '$1', $result->post_content );
+		$content = preg_replace( "#<a href=\"localhost\/annotations\?search=$search\"[^>]*?>.?<span.*?>(.+?)<\/span><\/a>#", '$1', $result->post_content );
 		
 		$update = array(
 			'ID' => $result->ID,

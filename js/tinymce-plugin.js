@@ -23,7 +23,7 @@ jQuery(document).ready(function(jQuery){
 				} else {
 					//APA annotation service test URL
 					var ps_annotate_url = 'http://apapses5.apa.at:7070/fliptest_tmp/cgi-bin/ps_annotate';
-						
+					
 					/* get info from OPTIONS PAGE */
 					
 					var data = {
@@ -33,6 +33,7 @@ jQuery(document).ready(function(jQuery){
 						text: content,
 						skip: 'GER:Austria_Presse_Agentur|GER:Deutsche_Presse-Agentur'
 					};
+					
 					
 					//POST request to ps_annotate server
 					jQuery.ajax({
@@ -49,7 +50,7 @@ jQuery(document).ready(function(jQuery){
 								wm.alert("No annotations could be found!");
 							} else {
 								//opens selection form
-								var selection_form = url + '/../selection_form.html';
+								var selection_form = WORDPRESS.selection_form;
 								var selection_form_id = 'selectionform';
 								wm.open({
 									url : selection_form,
@@ -98,10 +99,14 @@ jQuery(document).ready(function(jQuery){
 											if (element.phrase === false) {
 												return false;
 											}
-											var microdata = createMicrodata(element, url);
+											if( WORDPRESS.add_microdata ) {											
+												var microdata = createMicrodata(element, url);
+											} else {
+												var microdata = createAnnotation( element );
+											}
 											
 											var post_title = jQuery('#titlewrap input').val();
-											var db_annotate_url = url + '/../annotate_db.php';
+											var db_annotate_url = WORDPRESS.annotate_db;
 											addAnnotationToDB(post_title, element, db_annotate_url);
 											
 											content = content.replace(
@@ -150,6 +155,12 @@ jQuery(document).ready(function(jQuery){
 		return false;
 	}
 
+	function createAnnotation( element ) {
+		var name = cleanName(element.concept);
+		var link = window.location.hostname + '/annotations?search=' + encode(name);
+		
+		return `<a href=${link}><span>${element.phrase}</span></a>`;
+	}
 	
 	function createMicrodata( element, url ) {
 		var name = cleanName(element.concept);
@@ -211,8 +222,16 @@ jQuery(document).ready(function(jQuery){
 	function cleanResponse(response) {
 		var indices = [];
 		var counter = 0;
+		alert(
+			'test: ' + WORDPRESS.annotate_db +
+			'\nemail: ' + WORDPRESS.annotate_email.toString() +
+			'\n date: ' + WORDPRESS.annotate_date.toString() + 
+			'\n    url: ' + WORDPRESS.annotate_url.toString()
+		);
 		response.concepts.forEach(function(element) {
-			if (element.type == 'mailaddr' || element.type == 'date' || element.type == 'URL') {
+			if ((false == WORDPRESS.annotate_email && element.type == 'mailaddr' ) || 
+				(false == WORDPRESS.annotate_date && element.type == 'date' ) || 
+				(false == WORDPRESS.annotate_url && element.type == 'URL') ) {
 				indices[indices.length] = counter;
 			}
 			counter++;
