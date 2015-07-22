@@ -159,7 +159,7 @@ jQuery(document).ready(function(jQuery){
 		var name = cleanName(element.concept);
 		var link = window.location.hostname + '/annotations?search=' + encode(name);
 		
-		return `<a href=${link}><span>${element.phrase}</span></a>`;
+		return '<a href='+link+'><span>'+element.phrase+'</span></a>';
 	}
 	
 	function createMicrodata( element, url ) {
@@ -177,7 +177,7 @@ jQuery(document).ready(function(jQuery){
 			schema = 'http://schema.org/Thing';
 		}
 		
-		return `<a href=${link} itemscope itemtype=${schema}><span itemprop="name">${element.phrase}</span></a>`;
+		return '<a href='+link+' itemscope itemtype='+schema+'><span itemprop="name">'+element.phrase+'</span></a>';
 	}
 	
 	/**
@@ -199,16 +199,16 @@ jQuery(document).ready(function(jQuery){
 	 * Generates an individual table row depending on information
 	 */
 	function generateRow(element) {
-		var table_row = `<tr class="annotation">`
-			+ `\n\t<td class="input"><input type="checkbox" class="selector" name="checkbox"></td>`
-			+ `\n\t<td><span title="${element.abstract}">${cleanName(element.concept)}</span></td>`
-			+ `\n\t<td>${element.type}</td>`;
+		var table_row = '<tr class="annotation">'
+			+ '\n\t<td class="input"><input type="checkbox" class="selector" name="checkbox"></td>'
+			+ '\n\t<td><span title="'+element.abstract+'">'+cleanName(element.concept)+'</span></td>'
+			+ '\n\t<td>'+element.type+'</td>';
 		
 		//prefer companylogos over thumbimages
 		if(typeof element.complogo !== 'undefined') {
-			table_row += `\n\t<td class="image"><img src="${element.complogo}" alt=""/></td>`;
+			table_row += '\n\t<td class="image"><img src="'+element.complogo+'" alt=""/></td>';
 		} else if(typeof element.thumbimg !== 'undefined') {
-			table_row += `\n\t<td class="image"><img src="${element.thumbimg}" alt=""/></td>`;
+			table_row += '\n\t<td class="image"><img src="'+element.thumbimg+'" alt=""/></td>';
 		} else {
 			table_row += '\n\t<td></td>';
 		}
