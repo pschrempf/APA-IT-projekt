@@ -34,7 +34,7 @@ jQuery(document).ready(function() {
 			for (var i = 0; i < checkboxes.length; i++) {
 				if(checkboxes[i].checked) {
 					var name = checkboxes[i].value;
-					jQuery(`input[value='${name}']`).parent().parent().addClass('delete');
+					jQuery('input[value="'+name+'"]').parent().parent().addClass('delete');
 					
 					jQuery.ajax({
 						type: 'POST',
@@ -45,7 +45,7 @@ jQuery(document).ready(function() {
 						},
 						datatype: JSON,
 						success: function( response ) {
-							jQuery(`input[value='${response}']`).parent().parent().fadeOut(250);
+							jQuery('input[value="'+response+'"]').parent().parent().fadeOut(250);
 						}
 					});
 					
