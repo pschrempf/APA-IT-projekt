@@ -37,9 +37,6 @@ class Annotation_Plugin {
 		add_filter( 'template_include', array( $this, 'include_annotations_template' ) );
 	}
 		
-	
-	/*---------------------- Installing plugin ----------------------*/
-	
 	/**
 	 * Complete all necessary installation tasks on plugin activation.
 	 */
@@ -49,13 +46,12 @@ class Annotation_Plugin {
 	}
 
 	/**
-	 * Creates a database for the plugin.
+	 * Creates a MYSQL database for the plugin annotations.
 	 */
 	function createPluginDatabase() {
 		global $wpdb;
 		global $annotation_db;
 		$annotation_db = $wpdb->prefix . 'annotations';
-		
 		$charset_collate = $wpdb->get_charset_collate();
 		
 		$sql = "CREATE TABLE IF NOT EXISTS $annotation_db (
@@ -95,9 +91,9 @@ class Annotation_Plugin {
 		}
 	}
 
-
-	/*---------------------- Initialising plugin ----------------------*/
-
+	/**
+	 * Main initialising function that enqueues jQuery and initialises variables and the annotation service.
+	 */
 	function plugin_init() {
 		wp_enqueue_script( 'jquery' );
 
@@ -105,6 +101,9 @@ class Annotation_Plugin {
 		$this->init_annotation_service();
 	}
 	
+	/**
+	 * Initialises all global variables and constants.
+	 */
 	function init_global_variables() {
 		global $wpdb;
 		global $annotation_db;
@@ -113,7 +112,7 @@ class Annotation_Plugin {
 		$plugin_constants = array(
 				'ps_annotate_url' => 'http://apapses5.apa.at:7070/fliptest_tmp/cgi-bin/ps_annotate',
 				'annotate_db' => plugins_url( 'annotate_db.php', __FILE__ ),
-				'selection_form' => plugins_url( 'selection_form.html', __FILE__ ),
+				'selection_form' => plugins_url( 'templates/selection_form.html', __FILE__ ),
 				'button_text' => __( 'Annotate', 'APA-IT-projekt' ),
 				'button_tooltip' => __( 'Annotate', 'APA-IT-projekt' ),
 				'no_text_alert' => __( 'Please enter text to be annotated!', 'APA-IT-projekt' ),
@@ -126,19 +125,29 @@ class Annotation_Plugin {
 		);
 	}
 	
+	/**
+	 * Loads the textdomain for different languagepacks.
+	 */
 	function load_textdomain() {
 		load_plugin_textdomain( 'APA-IT-projekt', false, basename( dirname( __FILE__ ) ) . '/languages/' );
 	}
 
-	/*---------------------- Adding annnotation service to editor ----------------------*/
-
+	/**
+	 * Initialises the annotation service/tinymce plugin.
+	 */
 	function init_annotation_service() {
-		add_filter( 'mce_external_plugins', array( $this, 'add_annotate_button') );
+		add_filter( 'mce_external_plugins', array( $this, 'add_annotate_plugin') );
 		add_filter( 'mce_buttons', array( $this, 'register_annotate_button') );
 	}
 	
-	function add_annotate_button( $plugin_array ) {
+	/**
+	 * Adds the annotation plugin to the tinymce editor and localizes SETTINGS and CONSTANTS.
+	 */
+	function add_annotate_plugin( $plugin_array ) {
+		//enqueue so that variables can be localized
 		wp_enqueue_script( 'tinymce', plugins_url( 'js/tinymce-plugin.js', __FILE__ ), array( 'jquery' ) );		
+		
+		//localize SETTINGS
 		$options = get_option( $this->option_name );
 		wp_localize_script( 
 			'tinymce', 
@@ -152,28 +161,33 @@ class Annotation_Plugin {
 				'skip' => $options['skip']
 			) 
 		);
+		
+		//localize CONSTANTS
 		global $plugin_constants;
 		wp_localize_script(
 			'tinymce',
 			'CONSTANTS',
 			$plugin_constants
 		);
+		
+		//add annotation plugin to plugin array
 		$plugin_array['annotate'] = plugins_url( 'js/tinymce-plugin.js', __FILE__ );		
 		return $plugin_array;
 	}
 	
+	/**
+	 * Registers the 'Annotate' button in the tinymce editor
+	 */
 	function register_annotate_button( $buttons ) {
 		array_push( $buttons, 'separator', 'annotate' );
 		return $buttons;
 	}
 
-
-	/*---------------------- Adding pages ----------------------*/
-	
 	/**
-	 * Adds various pages to UI.
+	 * Adds plugin pages to UI.
 	 */
 	function add_pages() {
+		//add plugin options page
 		add_options_page(
 			__( 'Annotation Plugin Options', 'APA-IT-projekt'), 
 			__( 'Annotation Plugin Options', 'APA-IT-projekt'), 
@@ -182,6 +196,7 @@ class Annotation_Plugin {
 			array( $this, 'options_page' ) 
 		);
 		
+		//add dashboard annotation page
 		add_object_page( 
 			__( 'Annotations', 'APA-IT-projekt'), 
 			__( 'Annotations', 'APA-IT-projekt'), 
@@ -192,30 +207,32 @@ class Annotation_Plugin {
 		);
 	}
 	
+	/**
+	 * Initialises the settings by registering an 'annotation-plugin-options' setting.
+	 */
 	function annotation_settings_init() {
 		register_setting( $this->option_name, $this->option_name, array( $this, 'validate_input' ) );
 	}
 	
+	/**
+	 * 
+	 */
 	function validate_input( $input ) {
 		return $input;
 	}
 	
 	/**
-	 * The options page for the plugin.
+	 * Displays the options page for the plugin.
 	 */
 	function options_page() {
 		if ( ! current_user_can( 'manage_options' ) )  {
 			wp_die( __( 'You do not have sufficient permissions to access this page.', 'APA-IT-projekt' ) );
 		}
 		
-		$options = array( 
-			'annotate_url' => FALSE,
-			'annotate_date' => FALSE,
-			'annotate_email' => FALSE,
-			'add_microdata' => FALSE 
-		);
-		
+		//get current options
 		$options = get_option( $this->option_name );
+		
+		//display the options html
 		?>
 		<div class="wrap">
 		<h2><?php _e( 'Annotation Plugin Settings', 'APA-IT-projekt' ) ?></h2>
@@ -283,7 +300,7 @@ class Annotation_Plugin {
 	}
 	
 	/**
-	 * The annotations summary page shown in the dashboard.
+	 * Displays the annotations summary page shown in the dashboard.
 	 */
 	function annotations_object_page() {
 		if ( ! current_user_can( 'publish_posts' ) ) {
@@ -293,7 +310,7 @@ class Annotation_Plugin {
 	}
 		
 	/**
-	 * Adds microdata tags to tinyMCE editor's valid elements.
+	 * Adds microdata tags to tinymce editor's valid elements.
 	 */
 	function override_mce_options( $initArray ) {
 		$options = 'div[itemprop|itemscope|itemtype],a[href|itemprop|itemscope|itemtype],span[itemprop|itemscope|itemtype]';
@@ -302,7 +319,7 @@ class Annotation_Plugin {
 	}
 	
 	/**
-	 * Use annotations-template.php for 
+	 * Use 'annotations-template.php' for annotations page.
 	 */
 	function include_annotations_template( $template ) {
 		if ( is_page( 'Annotations' ) ) {
@@ -328,8 +345,11 @@ class Annotation_Plugin {
 	 * Echos an annotations page according to the query.
 	 */
 	public function getAnnotations() {
+		//enqueue script and style for page
 		wp_enqueue_script( 'annotation-script', plugins_url( 'js/annotations.js', __FILE__ ), array( 'jquery' ) );
 		wp_enqueue_style( 'annotation-stylesheet', plugins_url( 'css/annotations.css', __FILE__ ) );
+		
+		//localize CONSTANTS
 		global $plugin_constants;
 		wp_localize_script( 'annotation-script', 'CONSTANTS', $plugin_constants );
 		
@@ -355,7 +375,6 @@ class Annotation_Plugin {
 		//get all annotations from database
 		global $wpdb;
 		global $annotation_db;
-		
 		$annotations = $wpdb->get_results( $wpdb->prepare(
 			"
 			SELECT 	* 
@@ -365,15 +384,15 @@ class Annotation_Plugin {
 			"
 		, $search_string ) );
 		
+		//set $url to correct link
 		if ( is_page( 'annotations' ) ) {
 			$url = 'annotations?';
 		} else {
 			$url = 'admin.php?page=annotations&';
 		}
 		
-		//build page content
+		//display page html
 		?>
-		
 		<input type='text' id='search' placeholder='Search'>
 		<h1 id='title' class='padded'>
 			<a href='<?php echo $url ?>'><?php _e( 'Annotations', 'APA-IT-projekt' ) ?></a>
@@ -408,12 +427,17 @@ class Annotation_Plugin {
 	 * Creates annotation page containing all annotations.
 	 */
 	function getGeneralAnnotationPage( $annotations, $url ) {
+		//set image source for small triangles
 		$img_src = plugins_url( 'img/triangle.jpg', __FILE__ );
+		
+		//display general annotations in a table
 		?>
 		<div class='padded'>
 		<table id='annotation-table'>
 			<tr class='title'>
 		<?php
+		
+		//if current user can edit posts then show checkbox column
 		if ( current_user_can( 'edit_posts' ) ) {
 			?>
 			<th class='input'>
@@ -421,6 +445,8 @@ class Annotation_Plugin {
 			</th>
 			<?php
 		}
+		
+		//display table with annotations for all users
 		?>
 			<th>
 				<?php _e( 'Annotation', 'APA-IT-projekt' ) ?>
@@ -437,6 +463,8 @@ class Annotation_Plugin {
 			</th>
 			</tr>
 		<?php
+		
+		//only display each annotation once in table (no duplicate entries)
 		$names = array();
 		foreach ( $annotations as $result ) {
 			if ( !in_array( $result->name, $names ) ) {
@@ -466,6 +494,8 @@ class Annotation_Plugin {
 		?>
 		</table></div></div></article>
 		<?php
+		
+		//if current user can edit post show delete button
 		if ( current_user_can( 'edit_posts' ) ) {
 			?>
 			<button id="delete"><?php _e( 'Delete', 'APA-IT-projekt' ) ?></button>
@@ -485,15 +515,12 @@ class Annotation_Plugin {
 				<ul class='inner-list annotation-details'>
 		
 		<?php
-		if ( is_page( 'annotations' ) ) {
-			$url = 'annotations?';
-		} else {
-			$url = 'admin.php?page=annotations&';
-		}
 		
+		//add 'li' for each annotation
 		foreach ( $annotations as $result ) {
-			//deal with database errors
 			$guid = '';
+			
+			//deal with database errors
 			if ( $result->post_id == -1 ) {
 				$post_title = '<p class="error">[' + __('Post does not exist', 'APA-IT-projekt' ) + ']</p>';
 			} else if ( $result->post_id == 0 ) {

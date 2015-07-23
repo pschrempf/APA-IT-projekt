@@ -3,25 +3,24 @@ jQuery(document).ready(function(jQuery){
 	tinymce.PluginManager.add('annotate', function(editor, url) {
 		var wm = editor.windowManager;
 		
-		// Add annotate button
+		// Add annotate button to editor
 		editor.addButton('annotate', {
 			title: 'Annotate',
 			tooltip: CONSTANTS.button_tooltip,
-			
-			/* Either have text or image here */
-			
 			text: CONSTANTS.button_text, 
-			//image: url + '/../img/apa.jpg',
 			
 			//on click annotate if there is text in the editor
 			onclick: function() {
-				//get text from editor
+				//get content from editor
 				var content = editor.getContent();
 				
+				//if there is no content alert user
 				if ('' === content) {
 					wm.alert(CONSTANTS.no_text_alert);
-				} else {
-
+				} 
+				//else annotate content
+				else {
+					//set data for POST request
 					var data = {
 						contenttype: 'application/json',
 						reqid: 'request',
@@ -30,7 +29,6 @@ jQuery(document).ready(function(jQuery){
 						skip: SETTINGS.skip
 					};
 					
-					
 					//POST request to ps_annotate server
 					jQuery.ajax({
 						type: 'POST',
@@ -38,14 +36,18 @@ jQuery(document).ready(function(jQuery){
 						crossDomain: true,
 						dataType: 'json',
 						data: data,
-						error: handle_request_error,						
+						error: handle_request_error,		
+										
+						//on success work with response
 						success: function( response ) {
 							response = cleanResponse(response);
 							
+							//if no annotations could be found
 							if (!response.hasOwnProperty('concepts')) {
 								wm.alert(CONSTANTS.no_annotations_alert);
-							} else {
-								//opens selection form
+							} 
+							//else open selection form
+							else {
 								var selection_form_id = 'selectionform';
 								wm.open({
 									url : CONSTANTS.selection_form,
@@ -62,7 +64,8 @@ jQuery(document).ready(function(jQuery){
 								//wait until iframe is loaded
 								var iframe_identifier = '#' + selection_form_id + ' iframe';
 								jQuery(iframe_identifier).load(function() {
-									//add information to 'selection_form.html' from results
+									
+									//add information to table in 'selection_form.html' from results
 									var table_contents = 
 										'<tr class="title">' + 
 											'<th class="input"><input type="checkbox" class="select-all"></th>' + 
@@ -77,9 +80,7 @@ jQuery(document).ready(function(jQuery){
 									jQuery(iframe_identifier).contents().find('table').append(table_contents);
 									jQuery(iframe_identifier).contents().find('table').after(
 										'<br>' + 
-										//'<div class="button-container">' +
-										'<input id="button" type="submit" value="' + CONSTANTS.button_text + '" form="target">' 
-										// + '</div>'
+										'<input id="button" type="submit" value="' + CONSTANTS.button_text + '" form="target">'
 									);
 									
 									jQuery(iframe_identifier).contents().find('input[class=select-all]').click(function() {
@@ -108,7 +109,7 @@ jQuery(document).ready(function(jQuery){
 												return false;
 											}
 											if( SETTINGS.add_microdata ) {											
-												var microdata = createMicrodata(element, url);
+												var microdata = createMicrodataAnnotation(element, url);
 											} else {
 												var microdata = createAnnotation( element );
 											}
@@ -159,6 +160,9 @@ jQuery(document).ready(function(jQuery){
 		return false;
 	}
 
+	/**
+	 * Creates an annotation with a link to its annotation page.
+	 */
 	function createAnnotation( element ) {
 		var name = cleanName(element.concept);
 		var link = window.location.hostname + '/annotations?search=' + encode(name);
@@ -166,7 +170,10 @@ jQuery(document).ready(function(jQuery){
 		return '<a href='+link+'><span>'+element.phrase+'</span></a>';
 	}
 	
-	function createMicrodata( element, url ) {
+	/**
+	 * Creates an annotations with 'schema.org' microdata.
+	 */
+	function createMicrodataAnnotation( element, url ) {
 		var name = cleanName(element.concept);
 		var link = window.location.hostname + '/annotations?search=' + encode(name);
 		var schema;
@@ -215,11 +222,15 @@ jQuery(document).ready(function(jQuery){
 	}
 	
 	/**
-	 * Removes unwanted dates and e-mail addresses from response.
+	 * Removes unwanted annotations from response according to plugin settings.
 	 */
 	function cleanResponse(response) {
 		var indices = [];
 		var counter = 0;
+		
+		if( undefined === response.concepts ) {
+			return response;
+		}
 		
 		response.concepts.forEach(function(element) {
 			if ((false == SETTINGS.annotate_email && element.type == 'mailaddr' ) || 
@@ -229,16 +240,23 @@ jQuery(document).ready(function(jQuery){
 			}
 			counter++;
 		});
+		
+		//remove unwanted indices
 		for (var index = indices.length-1; index >= 0; index--) {
 			var element = indices[index];
 			response.concepts.splice(element, 1);
 		}
+		
+		//check if there are no annotations left in array
 		if (response.concepts.length == 0) {
 			delete response.concepts;
 		}
 		return response;
 	}
 	
+	/**
+	 * Reports various errors from post requests. 
+	 */
 	function handle_request_error(jqxhr, exception) {
 		if (jqxhr.status === 0) {
 			alert('Not connected.\nVerify Network.');
@@ -257,16 +275,16 @@ jQuery(document).ready(function(jQuery){
 		}
 	}
 	
-	function beginsWith(haystack, needle) {
-		var res = haystack.substr( 0, needle.length ) == needle;
-		alert(res);
-		return res;
-	}
-	
+	/**
+	 * Removes the language tag from the name of an annotation.
+	 */
 	function cleanName(name) {
 		return name.substr(4, name.length).replace(new RegExp('_', 'gi'), ' ');
 	}
 	
+	/**
+	 * Sends a POST request to the 'annotate_db.php' file to add an entry to the database.
+	 */
 	function addAnnotationToDB(post_title, element) {
 		var data = {
 			'function': 'add',
@@ -279,11 +297,7 @@ jQuery(document).ready(function(jQuery){
 			type: 'POST',
 			url: CONSTANTS.annotate_db,
 			data: data,
-			datatype: JSON,
-			error: handle_request_error,
-			success: function( response ) {
-				//ignore
-			}
+			datatype: JSON
 		});
 	}
 
