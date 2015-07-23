@@ -9,7 +9,7 @@ Text Domain: APA-IT-projekt
 Domain Path: languages/
 */
 
-defined( 'ABSPATH' ) or wp_die( 'Plugin cannot be accessed correctly!' );  /*not sure if needed*/
+defined( 'ABSPATH' ) or wp_die( __( 'Plugin cannot be accessed correctly!', 'APA-IT-projekt' ) );
 define( 'WPLANG', '' );
 
 class Annotation_Plugin {
@@ -109,6 +109,21 @@ class Annotation_Plugin {
 		global $wpdb;
 		global $annotation_db;
 		$annotation_db = $wpdb->prefix . 'annotations';
+		global $plugin_constants;
+		$plugin_constants = array(
+				'ps_annotate_url' => 'http://apapses5.apa.at:7070/fliptest_tmp/cgi-bin/ps_annotate',
+				'annotate_db' => plugins_url( 'annotate_db.php', __FILE__ ),
+				'selection_form' => plugins_url( 'selection_form.html', __FILE__ ),
+				'button_text' => __( 'Annotate', 'APA-IT-projekt' ),
+				'button_tooltip' => __( 'Annotate', 'APA-IT-projekt' ),
+				'no_text_alert' => __( 'Please enter text to be annotated!', 'APA-IT-projekt' ),
+				'no_annotations_alert' => __( 'No annotations could be found', 'APA-IT-projekt' ),
+				'results_title' => __( 'Annotation results', 'APA-IT-projekt' ),
+				'results_name' => __( 'Name', 'APA-IT-projekt' ),
+				'results_type' => __( 'Type', 'APA-IT-projekt' ),
+				'delete_error' => __( 'Please select annotations to be deleted', 'APA-IT-projekt' ),
+				'delete_confirmation' => __( 'Would you really like to delete these annotations permanently?', 'APA-IT-projekt' )
+		);
 	}
 	
 	function load_textdomain() {
@@ -127,15 +142,21 @@ class Annotation_Plugin {
 		$options = get_option( $this->option_name );
 		wp_localize_script( 
 			'tinymce', 
-			'WORDPRESS', 
-			array( 
-				'annotate_db' => plugins_url( 'annotate_db.php', __FILE__ ),
-				'selection_form' => plugins_url( 'selection_form.html', __FILE__ ),
-				'annotate_url' => isset($options['annotate_url']) ? true : false,
-				'annotate_date' => isset($options['annotate_date']) ? true : false,
-				'annotate_email' => isset($options['annotate_email']) ? true : false,
-				'add_microdata' => isset($options['add_microdata']) ? true : false
+			'SETTINGS', 
+			array(
+				'annotate_url' => isset( $options['annotate_url'] ) ? true : false,
+				'annotate_date' => isset( $options['annotate_date'] ) ? true : false,
+				'annotate_email' => isset( $options['annotate_email'] ) ? true : false,
+				'add_microdata' => isset( $options['add_microdata'] ) ? true : false,
+				'lang' => $options['lang'],
+				'skip' => $options['skip']
 			) 
+		);
+		global $plugin_constants;
+		wp_localize_script(
+			'tinymce',
+			'CONSTANTS',
+			$plugin_constants
 		);
 		$plugin_array['annotate'] = plugins_url( 'js/tinymce-plugin.js', __FILE__ );		
 		return $plugin_array;
@@ -198,7 +219,6 @@ class Annotation_Plugin {
 		?>
 		<div class="wrap">
 		<h2><?php _e( 'Annotation Plugin Settings', 'APA-IT-projekt' ) ?></h2>
-		<p><?php _e( 'Please select which annotations should be shown', 'APA-IT-projekt' ) ?>.</p>
 		<form method="post" action="options.php">
 			<?php settings_fields( $this->option_name ); ?>
 			<table class="form-table">
@@ -207,6 +227,7 @@ class Annotation_Plugin {
 					<td>
 						<input type='checkbox' name='<?php echo $this->option_name . "[annotate_url]" ?>' value='yes' 
 							<?php if( isset( $options['annotate_url'] ) ) { checked( 'yes', $options['annotate_url'] ); } ?> >
+						<?php _e( 'URLs will be suggested when annotating.', 'APA-IT-projekt' ); ?>
 					</td>
 				</tr>
 				
@@ -215,6 +236,7 @@ class Annotation_Plugin {
 					<td>
 						<input type='checkbox' name='<?php echo $this->option_name . "[annotate_date]" ?>' value='yes' 
 							<?php if( isset( $options['annotate_date'] ) ) { checked( 'yes', $options['annotate_date'] ); } ?> >
+						<?php _e( 'Dates will be suggested when annotating.', 'APA-IT-projekt' ); ?>
 					</td>
 				</tr>
 				
@@ -223,6 +245,7 @@ class Annotation_Plugin {
 					<td>
 						<input type='checkbox' name='<?php echo $this->option_name . "[annotate_email]" ?>' value='yes' 
 							<?php if( isset( $options['annotate_email'] ) ) { checked( 'yes', $options['annotate_email'] ); } ?> >
+						<?php _e( 'Email addresses will be suggested when annotating.', 'APA-IT-projekt' ); ?>
 					</td>
 				</tr>
 				
@@ -231,13 +254,32 @@ class Annotation_Plugin {
 					<td>
 						<input type='checkbox' name='<?php echo $this->option_name . "[add_microdata]" ?>' value='yes' 
 							<?php if( isset( $options['add_microdata'] ) ) { checked( 'yes', $options['add_microdata'] ); } ?> >
+						<?php _e( 'Microdata will be added to all annotations if this is selected.', 'APA-IT-projekt' ); ?>
+					</td>
+				</tr>
+				
+				<tr valign="top">
+					<th scope="row"><?php _e( 'Select an annotation language', 'APA-IT-projekt' ) ?></th>
+					<td>
+						<select name='<?php echo $this->option_name . "[lang]" ?>'>
+							<option value='GER' <?php if( isset( $options['lang'] ) ) { selected( $options['lang'], 'GER' ); } ?>><?php _e( 'German', 'APA-IT-projekt' ); ?></option>
+							<option value='FRA' <?php if( isset( $options['lang'] ) ) { selected( $options['lang'], 'FRA' ); } ?>><?php _e( 'French', 'APA-IT-projekt' ); ?></option>
+						</select>
+					</td>
+				</tr>
+				
+				<tr valign="top">
+					<th scope="row"><?php _e( 'Enter annotations to skip', 'APA-IT-projekt' ) ?></th>
+					<td>
+						<input type="text" size='75' placeholder='<?php _e( 'e.g.', 'APA-IT-projekt' ); ?> GER:Austria_Presse_Agentur|GER:Deutsche_Presse_Agentur' name='<?php echo $this->option_name . "[skip]" ?>' value='<?php if( isset ( $options['skip'] ) ) { echo $options['skip']; } ?>'>
+						<?php _e( '(multiple entries should be separated by "|")', 'APA-IT-projekt' ); ?>						
 					</td>
 				</tr>
 			</table>
 			<?php submit_button(); ?>
 		</form>
 		</div>
-		<?php 
+		<?php
 	}
 	
 	/**
@@ -288,7 +330,8 @@ class Annotation_Plugin {
 	public function getAnnotations() {
 		wp_enqueue_script( 'annotation-script', plugins_url( 'js/annotations.js', __FILE__ ), array( 'jquery' ) );
 		wp_enqueue_style( 'annotation-stylesheet', plugins_url( 'css/annotations.css', __FILE__ ) );
-		wp_localize_script( 'annotation-script', 'WORDPRESS', array( 'annotate_db' => plugins_url( 'annotate_db.php', __FILE__ ) ) );
+		global $plugin_constants;
+		wp_localize_script( 'annotation-script', 'CONSTANTS', $plugin_constants );
 		
 		$allowed_orders = array(
 			'name' => 'a.name',

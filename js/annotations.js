@@ -29,8 +29,11 @@ jQuery(document).ready(function() {
 	});
 	
 	jQuery('#delete').click(function() {
-		if (confirm('Would you really like to delete these annotations permanently?')) {
-			var checkboxes = jQuery('input[class=anno]');
+		var checkboxes = jQuery('input[class=anno]:checked');
+		if(checkboxes.length == 0) {
+			alert(CONSTANTS.delete_error);
+		} else if (confirm(CONSTANTS.delete_confirmation)) {	
+			checkboxes = jQuery('input[class=anno]');
 			for (var i = 0; i < checkboxes.length; i++) {
 				if(checkboxes[i].checked) {
 					var name = checkboxes[i].value;
@@ -38,7 +41,7 @@ jQuery(document).ready(function() {
 					
 					jQuery.ajax({
 						type: 'POST',
-						url: WORDPRESS.annotate_db, 
+						url: CONSTANTS.annotate_db, 
 						data: {
 							'function': 'delete',
 							'name': name

@@ -1,14 +1,18 @@
 .container {
-	font-family: Verdana, Geneva, Tahoma, sans-serif;
+	font-family: 	Verdana, Geneva, Tahoma, sans-serif;
 }
 
 #title {
-	text-align:	center; 
-	font-size:	2em;
+	text-align:		center; 
+	font-size:		2em;
 }
 
 .padded {
-	padding:	15px 0 0 0;
+	padding:		15px 0 0 0;
+}
+
+#wpfooter {
+	position: relative;
 }
 
 table#annotation-table {
@@ -30,15 +34,15 @@ tr.title {
 	font-weight: 	600;
 }
 
-.annotation>td {
-	min-width:	200px; 
-	padding:	15px 10px;
-	border:		1px solid black;
-	color:		gray;
+.annotation>td {	
+	min-width:		200px; 
+	padding:		15px 10px;
+	border:			1px solid black;
+	color:			gray;
 }
 
 .error {
-	font-style:	italic;
+	font-style:		italic;
 }
 
 a {
@@ -46,7 +50,7 @@ a {
 }
 
 tr.delete>td>a {
-	color: red;
+	color: 			red;
 }
 
 .inner-list {
@@ -54,34 +58,81 @@ tr.delete>td>a {
 }
 
 h2 {
-	font-size: 	20px;
-	color:  	darkslateblue;
+	font-size: 		20px;
+	color:  		darkslateblue;
 }
 
 .annotation-details {
-	list-style-position: inside;
-	line-height: 150%;
+	list-style-position:	inside;
+	line-height: 			150%;
 }
 
 img.triangle {
-	height: 10px;
-	width: 10px;
-	border: none;
+	height:			10px;
+	width:			10px;
+	border:			none;
 }
 
 .input {
-	min-width: 30px;
-	width: 50px;
-	max-width: 50px;
-	text-align: center;
+	min-width:		30px;
+	width:			50px;
+	max-width:		50px;
+	text-align:		center;
 }
 
 #search {
-	height: 20px;
-	font-size: 15px;
-	width: 180px;
-	font-weight: normal;
-	float: right;
-	padding: 10px;
-	color: black;
+	height:			20px;
+	font-size:		15px;
+	width:			180px;
+	font-weight:	normal;
+	float: 			right;
+	padding: 		10px;
+	color: 			black;
+}
+
+#button, #delete {
+	display: 		inline-block;
+	margin: 		0 5px 0 0;
+	padding: 		5px 15px;
+	font-size: 		15px;
+	line-height:	1.8;
+	box-shadow: 	none;
+	border-radius: 	0;
+	color: 			#6496c8;
+	background: 	white;
+	border: 		solid 5px #6496c8;
+}
+
+#button {
+	position: 		fixed;
+	bottom: 		10px;
+	right: 			10px;
+}
+
+div.button-container {
+	position: 		fixed;
+	background: 	white;
+	width: 			140px;
+	height: 		65px;
+	bottom: 		0;
+	right: 			0;
+	z-index: 		100;
+	border-left: 	1px solid grey;
+	border-top: 	1px solid grey;
+}
+
+#button:hover, 
+#button.hover, 
+#delete:hover,
+#delete.hover {
+	border-color:	#346392;
+	color: 			#346392;
+}
+
+#button:active,
+#button.active,
+#delete:active,
+#delete.active {
+	border-color:	#27496d;
+	color: 			#27496d;
 }

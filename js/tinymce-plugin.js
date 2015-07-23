@@ -6,11 +6,11 @@ jQuery(document).ready(function(jQuery){
 		// Add annotate button
 		editor.addButton('annotate', {
 			title: 'Annotate',
-			tooltip: 'Annotate',
+			tooltip: CONSTANTS.button_tooltip,
 			
 			/* Either have text or image here */
 			
-			text: 'Annotate', 
+			text: CONSTANTS.button_text, 
 			//image: url + '/../img/apa.jpg',
 			
 			//on click annotate if there is text in the editor
@@ -19,26 +19,22 @@ jQuery(document).ready(function(jQuery){
 				var content = editor.getContent();
 				
 				if ('' === content) {
-					wm.alert('Please enter text to be annotated!');
+					wm.alert(CONSTANTS.no_text_alert);
 				} else {
-					//APA annotation service test URL
-					var ps_annotate_url = 'http://apapses5.apa.at:7070/fliptest_tmp/cgi-bin/ps_annotate';
-					
-					/* get info from OPTIONS PAGE */
-					
+
 					var data = {
 						contenttype: 'application/json',
 						reqid: 'request',
-						lang: 'GER',
+						lang: SETTINGS.lang,
 						text: content,
-						skip: 'GER:Austria_Presse_Agentur|GER:Deutsche_Presse-Agentur'
+						skip: SETTINGS.skip
 					};
 					
 					
 					//POST request to ps_annotate server
 					jQuery.ajax({
 						type: 'POST',
-						url: ps_annotate_url,
+						url: CONSTANTS.ps_annotate_url,
 						crossDomain: true,
 						dataType: 'json',
 						data: data,
@@ -47,14 +43,13 @@ jQuery(document).ready(function(jQuery){
 							response = cleanResponse(response);
 							
 							if (!response.hasOwnProperty('concepts')) {
-								wm.alert("No annotations could be found!");
+								wm.alert(CONSTANTS.no_annotations_alert);
 							} else {
 								//opens selection form
-								var selection_form = WORDPRESS.selection_form;
 								var selection_form_id = 'selectionform';
 								wm.open({
-									url : selection_form,
-									title: 'Annotation results',
+									url : CONSTANTS.selection_form,
+									title: CONSTANTS.results_title,
 									width : 900,
 									height : 700,
 									id: selection_form_id,
@@ -68,11 +63,24 @@ jQuery(document).ready(function(jQuery){
 								var iframe_identifier = '#' + selection_form_id + ' iframe';
 								jQuery(iframe_identifier).load(function() {
 									//add information to 'selection_form.html' from results
-									var table_contents;
+									var table_contents = 
+										'<tr class="title">' + 
+											'<th class="input"><input type="checkbox" class="select-all"></th>' + 
+											'<th>' + CONSTANTS.results_name + '</th>' + 
+											'<th>' + CONSTANTS.results_type + '</th>' +
+											'<th></th>' +
+										'</tr>';
+									
 									response.concepts.forEach(function(element) {
 										table_contents += generateRow(element);
 									});
 									jQuery(iframe_identifier).contents().find('table').append(table_contents);
+									jQuery(iframe_identifier).contents().find('table').after(
+										'<br>' + 
+										//'<div class="button-container">' +
+										'<input id="button" type="submit" value="' + CONSTANTS.button_text + '" form="target">' 
+										// + '</div>'
+									);
 									
 									jQuery(iframe_identifier).contents().find('input[class=select-all]').click(function() {
 										var checkboxes = jQuery(iframe_identifier).contents().find('input[name=checkbox]');
@@ -99,22 +107,18 @@ jQuery(document).ready(function(jQuery){
 											if (element.phrase === false) {
 												return false;
 											}
-											if( WORDPRESS.add_microdata ) {											
+											if( SETTINGS.add_microdata ) {											
 												var microdata = createMicrodata(element, url);
 											} else {
 												var microdata = createAnnotation( element );
 											}
 											
 											var post_title = jQuery('#titlewrap input').val();
-											var db_annotate_url = WORDPRESS.annotate_db;
-											addAnnotationToDB(post_title, element, db_annotate_url);
+											addAnnotationToDB(post_title, element);
 											
 											content = content.replace(
 												new RegExp('([ ,.:\(_\-])(' + element.phrase + ')([ ,.:_\)\-])', 'g'), '$1' + microdata + "$3");
 										}, this);
-										
-										//add article microdata
-										//content = addArticleMicrodata(content);
 										
 										editor.setContent(content);
 										
@@ -189,12 +193,6 @@ jQuery(document).ready(function(jQuery){
 		return url;
 	}
 	
-	function addArticleMicrodata(content) {
-		var post_prologue = '<div itemscope="" itemtype="http://schema.org/Article"><div itemprop="articleBody"> ';
-		var post_epilogue = '</div></div>';
-		return post_prologue + content + post_epilogue;
-	}
-	
 	/**
 	 * Generates an individual table row depending on information
 	 */
@@ -222,16 +220,11 @@ jQuery(document).ready(function(jQuery){
 	function cleanResponse(response) {
 		var indices = [];
 		var counter = 0;
-		alert(
-			'test: ' + WORDPRESS.annotate_db +
-			'\nemail: ' + WORDPRESS.annotate_email.toString() +
-			'\n date: ' + WORDPRESS.annotate_date.toString() + 
-			'\n    url: ' + WORDPRESS.annotate_url.toString()
-		);
+		
 		response.concepts.forEach(function(element) {
-			if ((false == WORDPRESS.annotate_email && element.type == 'mailaddr' ) || 
-				(false == WORDPRESS.annotate_date && element.type == 'date' ) || 
-				(false == WORDPRESS.annotate_url && element.type == 'URL') ) {
+			if ((false == SETTINGS.annotate_email && element.type == 'mailaddr' ) || 
+				(false == SETTINGS.annotate_date && element.type == 'date' ) || 
+				(false == SETTINGS.annotate_url && element.type == 'URL') ) {
 				indices[indices.length] = counter;
 			}
 			counter++;
@@ -274,7 +267,7 @@ jQuery(document).ready(function(jQuery){
 		return name.substr(4, name.length).replace(new RegExp('_', 'gi'), ' ');
 	}
 	
-	function addAnnotationToDB(post_title, element, url) {
+	function addAnnotationToDB(post_title, element) {
 		var data = {
 			'function': 'add',
 			'name': cleanName(element.concept),
@@ -284,7 +277,7 @@ jQuery(document).ready(function(jQuery){
 		
 		jQuery.ajax({
 			type: 'POST',
-			url: url,
+			url: CONSTANTS.annotate_db,
 			data: data,
 			datatype: JSON,
 			error: handle_request_error,
