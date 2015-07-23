@@ -5,11 +5,11 @@ Plugin URI: http://www.apa-it.at
 Description: Annotations service
 Author: Patrick Schrempf
 Version: Alpha
-Text Domain: APA-IT-projekt
+Text Domain: annotation-plugin
 Domain Path: languages/
 */
 
-defined( 'ABSPATH' ) or wp_die( __( 'Plugin cannot be accessed correctly!', 'APA-IT-projekt' ) );
+defined( 'ABSPATH' ) or wp_die( __( 'Plugin cannot be accessed correctly!', 'annotation-plugin' ) );
 define( 'WPLANG', '' );
 
 class Annotation_Plugin {
@@ -81,8 +81,8 @@ class Annotation_Plugin {
 		if ( empty( $results ) ) {
 			$page = array(
 				'post_name' => 'annotations',
-				'post_title' => 'Annotations',
-				'post_content' => '<em>' + __( 'No annotations available', 'APA-IT-projekt' ) + '.</em>',
+				'post_title' => __( 'Annotations', 'annotation-plugin'),
+				'post_content' => '<em>' + __( 'No annotations available', 'annotation-plugin' ) + '.</em>',
 				'post_excerpt' => 'Annotations',				
 				'post_status' => 'publish',
 				'post_type' => 'page'
@@ -108,20 +108,22 @@ class Annotation_Plugin {
 		global $wpdb;
 		global $annotation_db;
 		$annotation_db = $wpdb->prefix . 'annotations';
+		
+		//set all necessary constants
 		global $plugin_constants;
 		$plugin_constants = array(
 				'ps_annotate_url' => 'http://apapses5.apa.at:7070/fliptest_tmp/cgi-bin/ps_annotate',
 				'annotate_db' => plugins_url( 'annotate_db.php', __FILE__ ),
 				'selection_form' => plugins_url( 'templates/selection_form.html', __FILE__ ),
-				'button_text' => __( 'Annotate', 'APA-IT-projekt' ),
-				'button_tooltip' => __( 'Annotate', 'APA-IT-projekt' ),
-				'no_text_alert' => __( 'Please enter text to be annotated!', 'APA-IT-projekt' ),
-				'no_annotations_alert' => __( 'No annotations could be found', 'APA-IT-projekt' ),
-				'results_title' => __( 'Annotation results', 'APA-IT-projekt' ),
-				'results_name' => __( 'Name', 'APA-IT-projekt' ),
-				'results_type' => __( 'Type', 'APA-IT-projekt' ),
-				'delete_error' => __( 'Please select annotations to be deleted', 'APA-IT-projekt' ),
-				'delete_confirmation' => __( 'Would you really like to delete these annotations permanently?', 'APA-IT-projekt' )
+				'button_text' => __( 'Annotate', 'annotation-plugin' ),
+				'button_tooltip' => __( 'Annotate', 'annotation-plugin' ),
+				'no_text_alert' => __( 'Please enter text to be annotated!', 'annotation-plugin' ),
+				'no_annotations_alert' => __( 'No annotations could be found', 'annotation-plugin' ),
+				'results_title' => __( 'Annotation results', 'annotation-plugin' ),
+				'results_name' => __( 'Name', 'annotation-plugin' ),
+				'results_type' => __( 'Type', 'annotation-plugin' ),
+				'delete_error' => __( 'Please select annotations to be deleted', 'annotation-plugin' ),
+				'delete_confirmation' => __( 'Would you really like to delete these annotations permanently?', 'annotation-plugin' )
 		);
 	}
 	
@@ -129,7 +131,7 @@ class Annotation_Plugin {
 	 * Loads the textdomain for different languagepacks.
 	 */
 	function load_textdomain() {
-		load_plugin_textdomain( 'APA-IT-projekt', false, basename( dirname( __FILE__ ) ) . '/languages/' );
+		load_plugin_textdomain( 'annotation-plugin', false, basename( dirname( __FILE__ ) ) . '/languages/' );
 	}
 
 	/**
@@ -189,8 +191,8 @@ class Annotation_Plugin {
 	function add_pages() {
 		//add plugin options page
 		add_options_page(
-			__( 'Annotation Plugin Options', 'APA-IT-projekt'), 
-			__( 'Annotation Plugin Options', 'APA-IT-projekt'), 
+			__( 'Annotation Plugin Options', 'annotation-plugin'), 
+			__( 'Annotation Plugin Options', 'annotation-plugin'), 
 			'manage_options', 
 			$this->option_name, 
 			array( $this, 'options_page' ) 
@@ -198,8 +200,8 @@ class Annotation_Plugin {
 		
 		//add dashboard annotation page
 		add_object_page( 
-			__( 'Annotations', 'APA-IT-projekt'), 
-			__( 'Annotations', 'APA-IT-projekt'), 
+			__( 'Annotations', 'annotation-plugin'), 
+			__( 'Annotations', 'annotation-plugin'), 
 			'publish_posts', 
 			'annotations', 
 			array( $this, 'annotations_object_page' ), 
@@ -215,9 +217,12 @@ class Annotation_Plugin {
 	}
 	
 	/**
-	 * 
+	 * Validates and sanitizes the settings text input field.
 	 */
 	function validate_input( $input ) {
+		if( isset( $input['skip'] ) ) {
+			$input['skip'] = sanitize_text_field( $input['skip'] );
+		}
 		return $input;
 	}
 	
@@ -226,7 +231,7 @@ class Annotation_Plugin {
 	 */
 	function options_page() {
 		if ( ! current_user_can( 'manage_options' ) )  {
-			wp_die( __( 'You do not have sufficient permissions to access this page.', 'APA-IT-projekt' ) );
+			wp_die( __( 'You do not have sufficient permissions to access this page.', 'annotation-plugin' ) );
 		}
 		
 		//get current options
@@ -235,61 +240,61 @@ class Annotation_Plugin {
 		//display the options html
 		?>
 		<div class="wrap">
-		<h2><?php _e( 'Annotation Plugin Settings', 'APA-IT-projekt' ) ?></h2>
+		<h2><?php _e( 'Annotation Plugin Settings', 'annotation-plugin' ) ?></h2>
 		<form method="post" action="options.php">
 			<?php settings_fields( $this->option_name ); ?>
 			<table class="form-table">
 				<tr valign="top">
-					<th scope="row"><?php _e( 'Annotate URLs?', 'APA-IT-projekt' ) ?></th>
+					<th scope="row"><?php _e( 'Annotate URLs?', 'annotation-plugin' ) ?></th>
 					<td>
 						<input type='checkbox' name='<?php echo $this->option_name . "[annotate_url]" ?>' value='yes' 
 							<?php if( isset( $options['annotate_url'] ) ) { checked( 'yes', $options['annotate_url'] ); } ?> >
-						<?php _e( 'URLs will be suggested when annotating.', 'APA-IT-projekt' ); ?>
+						<?php _e( 'URLs will be suggested when annotating.', 'annotation-plugin' ); ?>
 					</td>
 				</tr>
 				
 				<tr valign="top">
-					<th scope="row"><?php _e( 'Annotate dates?', 'APA-IT-projekt' ) ?></th>
+					<th scope="row"><?php _e( 'Annotate dates?', 'annotation-plugin' ) ?></th>
 					<td>
 						<input type='checkbox' name='<?php echo $this->option_name . "[annotate_date]" ?>' value='yes' 
 							<?php if( isset( $options['annotate_date'] ) ) { checked( 'yes', $options['annotate_date'] ); } ?> >
-						<?php _e( 'Dates will be suggested when annotating.', 'APA-IT-projekt' ); ?>
+						<?php _e( 'Dates will be suggested when annotating.', 'annotation-plugin' ); ?>
 					</td>
 				</tr>
 				
 				<tr valign="top">
-					<th scope="row"><?php _e( 'Annotate email addresses?', 'APA-IT-projekt' ) ?></th>
+					<th scope="row"><?php _e( 'Annotate email addresses?', 'annotation-plugin' ) ?></th>
 					<td>
 						<input type='checkbox' name='<?php echo $this->option_name . "[annotate_email]" ?>' value='yes' 
 							<?php if( isset( $options['annotate_email'] ) ) { checked( 'yes', $options['annotate_email'] ); } ?> >
-						<?php _e( 'Email addresses will be suggested when annotating.', 'APA-IT-projekt' ); ?>
+						<?php _e( 'Email addresses will be suggested when annotating.', 'annotation-plugin' ); ?>
 					</td>
 				</tr>
 				
 				<tr valign="top">
-					<th scope="row"><?php _e( 'Add schema.org microdata?', 'APA-IT-projekt' ) ?></th>
+					<th scope="row"><?php _e( 'Add schema.org microdata?', 'annotation-plugin' ) ?></th>
 					<td>
 						<input type='checkbox' name='<?php echo $this->option_name . "[add_microdata]" ?>' value='yes' 
 							<?php if( isset( $options['add_microdata'] ) ) { checked( 'yes', $options['add_microdata'] ); } ?> >
-						<?php _e( 'Microdata will be added to all annotations if this is selected.', 'APA-IT-projekt' ); ?>
+						<?php _e( 'Microdata will be added to all annotations if this is selected.', 'annotation-plugin' ); ?>
 					</td>
 				</tr>
 				
 				<tr valign="top">
-					<th scope="row"><?php _e( 'Select an annotation language', 'APA-IT-projekt' ) ?></th>
+					<th scope="row"><?php _e( 'Select an annotation language', 'annotation-plugin' ) ?></th>
 					<td>
 						<select name='<?php echo $this->option_name . "[lang]" ?>'>
-							<option value='GER' <?php if( isset( $options['lang'] ) ) { selected( $options['lang'], 'GER' ); } ?>><?php _e( 'German', 'APA-IT-projekt' ); ?></option>
-							<option value='FRA' <?php if( isset( $options['lang'] ) ) { selected( $options['lang'], 'FRA' ); } ?>><?php _e( 'French', 'APA-IT-projekt' ); ?></option>
+							<option value='GER' <?php if( isset( $options['lang'] ) ) { selected( $options['lang'], 'GER' ); } ?>><?php _e( 'German', 'annotation-plugin' ); ?></option>
+							<option value='FRA' <?php if( isset( $options['lang'] ) ) { selected( $options['lang'], 'FRA' ); } ?>><?php _e( 'French', 'annotation-plugin' ); ?></option>
 						</select>
 					</td>
 				</tr>
 				
 				<tr valign="top">
-					<th scope="row"><?php _e( 'Enter annotations to skip', 'APA-IT-projekt' ) ?></th>
+					<th scope="row"><?php _e( 'Enter annotations to skip', 'annotation-plugin' ) ?></th>
 					<td>
-						<input type="text" size='75' placeholder='<?php _e( 'e.g.', 'APA-IT-projekt' ); ?> GER:Austria_Presse_Agentur|GER:Deutsche_Presse_Agentur' name='<?php echo $this->option_name . "[skip]" ?>' value='<?php if( isset ( $options['skip'] ) ) { echo $options['skip']; } ?>'>
-						<?php _e( '(multiple entries should be separated by "|")', 'APA-IT-projekt' ); ?>						
+						<input type="text" size='75' placeholder='<?php _e( 'e.g.', 'annotation-plugin' ); ?> GER:Austria_Presse_Agentur|GER:Deutsche_Presse_Agentur' name='<?php echo $this->option_name . "[skip]" ?>' value='<?php if( isset ( $options['skip'] ) ) { echo $options['skip']; } ?>'>
+						<?php _e( '(multiple entries should be separated by "|")', 'annotation-plugin' ); ?>						
 					</td>
 				</tr>
 			</table>
@@ -304,7 +309,7 @@ class Annotation_Plugin {
 	 */
 	function annotations_object_page() {
 		if ( ! current_user_can( 'publish_posts' ) ) {
-			wp_die( __( 'You do not have sufficient permissions to access this page.', 'APA-IT-projekt' ) );
+			wp_die( __( 'You do not have sufficient permissions to access this page.', 'annotation-plugin' ) );
 		}
 		$this->getAnnotations();
 	}
@@ -395,7 +400,7 @@ class Annotation_Plugin {
 		?>
 		<input type='text' id='search' placeholder='Search'>
 		<h1 id='title' class='padded'>
-			<a href='<?php echo $url ?>'><?php _e( 'Annotations', 'APA-IT-projekt' ) ?></a>
+			<a href='<?php echo $url ?>'><?php _e( 'Annotations', 'annotation-plugin' ) ?></a>
 		</h1>
 		<br>
 		
@@ -403,12 +408,12 @@ class Annotation_Plugin {
 		if ( empty( $annotations ) ) {
 			if ( '%' === $search_string ) {
 				?>
-				<p class="error"><?php _e( 'Please add annotations to your posts.', 'APA-IT-projekt' ) ?></p>
+				<p class="error"><?php _e( 'Please add annotations to your posts.', 'annotation-plugin' ) ?></p>
 				<?php
 			} else {
 				?>
 				<h2><?php echo $search_string ?></h2>
-				<p class='error'><?php _e( 'No annotations found.', 'APA-IT-projekt' ) ?></p>
+				<p class='error'><?php _e( 'No annotations found.', 'annotation-plugin' ) ?></p>
 				<?php
 			}
 		} else {
@@ -449,14 +454,14 @@ class Annotation_Plugin {
 		//display table with annotations for all users
 		?>
 			<th>
-				<?php _e( 'Annotation', 'APA-IT-projekt' ) ?>
+				<?php _e( 'Annotation', 'annotation-plugin' ) ?>
 				<a href='<?php echo $url ?> orderby=name'>
 					<img src='<?php echo $img_src ?>' alt='sort' class='triangle'>
 				</a>
 			</th>
 		
 			<th>
-				<?php _e( 'Type', 'APA-IT-projekt' ) ?>
+				<?php _e( 'Type', 'annotation-plugin' ) ?>
 				<a href='<?php echo $url ?> orderby=type'>
 					<img src='<?php echo $img_src ?>' alt='sort' class='triangle'>
 				</a>
@@ -498,7 +503,7 @@ class Annotation_Plugin {
 		//if current user can edit post show delete button
 		if ( current_user_can( 'edit_posts' ) ) {
 			?>
-			<button id="delete"><?php _e( 'Delete', 'APA-IT-projekt' ) ?></button>
+			<button id="delete"><?php _e( 'Delete', 'annotation-plugin' ) ?></button>
 			<?php
 		}
 	}
@@ -522,9 +527,9 @@ class Annotation_Plugin {
 			
 			//deal with database errors
 			if ( $result->post_id == -1 ) {
-				$post_title = '<p class="error">[' + __('Post does not exist', 'APA-IT-projekt' ) + ']</p>';
+				$post_title = '<p class="error">[' + __('Post does not exist', 'annotation-plugin' ) + ']</p>';
 			} else if ( $result->post_id == 0 ) {
-				$post_title = '<p class="error">[' + __( 'Error when reading from database', 'APA-IT-projekt' ) + ']</p>';
+				$post_title = '<p class="error">[' + __( 'Error when reading from database', 'annotation-plugin' ) + ']</p>';
 			} else {
 				$post = get_post($result->post_id);
 				$post_title = $post->post_title;
