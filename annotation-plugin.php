@@ -5,13 +5,12 @@ Plugin URI: http://www.apa-it.at
 Description: Annotations service
 Author: Patrick Schrempf
 Version: Alpha
+Text Domain: APA-IT-projekt
+Domain Path: languages/
 */
 
 defined( 'ABSPATH' ) or wp_die( 'Plugin cannot be accessed correctly!' );  /*not sure if needed*/
-
-require_once( ABSPATH . 'wp-admin/includes/media.php' );
-require_once( ABSPATH . 'wp-admin/includes/file.php' );
-require_once( ABSPATH . 'wp-admin/includes/image.php' );
+define( 'WPLANG', '' );
 
 class Annotation_Plugin {
 
@@ -28,6 +27,8 @@ class Annotation_Plugin {
 		register_activation_hook( __FILE__, array( $this, 'install' ) );
 
 		add_action( 'init', array( $this, 'plugin_init' ) );
+		
+		add_action( 'plugins_loaded', array( $this, 'load_textdomain' ) );
 
 		add_filter( 'tiny_mce_before_init', array( $this, 'override_mce_options' ) );
 		
@@ -85,7 +86,7 @@ class Annotation_Plugin {
 			$page = array(
 				'post_name' => 'annotations',
 				'post_title' => 'Annotations',
-				'post_content' => '<em>No annotations available.</em>',
+				'post_content' => '<em>' + __( 'No annotations available', 'APA-IT-projekt' ) + '.</em>',
 				'post_excerpt' => 'Annotations',				
 				'post_status' => 'publish',
 				'post_type' => 'page'
@@ -108,6 +109,10 @@ class Annotation_Plugin {
 		global $wpdb;
 		global $annotation_db;
 		$annotation_db = $wpdb->prefix . 'annotations';
+	}
+	
+	function load_textdomain() {
+		load_plugin_textdomain( 'APA-IT-projekt', false, basename( dirname( __FILE__ ) ) . '/languages/' );
 	}
 
 	/*---------------------- Adding annnotation service to editor ----------------------*/
@@ -149,16 +154,16 @@ class Annotation_Plugin {
 	 */
 	function add_pages() {
 		add_options_page(
-			'Annotation Plugin Options', 
-			'Annotation Plugin Options', 
+			__( 'Annotation Plugin Options', 'APA-IT-projekt'), 
+			__( 'Annotation Plugin Options', 'APA-IT-projekt'), 
 			'manage_options', 
-			'annotation-plugin-options', 
+			$this->option_name, 
 			array( $this, 'options_page' ) 
 		);
 		
 		add_object_page( 
-			'Annotations', 
-			'Annotations', 
+			__( 'Annotations', 'APA-IT-projekt'), 
+			__( 'Annotations', 'APA-IT-projekt'), 
 			'publish_posts', 
 			'annotations', 
 			array( $this, 'annotations_object_page' ), 
@@ -167,7 +172,7 @@ class Annotation_Plugin {
 	}
 	
 	function annotation_settings_init() {
-		register_setting( 'annotation-plugin-options', $this->option_name, array( $this, 'validate_input' ) );
+		register_setting( $this->option_name, $this->option_name, array( $this, 'validate_input' ) );
 	}
 	
 	function validate_input( $input ) {
@@ -179,7 +184,7 @@ class Annotation_Plugin {
 	 */
 	function options_page() {
 		if ( ! current_user_can( 'manage_options' ) )  {
-			wp_die( 'You do not have sufficient permissions to access this page.' );
+			wp_die( __( 'You do not have sufficient permissions to access this page.', 'APA-IT-projekt' ) );
 		}
 		
 		$options = array( 
@@ -192,13 +197,13 @@ class Annotation_Plugin {
 		$options = get_option( $this->option_name );
 		?>
 		<div class="wrap">
-		<h2>Annotation Plugin Settings</h2>
-		<p>Please select which annotations should be shown.</p>
+		<h2><?php _e( 'Annotation Plugin Settings', 'APA-IT-projekt' ) ?></h2>
+		<p><?php _e( 'Please select which annotations should be shown', 'APA-IT-projekt' ) ?>.</p>
 		<form method="post" action="options.php">
-			<?php settings_fields( 'annotation-plugin-options' ); ?>
+			<?php settings_fields( $this->option_name ); ?>
 			<table class="form-table">
 				<tr valign="top">
-					<th scope="row">Annotate URLs?</th>
+					<th scope="row"><?php _e( 'Annotate URLs?', 'APA-IT-projekt' ) ?></th>
 					<td>
 						<input type='checkbox' name='<?php echo $this->option_name . "[annotate_url]" ?>' value='yes' 
 							<?php if( isset( $options['annotate_url'] ) ) { checked( 'yes', $options['annotate_url'] ); } ?> >
@@ -206,7 +211,7 @@ class Annotation_Plugin {
 				</tr>
 				
 				<tr valign="top">
-					<th scope="row">Annotate dates?</th>
+					<th scope="row"><?php _e( 'Annotate dates?', 'APA-IT-projekt' ) ?></th>
 					<td>
 						<input type='checkbox' name='<?php echo $this->option_name . "[annotate_date]" ?>' value='yes' 
 							<?php if( isset( $options['annotate_date'] ) ) { checked( 'yes', $options['annotate_date'] ); } ?> >
@@ -214,7 +219,7 @@ class Annotation_Plugin {
 				</tr>
 				
 				<tr valign="top">
-					<th scope="row">Annotate email addresses?</th>
+					<th scope="row"><?php _e( 'Annotate email addresses?', 'APA-IT-projekt' ) ?></th>
 					<td>
 						<input type='checkbox' name='<?php echo $this->option_name . "[annotate_email]" ?>' value='yes' 
 							<?php if( isset( $options['annotate_email'] ) ) { checked( 'yes', $options['annotate_email'] ); } ?> >
@@ -222,7 +227,7 @@ class Annotation_Plugin {
 				</tr>
 				
 				<tr valign="top">
-					<th scope="row">Add schema.org microdata?</th>
+					<th scope="row"><?php _e( 'Add schema.org microdata?', 'APA-IT-projekt' ) ?></th>
 					<td>
 						<input type='checkbox' name='<?php echo $this->option_name . "[add_microdata]" ?>' value='yes' 
 							<?php if( isset( $options['add_microdata'] ) ) { checked( 'yes', $options['add_microdata'] ); } ?> >
@@ -240,7 +245,7 @@ class Annotation_Plugin {
 	 */
 	function annotations_object_page() {
 		if ( ! current_user_can( 'publish_posts' ) ) {
-			wp_die( 'You do not have sufficient permissions to access this page.' );
+			wp_die( __( 'You do not have sufficient permissions to access this page.', 'APA-IT-projekt' ) );
 		}
 		$this->getAnnotations();
 	}
@@ -328,7 +333,7 @@ class Annotation_Plugin {
 		
 		<input type='text' id='search' placeholder='Search'>
 		<h1 id='title' class='padded'>
-			<a href='<?php echo $url ?>'>Annotations</a>
+			<a href='<?php echo $url ?>'><?php _e( 'Annotations', 'APA-IT-projekt' ) ?></a>
 		</h1>
 		<br>
 		
@@ -336,12 +341,12 @@ class Annotation_Plugin {
 		if ( empty( $annotations ) ) {
 			if ( '%' === $search_string ) {
 				?>
-				<p class="error">Please add annotations to your posts.</p>
+				<p class="error"><?php _e( 'Please add annotations to your posts.', 'APA-IT-projekt' ) ?></p>
 				<?php
 			} else {
 				?>
 				<h2><?php echo $search_string ?></h2>
-				<p class='error'>No annotations found.</p>
+				<p class='error'><?php _e( 'No annotations found.', 'APA-IT-projekt' ) ?></p>
 				<?php
 			}
 		} else {
@@ -375,14 +380,14 @@ class Annotation_Plugin {
 		}
 		?>
 			<th>
-				Annotation
+				<?php _e( 'Annotation', 'APA-IT-projekt' ) ?>
 				<a href='<?php echo $url ?> orderby=name'>
 					<img src='<?php echo $img_src ?>' alt='sort' class='triangle'>
 				</a>
 			</th>
 		
 			<th>
-				Type
+				<?php _e( 'Type', 'APA-IT-projekt' ) ?>
 				<a href='<?php echo $url ?> orderby=type'>
 					<img src='<?php echo $img_src ?>' alt='sort' class='triangle'>
 				</a>
@@ -420,7 +425,7 @@ class Annotation_Plugin {
 		<?php
 		if ( current_user_can( 'edit_posts' ) ) {
 			?>
-			<button id="delete">Delete</button>
+			<button id="delete"><?php _e( 'Delete', 'APA-IT-projekt' ) ?></button>
 			<?php
 		}
 	}
@@ -447,9 +452,9 @@ class Annotation_Plugin {
 			//deal with database errors
 			$guid = '';
 			if ( $result->post_id == -1 ) {
-				$post_title = '<p class="error">[Post does not exist]</p>';
+				$post_title = '<p class="error">[' + __('Post does not exist', 'APA-IT-projekt' ) + ']</p>';
 			} else if ( $result->post_id == 0 ) {
-				$post_title = '<p class="error">[Error when reading from database]</p>';
+				$post_title = '<p class="error">[' + __( 'Error when reading from database', 'APA-IT-projekt' ) + ']</p>';
 			} else {
 				$post = get_post($result->post_id);
 				$post_title = $post->post_title;
