@@ -293,7 +293,7 @@ class Annotation_Plugin {
 				<tr valign="top">
 					<th scope="row"><?php _e( 'Enter annotations to skip', 'annotation-plugin' ) ?></th>
 					<td>
-						<input type="text" size='75' placeholder='<?php _e( 'e.g.', 'annotation-plugin' ); ?> GER:Austria_Presse_Agentur|GER:Deutsche_Presse_Agentur' name='<?php echo $this->option_name . "[skip]" ?>' value='<?php if( isset ( $options['skip'] ) ) { echo $options['skip']; } ?>'>
+						<input type="text" size="60" placeholder='<?php _e( 'e.g.', 'annotation-plugin' ); ?> GER:Austria_Presse_Agentur|GER:Deutsche_Presse_Agentur' name='<?php echo $this->option_name . "[skip]" ?>' value='<?php if( isset ( $options['skip'] ) ) { echo $options['skip']; } ?>'>
 						<?php _e( '(multiple entries should be separated by "|")', 'annotation-plugin' ); ?>						
 					</td>
 				</tr>
@@ -479,14 +479,14 @@ class Annotation_Plugin {
 				if ( current_user_can( 'edit_posts' ) ) {
 					?>
 					<td class='input'>
-						<input type='checkbox' class='anno' value='<?php echo $result->name ?>'>
+						<input type='checkbox' class='anno' value="<?php echo $result->name ?>">
 					</td>
 					<?php
 				}
 				?>
 					<td>
-						<a href='<?php echo $url ?> search=<?php echo $result->name ?>'>
-							<strong><?php echo $result->name ?></strong>
+						<a href='<?php echo $url ?> search=<?php echo rawurlencode( $result->name ); ?>'>
+							<strong><?php echo stripslashes( $result->name ) ?></strong>
 						</a>
 					</td>
 			
@@ -513,12 +513,11 @@ class Annotation_Plugin {
 	 */
 	function getSpecificAnnotationPage( $annotations, $search_string, $url ) {
 		?>
-		<h2><?php echo $annotations[0]->name ?></h2>
+		<h2><?php echo stripslashes( $annotations[0]->name ) ?></h2>
 		<ul class='annotation-details'>
-			<li>Type: <?php echo $annotations[0]->type ?></li>
-			<li>Posts: 
+			<li><?php _e( 'Type', 'annotation-plugin' ); ?>: <?php echo $annotations[0]->type ?></li>
+			<li><?php _e( 'Posts', 'annotation-plugin' ); ?>: 
 				<ul class='inner-list annotation-details'>
-		
 		<?php
 		
 		//add 'li' for each annotation

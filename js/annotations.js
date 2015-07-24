@@ -11,7 +11,7 @@ jQuery(document).ready(function() {
 		var val;
 		if (e.keyCode == 13 && '' != (val = jQuery('#search').val()) ) {
 			var attribute_tag = 'search=';
-			val = encodeURI(val);
+			val = encodeURIComponent(val).replace(/'/g, "%27");
 			if (window.location.search == '') {
 				window.location.search = '?' + attribute_tag + val;
 			} else if (window.location.search.includes(attribute_tag) ) {

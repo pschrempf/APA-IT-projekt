@@ -22,7 +22,7 @@ if ( $_POST['function'] === 'add' ) {
 		"
 	, $post_title, $post_type ) );
 	
-	//check if no posts with specified title exist
+	//check that a post with specified title exist
 	if ( empty( $postids ) ) {
 		//'-1' represents an inconsistency in the database, this should not occur
 		$post_id = -1;
@@ -32,7 +32,7 @@ if ( $_POST['function'] === 'add' ) {
 	
 	//create entry for annotation database
 	$data = array(
-		'name' => $_POST['name'],
+		'name' => stripslashes( $_POST['name'] ),
 		'type' => $_POST['type'],
 		'post_id' => $post_id
 	);
@@ -43,6 +43,8 @@ if ( $_POST['function'] === 'add' ) {
 //delete entry from database
 } else if ( $_POST['function'] === 'delete' ) {
 	
+	$name = stripslashes( $_POST['name'] );
+	
 	//get content and ID of all posts connected to the annotation
 	$results = $wpdb->get_results( $wpdb->prepare(
 		"
@@ -51,11 +53,11 @@ if ( $_POST['function'] === 'add' ) {
 		WHERE 	a.name = %s
 		AND 	p.ID = a.post_id
 		"
-	, $_POST['name'] ) );
+	, $name ) );
 
 	//delete links from content of each of these posts
 	foreach( $results as $result ) {
-		$search = rawurlencode( $_POST['name'] );
+		$search = rawurlencode( $name );
 		
 		//Regexp to replace the link
 		$content = preg_replace( "#<a href=\"localhost\/annotations\?search=$search\"[^>]*?>.?<span.*?>(.+?)<\/span><\/a>#", '$1', $result->post_content );
@@ -69,9 +71,9 @@ if ( $_POST['function'] === 'add' ) {
 	}
 	
 	//delete annotation from database
-	$wpdb->delete( $annotation_db, array( 'name' => $_POST['name'] ) );
+	$wpdb->delete( $annotation_db, array( 'name' => $name ) );
 	
-	echo $_POST['name'];
+	echo $name;
 }
 
 ?>
