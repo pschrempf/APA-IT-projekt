@@ -82,7 +82,7 @@ class Annotation_Plugin {
 			$page = array(
 				'post_name' => 'annotations',
 				'post_title' => __( 'Annotations', 'annotation-plugin'),
-				'post_content' => '<em>' + __( 'No annotations available', 'annotation-plugin' ) + '.</em>',
+				'post_content' => '<em>' . __( 'No annotations available', 'annotation-plugin' ) . '.</em>',
 				'post_excerpt' => 'Annotations',				
 				'post_status' => 'publish',
 				'post_type' => 'page'
@@ -123,7 +123,8 @@ class Annotation_Plugin {
 				'results_name' => __( 'Name', 'annotation-plugin' ),
 				'results_type' => __( 'Type', 'annotation-plugin' ),
 				'delete_error' => __( 'Please select annotations to be deleted', 'annotation-plugin' ),
-				'delete_confirmation' => __( 'Would you really like to delete these annotations permanently?', 'annotation-plugin' )
+				'delete_confirmation' => __( 'Would you really like to delete these annotations permanently?', 'annotation-plugin' ),
+				'success' => __('Annotated successfully! Please make sure to save the post.', 'annotation-plugin')
 		);
 	}
 	
@@ -318,7 +319,7 @@ class Annotation_Plugin {
 	 * Adds microdata tags to tinymce editor's valid elements.
 	 */
 	function override_mce_options( $initArray ) {
-		$options = 'div[itemprop|itemscope|itemtype],a[href|itemprop|itemscope|itemtype],span[itemprop|itemscope|itemtype]';
+		$options = 'div[itemprop|itemscope|itemtype],a[href|itemprop|itemscope|itemtype],span[itemprop|itemscope|itemtype],annotation[id]';
 		$initArray['extended_valid_elements'] = $options;
 		return $initArray;
 	}

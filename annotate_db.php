@@ -29,17 +29,18 @@ if ( $_POST['function'] === 'add' ) {
 	} else {
 		$post_id = $postids[0];
 	}
-	
+
+	$name = stripslashes( $_POST['name'] );
+
 	//create entry for annotation database
 	$data = array(
-		'name' => stripslashes( $_POST['name'] ),
+		'name' => $name,
 		'type' => $_POST['type'],
 		'post_id' => $post_id
 	);
 	
 	$wpdb->insert( $annotation_db, $data );
-	
-	
+		
 //delete entry from database
 } else if ( $_POST['function'] === 'delete' ) {
 	
@@ -55,12 +56,14 @@ if ( $_POST['function'] === 'add' ) {
 		"
 	, $name ) );
 
+	$id = preg_quote( $name );
+
 	//delete links from content of each of these posts
 	foreach( $results as $result ) {
 		$search = rawurlencode( $name );
 		
 		//Regexp to replace the link
-		$content = preg_replace( "#<a href=\"localhost\/annotations\?search=$search\"[^>]*?>.?<span.*?>(.+?)<\/span><\/a>#", '$1', $result->post_content );
+		$content = preg_replace( "#<annotation id=\"$id\">.*?<span.*?>(.+?)<\/span><\/a><\/annotation>#", '$1', $result->post_content );
 		
 		$update = array(
 			'ID' => $result->ID,

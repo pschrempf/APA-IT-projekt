@@ -1,14 +1,13 @@
 === APA Annotation Plugin ===
 Contributors: (this should be a list of wordpress.org userid's)
-Donate link: http://example.com/
-Tags: comments, spam
-Requires at least: 3.0.1
-Tested up to: 3.4
+Tags: annotation, service, press
+Requires at least: 4.0.1
+Tested up to: 4.2.3
 Stable tag: 4.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Here is a short description of the plugin.  This should be no more than 150 characters.  No markup here.
+Using this plugin you can annotate your posts using the Austrian Press Agency annotation service.
 
 == Description ==
 
@@ -39,23 +38,19 @@ you put the stable version, in order to eliminate any doubt.
 
 == Installation ==
 
-This section describes how to install the plugin and get it working.
-
-e.g.
-
-1. Upload `plugin-name.php` to the `/wp-content/plugins/` directory
-1. Activate the plugin through the 'Plugins' menu in WordPress
-1. Place `<?php do_action('plugin_name_hook'); ?>` in your templates
+1. Download the plugin from the plugin site on wordpress and place in to the `/wp-content/plugins/` directory.
+2. Activate the plugin through the 'Plugins' menu in WordPress.
+3. Go to the settings menu to initialise the plugin as you which.
 
 == Frequently Asked Questions ==
 
-= A question that someone might have =
+= Are there any other languages available? =
 
-An answer to that question.
+The annotations are only supported in French and German at the moment. The plugin is available in German and English.
 
-= What about foo bar? =
+= How do I delete annotations? =
 
-Answer to foo bar dilemma.
+Go to the annotations page, select the annotations to be deleted and click the 'delete' button on the bottom of the page. Now wait until the desired annotations disappear from the list.
 
 == Screenshots ==
 
@@ -67,26 +62,14 @@ directory take precedence. For example, `/assets/screenshot-1.png` would win ove
 
 == Changelog ==
 
-= 1.0 =
-* A change since the previous version.
-* Another change.
-
-= 0.5 =
-* List versions from most recent at top to oldest at bottom.
+= Alpha =
+* First version of the plugin.
+* No changes.
 
 == Upgrade Notice ==
 
-= 1.0 =
-Upgrade notices describe the reason a user should upgrade.  No more than 300 characters.
-
-= 0.5 =
-This version fixes a security related bug.  Upgrade immediately.
-
-== Arbitrary section ==
-
-You may provide arbitrary sections, in the same format as the ones above.  This may be of use for extremely complicated
-plugins where more information needs to be conveyed that doesn't fit into the categories of "description" or
-"installation."  Arbitrary sections will be shown below the built-in sections outlined above.
+= Alpha =
+Please update to version Alpha as soon as possible.
 
 == A brief Markdown Example ==
 

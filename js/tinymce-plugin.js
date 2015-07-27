@@ -13,6 +13,7 @@ jQuery(document).ready(function(jQuery){
 			onclick: function() {
 				//get content from editor
 				var content = editor.getContent();
+				var cleanContent = editor.getContent({format:'text'});
 				
 				//if there is no content alert user
 				if ('' === content) {
@@ -25,7 +26,7 @@ jQuery(document).ready(function(jQuery){
 						contenttype: 'application/json',
 						reqid: 'request',
 						lang: SETTINGS.lang,
-						text: content,
+						text: cleanContent,
 						skip: SETTINGS.skip
 					};
 					
@@ -49,7 +50,7 @@ jQuery(document).ready(function(jQuery){
 							//else open selection form
 							else {
 								var selection_form_id = 'selectionform';
-								wm.open({
+								var selection_window = wm.open({
 									url : CONSTANTS.selection_form,
 									title: CONSTANTS.results_title,
 									width : 900,
@@ -101,29 +102,54 @@ jQuery(document).ready(function(jQuery){
 												selection[selection.length] = response.concepts[i];
 											}
 										};
-										
+																			
 										//create individual microdata for each selection
 										selection.some(function(element) {
 											element.phrase = findPhraseInContent(response.content, element.concept);
 											if (element.phrase === false) {
 												return false;
 											}
+											
+											//get microdata to replace phrase with
+											var microdata;
 											if( SETTINGS.add_microdata ) {											
-												var microdata = createMicrodataAnnotation(element, url);
+												microdata = createMicrodataAnnotation(element, url);
 											} else {
-												var microdata = createAnnotation( element );
+												microdata = createAnnotation( element );
 											}
 											
 											var post_title = jQuery('#titlewrap input').val();
-											addAnnotationToDB(post_title, element);
+
+											//addAnnotationToDB(post_title, element);
+											var data = {
+												'function': 'add',
+												'name': cleanName(element.concept),
+												'title': post_title,
+												'type': element.type
+											};
 											
+											jQuery.ajax({
+												type: 'POST',
+												url: CONSTANTS.annotate_db,
+												data: data,
+												datatype: JSON,
+												success: function(response) {
+													//after the last element has been annotated alert user
+													if(element === selection[selection.length-1]) {
+														wm.alert(CONSTANTS.success);
+													}
+												}
+											});
+											
+											//replace all occurences of the phrase with annotation
 											content = content.replace(
-												new RegExp('([ ,.:\(_\-])(' + element.phrase + ')([ ,.:_\)\-])', 'g'), '$1' + microdata + "$3");
+												new RegExp('([ ,.:_\-])(' + element.phrase + ')([ ,.:_\-])', 'g'), '$1' + microdata + "$3");
+											
 										}, this);
 										
 										editor.setContent(content);
 										
-										wm.close();
+										wm.close(selection_window);
 									});
 								});
 							}
@@ -167,7 +193,7 @@ jQuery(document).ready(function(jQuery){
 		var name = cleanName(element.concept);
 		var link = window.location.hostname + '/annotations?search=' + encode(name);
 		
-		return '<a href='+link+'><span>'+element.phrase+'</span></a>';
+		return '<annotation id="' + name + '"><a href=' + link + '><span>' + element.phrase + '</span></a></annotation>';
 	}
 	
 	/**
@@ -188,8 +214,8 @@ jQuery(document).ready(function(jQuery){
 			schema = 'http://schema.org/Thing';
 		}
 		
-		return '<a href=' + link + ' itemscope itemtype=' + schema + 
-			'><span itemprop="name">'+element.phrase+'</span></a>';
+		return '<annotation id="' + name + '"><a href=' + link + ' itemscope itemtype=' + schema + '>'
+			+ '<span itemprop="name">' + element.phrase + '</span></a></annotation>';
 	}
 	
 	/**
@@ -293,7 +319,6 @@ jQuery(document).ready(function(jQuery){
 			'title': post_title,
 			'type': element.type
 		};
-		
 		jQuery.ajax({
 			type: 'POST',
 			url: CONSTANTS.annotate_db,
@@ -301,5 +326,4 @@ jQuery(document).ready(function(jQuery){
 			datatype: JSON
 		});
 	}
-
 });
