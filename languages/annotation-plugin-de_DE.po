@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: APA-IT-projekt\n"
-"POT-Creation-Date: 2015-07-27 14:38+0200\n"
-"PO-Revision-Date: 2015-07-27 14:38+0200\n"
+"POT-Creation-Date: 2015-07-28 09:59+0200\n"
+"PO-Revision-Date: 2015-07-28 10:01+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de_DE\n"
@@ -19,8 +19,8 @@ msgstr ""
 msgid "Plugin cannot be accessed correctly!"
 msgstr "Es konnte nicht richtig auf das Plugin zugegriffen werden!"
 
-#: annotation-plugin.php:84 annotation-plugin.php:204 annotation-plugin.php:205
-#: annotation-plugin.php:404
+#: annotation-plugin.php:84 annotation-plugin.php:205 annotation-plugin.php:206
+#: annotation-plugin.php:414
 msgid "Annotations"
 msgstr "Annotationen"
 
@@ -48,8 +48,8 @@ msgstr "Annotationsergebnisse"
 msgid "Name"
 msgstr "Name"
 
-#: annotation-plugin.php:124 annotation-plugin.php:465
-#: annotation-plugin.php:519
+#: annotation-plugin.php:124 annotation-plugin.php:475
+#: annotation-plugin.php:529
 msgid "Type"
 msgstr "Typ"
 
@@ -63,111 +63,131 @@ msgstr "Möchten sie diese Annotationen wirklich löschen?"
 
 #: annotation-plugin.php:127
 msgid "Annotated successfully! Please make sure to save the post."
-msgstr "Der Beitrag wurde erfolgreich annotiert! Bitte speichern sie den Beitrag."
+msgstr ""
+"Der Beitrag wurde erfolgreich annotiert! Bitte speichern sie den Beitrag."
 
-#: annotation-plugin.php:195 annotation-plugin.php:196
+#: annotation-plugin.php:196 annotation-plugin.php:197
 msgid "Annotation Plugin Options"
 msgstr "Annotation Plugin-Einstellungen"
 
-#: annotation-plugin.php:235 annotation-plugin.php:313
+#: annotation-plugin.php:236 annotation-plugin.php:323
 msgid "You do not have sufficient permissions to access this page."
 msgstr "Sie sind nicht berechtigt, diese Seite zu sehen."
 
-#: annotation-plugin.php:244
+#: annotation-plugin.php:245
 msgid "Annotation Plugin Settings"
 msgstr "Annotation Plugin-Einstellungen"
 
-#: annotation-plugin.php:249
+#: annotation-plugin.php:250
 msgid "Annotate URLs?"
 msgstr "URLs annotieren?"
 
-#: annotation-plugin.php:253
+#: annotation-plugin.php:254
 msgid "URLs will be suggested when annotating."
 msgstr "URLs werden als Annotationen vorgeschlagen."
 
-#: annotation-plugin.php:258
+#: annotation-plugin.php:259
 msgid "Annotate dates?"
 msgstr "Daten annotieren?"
 
-#: annotation-plugin.php:262
+#: annotation-plugin.php:263
 msgid "Dates will be suggested when annotating."
 msgstr "Daten werden als Annotationen vorgeschlagen."
 
-#: annotation-plugin.php:267
+#: annotation-plugin.php:268
 msgid "Annotate email addresses?"
 msgstr "E-Mail-Adressen annotieren?"
 
-#: annotation-plugin.php:271
+#: annotation-plugin.php:272
 msgid "Email addresses will be suggested when annotating."
 msgstr "E-Mail Addressen werden als Annotation vorgeschlagen."
 
-#: annotation-plugin.php:276
+#: annotation-plugin.php:277
+msgid "Add links to posts?"
+msgstr "Sollen Beiträgen Links hinzugefügt werden?"
+
+#: annotation-plugin.php:281
+msgid "Links to annotations will be added to all posts if this is selected."
+msgstr "Links zu der Annotation werden hinzugefügt."
+
+#: annotation-plugin.php:286
 msgid "Add schema.org microdata?"
 msgstr "schema.org Mikrodaten hinzufügen?"
 
-#: annotation-plugin.php:280
-msgid "Microdata will be added to all annotations if this is selected."
-msgstr "Mikrodaten werden allen Annotierungen hinzugefügt."
+#: annotation-plugin.php:290
+msgid ""
+"Microdata will be added to all annotations if this is selected. Only "
+"possible if links are added."
+msgstr ""
+"Mikrodaten werden allen Annotationen hinzugefügt (nur wenn Links auch "
+"hinzugefügt werden)."
 
-#: annotation-plugin.php:285
+#: annotation-plugin.php:295
 msgid "Select an annotation language"
 msgstr "Wählen sie eine Annotations-Sprache aus"
 
-#: annotation-plugin.php:288
+#: annotation-plugin.php:298
 msgid "German"
 msgstr "Deutsch"
 
-#: annotation-plugin.php:289
+#: annotation-plugin.php:299
 msgid "French"
 msgstr "Französisch"
 
-#: annotation-plugin.php:295
+#: annotation-plugin.php:305
 msgid "Enter annotations to skip"
 msgstr "Welche Annotation URIs sollen ausgeschlossen werden?"
 
-#: annotation-plugin.php:297
+#: annotation-plugin.php:307
 msgid "e.g."
 msgstr "z.B."
 
-#: annotation-plugin.php:298
+#: annotation-plugin.php:308
 msgid "(multiple entries should be separated by \"|\")"
 msgstr "(mehrere Einträge müssen mit einem \"|\" getrennt werden)"
 
-#: annotation-plugin.php:412
+#: annotation-plugin.php:422
 msgid "Please add annotations to your posts."
 msgstr "Bitte annotieren sie Ihre Beiträge."
 
-#: annotation-plugin.php:417
+#: annotation-plugin.php:427
 msgid "No annotations found."
 msgstr "Keine Annotationen verfügbar."
 
-#: annotation-plugin.php:458
+#: annotation-plugin.php:468
 msgid "Annotation"
 msgstr "Annotation"
 
-#: annotation-plugin.php:507
+#: annotation-plugin.php:517
 msgid "Delete"
 msgstr "Löschen"
 
-#: annotation-plugin.php:520
+#: annotation-plugin.php:530
 msgid "Posts"
 msgstr "Beiträge"
 
-#: annotation-plugin.php:530
+#: annotation-plugin.php:540
 msgid "Post does not exist"
 msgstr "Post existiert nicht"
 
-#: annotation-plugin.php:532
+#: annotation-plugin.php:542
 msgid "Error when reading from database"
 msgstr "Fehler beim Lesen der Datenbank"
+
+#~ msgid "Microdata will be added to all annotations if this is selected."
+#~ msgstr "Mikrodaten werden allen Annotierungen hinzugefügt."
 
 #~ msgid "Annotated successfully! \\nPlease make sure to save the post."
 #~ msgstr ""
 #~ "Der Beitrag wurde erfolgreich annotiert! \n"
 #~ "Bitte speichern sie den Beitrag."
 
-#~ msgid "e.g. \"GER:Austria_Presse_Agentur\" (multiple entries should be separated by \"|\")"
-#~ msgstr "z.B. \"GER:Austria_Presse_Agentur\" (mehrere Einträge müssen mit einem \"|\" getrennt werden)"
+#~ msgid ""
+#~ "e.g. \"GER:Austria_Presse_Agentur\" (multiple entries should be separated "
+#~ "by \"|\")"
+#~ msgstr ""
+#~ "z.B. \"GER:Austria_Presse_Agentur\" (mehrere Einträge müssen mit einem \"|"
+#~ "\" getrennt werden)"
 
 #~ msgid "Please select which annotations should be shown"
 #~ msgstr "Bitte wählen Sie welche Annotationen angezeigt werden sollen"

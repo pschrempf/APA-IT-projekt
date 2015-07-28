@@ -43,7 +43,7 @@ jQuery(document).ready(function(jQuery){
 						success: function( response ) {
 							response = cleanResponse(response);
 							
-							//if no annotations could be found
+							//if no annotations could be found alert user
 							if (!response.hasOwnProperty('concepts')) {
 								wm.alert(CONSTANTS.no_annotations_alert);
 							} 
@@ -103,24 +103,11 @@ jQuery(document).ready(function(jQuery){
 											}
 										};
 																			
-										//create individual microdata for each selection
+										//create database entry for each selected annotation and edit content as settings require
 										selection.some(function(element) {
-											element.phrase = findPhraseInContent(response.content, element.concept);
-											if (element.phrase === false) {
-												return false;
-											}
-											
-											//get microdata to replace phrase with
-											var microdata;
-											if( SETTINGS.add_microdata ) {											
-												microdata = createMicrodataAnnotation(element, url);
-											} else {
-												microdata = createAnnotation( element );
-											}
-											
 											var post_title = jQuery('#titlewrap input').val();
 
-											//addAnnotationToDB(post_title, element);
+											//define data for POST request
 											var data = {
 												'function': 'add',
 												'name': cleanName(element.concept),
@@ -128,6 +115,7 @@ jQuery(document).ready(function(jQuery){
 												'type': element.type
 											};
 											
+											//POST request to add annotation to database
 											jQuery.ajax({
 												type: 'POST',
 												url: CONSTANTS.annotate_db,
@@ -141,9 +129,25 @@ jQuery(document).ready(function(jQuery){
 												}
 											});
 											
-											//replace all occurences of the phrase with annotation
-											content = content.replace(
-												new RegExp('([ ,.:_\-])(' + element.phrase + ')([ ,.:_\-])', 'g'), '$1' + microdata + "$3");
+											//if add_links setting is activated add link
+											if( SETTINGS.add_links ) {
+												element.phrase = findPhraseInContent(response.content, element.concept);
+												if (element.phrase === false) {
+													return false;
+												}
+												
+												//get microdata to replace phrase with
+												var microdata;
+												if( SETTINGS.add_microdata ) {											
+													microdata = createMicrodataAnnotation(element, url);
+												} else {
+													microdata = createAnnotation( element );
+												}
+												
+												//replace all occurences of the phrase with annotation
+												content = content.replace(
+													new RegExp('([ ,.:_\-])(' + element.phrase + ')([ ,.:_\-])', 'g'), '$1' + microdata + "$3");
+											}
 											
 										}, this);
 										

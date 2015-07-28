@@ -160,6 +160,7 @@ class Annotation_Plugin {
 				'annotate_date' => isset( $options['annotate_date'] ) ? true : false,
 				'annotate_email' => isset( $options['annotate_email'] ) ? true : false,
 				'add_microdata' => isset( $options['add_microdata'] ) ? true : false,
+				'add_links' => isset( $options['add_links'] ) ? true : false,				
 				'lang' => $options['lang'],
 				'skip' => $options['skip']
 			) 
@@ -273,11 +274,20 @@ class Annotation_Plugin {
 				</tr>
 				
 				<tr valign="top">
+					<th scope="row"><?php _e( 'Add links to posts?', 'annotation-plugin' ) ?></th>
+					<td>
+						<input type='checkbox' name='<?php echo $this->option_name . "[add_links]" ?>' value='yes' 
+							<?php if( isset( $options['add_links'] ) ) { checked( 'yes', $options['add_links'] ); } ?> >
+						<?php _e( 'Links to annotations will be added to all posts if this is selected.', 'annotation-plugin' ); ?>
+					</td>
+				</tr>
+				
+				<tr valign="top">
 					<th scope="row"><?php _e( 'Add schema.org microdata?', 'annotation-plugin' ) ?></th>
 					<td>
-						<input type='checkbox' name='<?php echo $this->option_name . "[add_microdata]" ?>' value='yes' 
+						<input type='checkbox' <?php if( !isset( $options['add_links'] ) ) { echo 'disabled'; } ?> name='<?php echo $this->option_name . "[add_microdata]" ?>' value='yes' 
 							<?php if( isset( $options['add_microdata'] ) ) { checked( 'yes', $options['add_microdata'] ); } ?> >
-						<?php _e( 'Microdata will be added to all annotations if this is selected.', 'annotation-plugin' ); ?>
+						<?php _e( 'Microdata will be added to all annotations if this is selected. Only possible if links are added.', 'annotation-plugin' ); ?>
 					</td>
 				</tr>
 				
