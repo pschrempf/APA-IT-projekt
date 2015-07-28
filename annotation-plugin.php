@@ -55,14 +55,30 @@ class Annotation_Plugin {
 		$charset_collate = $wpdb->get_charset_collate();
 		
 		$sql = "CREATE TABLE IF NOT EXISTS $annotation_db (
+					id VARCHAR(80) NOT NULL,
 					name VARCHAR(80) NOT NULL,
-					post_id INT NOT NULL,
 					type VARCHAR(40) NOT NULL,
-					PRIMARY KEY  (name, post_id)
+					image VARCHAR(255),
+					url VARCHAR(255),
+					description LONGTEXT,
+					PRIMARY KEY  (id)
 				) $charset_collate;";
 		
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 		dbDelta( $sql );
+		
+		global $annotation_rel_db;
+		$annotation_rel_db = $wpdb->prefix . 'annotation_relationships';
+		$posts = $wpdb->posts;
+		
+		$sql = "CREATE TABLE IF NOT EXISTS $annotation_rel_db (
+				anno_id VARCHAR(80) NOT NULL,
+				post_id INT NOT NULL,
+				PRIMARY KEY (anno_id, post_id)
+			) $charset_collate;";
+
+		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+		dbDelta( $sql );		
 	}
 
 	/**
@@ -246,36 +262,6 @@ class Annotation_Plugin {
 		<form method="post" action="options.php">
 			<?php settings_fields( $this->option_name ); ?>
 			<table class="form-table">
-				<!-- [annotate_url] -->
-				<tr valign="top">
-					<th scope="row"><?php _e( 'Annotate URLs?', 'annotation-plugin' ) ?></th>
-					<td>
-						<input type='checkbox' name='<?php echo $this->option_name . "[annotate_url]" ?>' value='yes' 
-							<?php if( isset( $options['annotate_url'] ) ) { checked( 'yes', $options['annotate_url'] ); } ?> >
-						<?php _e( 'URLs will be suggested when annotating.', 'annotation-plugin' ); ?>
-					</td>
-				</tr>
-				
-				<!-- [annotate_date] -->
-				<tr valign="top">
-					<th scope="row"><?php _e( 'Annotate dates?', 'annotation-plugin' ) ?></th>
-					<td>
-						<input type='checkbox' name='<?php echo $this->option_name . "[annotate_date]" ?>' value='yes' 
-							<?php if( isset( $options['annotate_date'] ) ) { checked( 'yes', $options['annotate_date'] ); } ?> >
-						<?php _e( 'Dates will be suggested when annotating.', 'annotation-plugin' ); ?>
-					</td>
-				</tr>
-				
-				<!-- [annotate_email] -->
-				<tr valign="top">
-					<th scope="row"><?php _e( 'Annotate email addresses?', 'annotation-plugin' ) ?></th>
-					<td>
-						<input type='checkbox' name='<?php echo $this->option_name . "[annotate_email]" ?>' value='yes' 
-							<?php if( isset( $options['annotate_email'] ) ) { checked( 'yes', $options['annotate_email'] ); } ?> >
-						<?php _e( 'Email addresses will be suggested when annotating.', 'annotation-plugin' ); ?>
-					</td>
-				</tr>
-				
 				<!-- [add_links] -->
 				<tr valign="top">
 					<th scope="row"><?php _e( 'Add links to posts?', 'annotation-plugin' ) ?></th>
@@ -290,9 +276,9 @@ class Annotation_Plugin {
 				<tr valign="top">
 					<th scope="row"><?php _e( 'Add schema.org microdata?', 'annotation-plugin' ) ?></th>
 					<td>
-						<input type='checkbox' <?php if( !isset( $options['add_links'] ) ) { echo 'disabled'; } ?> name='<?php echo $this->option_name . "[add_microdata]" ?>' value='yes' 
+						<input type='checkbox' name='<?php echo $this->option_name . "[add_microdata]" ?>' value='yes' 
 							<?php if( isset( $options['add_microdata'] ) ) { checked( 'yes', $options['add_microdata'] ); } ?> >
-						<?php _e( 'Microdata will be added to all annotations if this is selected. Only possible if links are added.', 'annotation-plugin' ); ?>
+						<?php _e( 'Microdata will be added to all annotations if this is selected.', 'annotation-plugin' ); ?>
 					</td>
 				</tr>
 				

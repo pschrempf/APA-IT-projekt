@@ -110,9 +110,14 @@ jQuery(document).ready(function(jQuery){
 											//define data for POST request
 											var data = {
 												'function': 'add',
-												'name': cleanName(element.concept),
 												'title': post_title,
-												'type': element.type
+												'lang': response.lang,
+												'hash': element.hash,
+												'name': cleanName(element.concept),
+												'type': element.type,
+												'link': element.link,
+												'description': element.abstract,
+												'image': element.thumbimg
 											};
 											
 											//POST request to add annotation to database
@@ -264,9 +269,7 @@ jQuery(document).ready(function(jQuery){
 		}
 		
 		response.concepts.forEach(function(element) {
-			if ((false == SETTINGS.annotate_email && element.type == 'mailaddr' ) || 
-				(false == SETTINGS.annotate_date && element.type == 'date' ) || 
-				(false == SETTINGS.annotate_url && element.type == 'URL') ) {
+			if (element.type == 'mailaddr' || element.type == 'date' || element.type == 'URL' ) {
 				indices[indices.length] = counter;
 			}
 			counter++;

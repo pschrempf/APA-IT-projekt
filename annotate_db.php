@@ -4,10 +4,13 @@ include_once( $_SERVER['DOCUMENT_ROOT'] . '/wordpress/wp-load.php' );
 
 global $wpdb;
 global $annotation_db;
+global $annotation_rel_db;
 $posts = $wpdb->posts;
 
 //add entry to database
 if ( $_POST['function'] === 'add' ) {
+	$hash = $_POST['lang'] . '_' . $_POST['hash'];
+	
 	//clean post title for SQL query
 	$post_title = stripslashes( rawurldecode( $_POST['title'] ) );
 	$post_type = '%post%';
@@ -33,13 +36,25 @@ if ( $_POST['function'] === 'add' ) {
 	$name = stripslashes( $_POST['name'] );
 
 	//create entry for annotation database
-	$data = array(
+	$annotation_data = array(
+		'id' => $hash,
 		'name' => $name,
 		'type' => $_POST['type'],
+		'image' => $_POST['image'],
+		'url' => $_POST['link'],
+		'description' => $_POST['description']
+	);
+
+	$wpdb->insert( $annotation_db, $annotation_data );
+	
+	//create entry for annotation relationship database
+	$relationship_data = array(
+		'anno_id' => $hash,
 		'post_id' => $post_id
 	);
 	
-	$wpdb->insert( $annotation_db, $data );
+	$wpdb->insert( $annotation_rel_db, $relationship_data );
+	
 		
 //delete entry from database
 } else if ( $_POST['function'] === 'delete' ) {
