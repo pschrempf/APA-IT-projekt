@@ -246,6 +246,7 @@ class Annotation_Plugin {
 		<form method="post" action="options.php">
 			<?php settings_fields( $this->option_name ); ?>
 			<table class="form-table">
+				<!-- [annotate_url] -->
 				<tr valign="top">
 					<th scope="row"><?php _e( 'Annotate URLs?', 'annotation-plugin' ) ?></th>
 					<td>
@@ -255,6 +256,7 @@ class Annotation_Plugin {
 					</td>
 				</tr>
 				
+				<!-- [annotate_date] -->
 				<tr valign="top">
 					<th scope="row"><?php _e( 'Annotate dates?', 'annotation-plugin' ) ?></th>
 					<td>
@@ -264,6 +266,7 @@ class Annotation_Plugin {
 					</td>
 				</tr>
 				
+				<!-- [annotate_email] -->
 				<tr valign="top">
 					<th scope="row"><?php _e( 'Annotate email addresses?', 'annotation-plugin' ) ?></th>
 					<td>
@@ -273,6 +276,7 @@ class Annotation_Plugin {
 					</td>
 				</tr>
 				
+				<!-- [add_links] -->
 				<tr valign="top">
 					<th scope="row"><?php _e( 'Add links to posts?', 'annotation-plugin' ) ?></th>
 					<td>
@@ -282,6 +286,7 @@ class Annotation_Plugin {
 					</td>
 				</tr>
 				
+				<!-- [add_microdata] -->
 				<tr valign="top">
 					<th scope="row"><?php _e( 'Add schema.org microdata?', 'annotation-plugin' ) ?></th>
 					<td>
@@ -291,6 +296,7 @@ class Annotation_Plugin {
 					</td>
 				</tr>
 				
+				<!-- [lang] -->
 				<tr valign="top">
 					<th scope="row"><?php _e( 'Select an annotation language', 'annotation-plugin' ) ?></th>
 					<td>
@@ -301,6 +307,7 @@ class Annotation_Plugin {
 					</td>
 				</tr>
 				
+				<!-- [skip] -->
 				<tr valign="top">
 					<th scope="row"><?php _e( 'Enter annotations to skip', 'annotation-plugin' ) ?></th>
 					<td>

@@ -10,8 +10,8 @@ get_header();
 					<?php $Annotation_Plugin->getAnnotations(); ?>
 				</div>
 			</article>
-		</main><!-- .site-main -->
-	</div><!-- .content-area -->
+		</main>
+	</div>
 
 <?php 
 get_footer(); 
