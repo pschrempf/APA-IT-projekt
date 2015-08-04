@@ -101,14 +101,14 @@ jQuery(document).ready(function(jQuery){
 									jQuery(iframe_identifier).contents().find('form').submit(function( event ) {
 										var selection = [];
 										
-										//add selected annotations to selection								
+										//add selected annotations to selection
 										var checkboxes = jQuery(iframe_identifier).contents().find('input[class=selector]');
 										for (var i = 0; i < checkboxes.length; i++) {
 											if(checkboxes[i].checked) {
 												selection[selection.length] = response.concepts[i];
 											}
 										};
-																			
+										
 										//create database entry for each selected annotation and edit content as settings require
 										selection.some(function(element) {
 											var post_title = jQuery('#titlewrap input').val();
@@ -120,7 +120,7 @@ jQuery(document).ready(function(jQuery){
 											} else if(typeof element.thumbimg !== 'undefined') {
 												img = element.thumbimg;
 											}
-											
+																																
 											//define data for POST request
 											var data = {
 												'function': 'add',

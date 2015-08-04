@@ -32,7 +32,7 @@ class Annotation_Plugin {
 
 		add_filter( 'tiny_mce_before_init', array( $this, 'override_mce_options' ) );
 		
-		add_action( 'delete_post', array( $this, 'deleteAnnotation' ) );
+		add_action( 'delete_post', array( $this, 'deleteAnnotationRelations' ) );
 		
 		add_filter( 'template_include', array( $this, 'include_annotations_template' ) );
 	}
@@ -334,22 +334,42 @@ class Annotation_Plugin {
 	 * Use 'annotations-template.php' for annotations page.
 	 */
 	function include_annotations_template( $template ) {
-		if ( is_page( 'Annotations' ) ) {
+		if ( is_page( 'Annotations' ) || $this->is_subpage( 'annotations' ) ) {
 			$annotations_template = plugin_dir_path( __FILE__ ) . 'templates/annotations-template.php' ;
 			if ( '' != $annotations_template ) {
-				return $annotations_template;
+				$template = $annotations_template;
 			}
 		}
 		return $template;		
 	}
 	
 	/**
-	 * Deletes all annotations linked to a post id.
+	 * Checks if the current page is a subpage of the page with the provided slug.
 	 */
-	function deleteAnnotation( $postid ) {
+	function is_subpage( $slug ) {
+		global $post;
+		
+		if ( isset( $post ) ) {
+			$page = get_page_by_path( $slug );
+			$anc = get_post_ancestors( $post->ID );
+			
+			foreach ( $anc as $ancestor ) {
+				if( is_page() && $ancestor == $page->ID ) {
+					return true;
+				}
+			}
+		}
+		
+		return false;  // the page is not a subpage of $slug
+	}
+	
+	/**
+	 * Deletes all relations to annotations from a post.
+	 */
+	function deleteAnnotationRelations( $postid ) {
 		global $wpdb;
-		global $annotation_db;
-		$wpdb->delete( $annotation_db, array( 'post_id' => $postid ) );
+		global $annotation_rel_db;
+		$wpdb->delete( $annotation_rel_db, array( 'post_id' => $postid ) );
 		return $postid;
 	}
 	
@@ -379,7 +399,7 @@ class Annotation_Plugin {
 		
 		//check for search GET attribute
 		if ( isset( $_GET['search'] ) ) {
-			$search_string = urldecode( $_GET['search'] );
+			$search_string = '%' . urldecode( $_GET['search'] ) . '%';
 		} else {
 			$search_string = '%';
 		}
@@ -397,7 +417,7 @@ class Annotation_Plugin {
 		, $search_string ) );
 		
 		//set $url to correct link
-		if ( is_page( 'annotations' ) ) {
+		if ( is_page( 'annotations' ) || $this->is_subpage('annotations') ) {
 			$url = 'annotations?';
 		} else {
 			$url = 'admin.php?page=annotations&';
@@ -424,10 +444,12 @@ class Annotation_Plugin {
 				<?php
 			}
 		} else {
-			if ( isset( $_GET['search'] ) ) {
-				
+			if ( $this->is_subpage( 'annotations' ) ) {
+				$this->getSpecificAnnotationPage( $annotations );
+			} else if ( isset( $_GET['search'] ) ) {
+				$this->getSearchAnnotationPage( $annotations, $url );
 			} else if ( isset( $_GET['edit'] ) ) {
-				$this->getEditAnnotationPage( $annotations, $url );
+				$this->getEditAnnotationPage( $annotations );
 			} else {
 				$this->getGeneralAnnotationPage( $annotations, $url );
 			}
@@ -520,33 +542,36 @@ class Annotation_Plugin {
 	}
 	
 	/**
-	 * Creates edit annotation page for a specific name.
+	 * Creates the information page for a specific annotation.
 	 */
-	function getEditAnnotationPage( $annotations, $url ) {
-		wp_enqueue_style( 'annotation-stylesheet', plugins_url( 'css/annotations.css', __FILE__ ) );
-		if( !current_user_can( 'edit_posts' ) ) {
-			wp_die( __( 'You do not have sufficient permissions to access this page.', 'annotation-plugin' ) );
+	function getSpecificAnnotationPage( $annotations ) {
+		//find correct annotation
+		foreach ( $annotations as $result ) {
+			if( get_the_title() === $result->name ) {
+				$annotation = $result;
+			}
 		}
 		?>
-		<h2><?php echo stripslashes( $annotations[0]->name ) ?></h2>
-		<img src='<?php echo $annotations[0]->image ?>' alt='No picture available' class="anno_img">
-		<form id="save" action="<?php echo plugins_url( 'edit_annotation.php', __FILE__ ) ?>" method ="post">
+		<h2><?php the_title(); ?></h2>
+		<?php 
+		if ( '' !== $annotation->url ) { 
+		?>
+			<p>(<a href="<?php echo $annotation->url; ?>">Link</a>)</p>
+		<?php 
+		} 
+		if ( '' !== $annotation->image ) { ?>
+			<img src='<?php echo $annotation->image ?>' alt='No picture available'>
+		<?php 
+		} 
+		?>
 		<table class='annotation-details'>
 			<tr>
 				<td><?php _e( 'Type', 'annotation-plugin' ); ?></td>
-				<td><input type="text" name="type" value="<?php echo $annotations[0]->type ?>"></td>
-			</tr>
-			<tr>
-				<td><?php _e( 'URL', 'annotation-plugin' ); ?></td>
-				<td><input type="url" size="90" name="url" value="<?php echo $annotations[0]->url ?>"></td>
-			</tr>
-			<tr>
-				<td><?php _e( 'Image URL', 'annotation-plugin' ); ?></td>
-				<td><input type="url" size="90" name="image_url" value="<?php echo $annotations[0]->image ?>"></td>
+				<td><?php echo $annotation->type; ?></td>
 			</tr>
 			<tr>
 				<td style="vertical-align: middle"><?php _e( 'Description', 'annotation-plugin' ); ?></td>
-				<td><textarea type="text" form="save" name="description" wrap="hard" rows="10" cols="90"><?php echo $annotations[0]->description ?></textarea></td>
+				<td><?php echo stripslashes( $annotation->description ); ?></td>
 			</tr>
 			<tr>
 				<td><?php _e( 'Posts', 'annotation-plugin' ); ?></td> 
@@ -561,7 +586,7 @@ class Annotation_Plugin {
 			FROM $annotation_rel_db 
 			WHERE anno_id = %s
 			"
-		, $annotations[0]->id ) );
+		, $annotation->id ) );
 		
 		//add 'li' for each annotation
 		foreach ( $relations as $result ) {
@@ -578,7 +603,85 @@ class Annotation_Plugin {
 				$guid = $post->guid;
 			}
 			?>
-				<li> <a href='<?php echo $guid ?>'><?php echo $post_title ?></a> </li> 
+				<li><a href='<?php echo $guid ?>'><?php echo $post_title ?></a></li> 
+			<?php
+		}
+		?>
+				</ul></td>
+			</tr>
+		</table>
+	<?php
+	}
+	
+	/**
+	 * Creates edit annotation page for a specific name.
+	 */
+	function getEditAnnotationPage( $annotations ) {
+		wp_enqueue_style( 'annotation-stylesheet', plugins_url( 'css/annotations.css', __FILE__ ) );
+		
+		//make sure user has right to edit posts and annotations
+		if( !current_user_can( 'edit_posts' ) ) {
+			wp_die( __( 'You do not have sufficient permissions to access this page.', 'annotation-plugin' ) );
+		}
+		
+		foreach ( $annotations as $result ) {
+			if( urldecode( $_GET['edit'] ) === $result->name ) {
+				$annotation = $result;
+			}
+		}
+		?>
+		
+		<h2><?php echo stripslashes( $annotation->name ) ?></h2>
+		<img src='<?php echo $annotation->image ?>' alt='No picture available' class="anno_img">
+		<form id="save" action="<?php echo plugins_url( 'edit_annotation.php', __FILE__ ) ?>" method ="post">
+		<table class='annotation-details'>
+			<tr>
+				<td><?php _e( 'Type', 'annotation-plugin' ); ?></td>
+				<td><input type="text" name="type" value="<?php echo $annotation->type ?>"></td>
+			</tr>
+			<tr>
+				<td><?php _e( 'URL', 'annotation-plugin' ); ?></td>
+				<td><input type="url" size="90" name="url" value="<?php echo $annotation->url ?>"></td>
+			</tr>
+			<tr>
+				<td><?php _e( 'Image URL', 'annotation-plugin' ); ?></td>
+				<td><input type="url" size="90" name="image_url" value="<?php echo $annotation->image ?>"></td>
+			</tr>
+			<tr>
+				<td style="vertical-align: middle"><?php _e( 'Description', 'annotation-plugin' ); ?></td>
+				<td><textarea type="text" form="save" name="description" wrap="hard" rows="10" cols="90"><?php echo $annotation->description ?></textarea></td>
+			</tr>
+			<tr>
+				<td><?php _e( 'Posts', 'annotation-plugin' ); ?></td> 
+				<td><ul class='inner-list annotation-details'>
+		<?php
+		
+		global $wpdb;
+		global $annotation_rel_db;
+		$relations = $wpdb->get_results( $wpdb->prepare( 
+			"
+			SELECT post_id 
+			FROM $annotation_rel_db 
+			WHERE anno_id = %s
+			"
+		, $annotation->id ) );
+		
+		//add 'li' for each annotation
+		foreach ( $relations as $result ) {
+			$guid = '';
+			
+			//deal with database errors
+			if ( $result->post_id == -1 ) {
+				$post_title = '<p class="error">[' + __('Post does not exist', 'annotation-plugin' ) + ']</p>';
+			} else if ( $result->post_id == 0 ) {
+				$post_title = '<p class="error">[' + __( 'Error when reading from database', 'annotation-plugin' ) + ']</p>';
+			} else {
+				$post = get_post( $result->post_id );
+				$post_title = $post->post_title;
+				$guid = $post->guid;
+			}
+			?>
+				<li><a href='<?php echo $guid ?>'><?php echo $post_title ?></a></li> 
 			<?php
 		}
 		?>
@@ -590,6 +693,36 @@ class Annotation_Plugin {
 		<input hidden type="text" name="id" value="<?php echo $annotations[0]->id ?>">
 		<input class="custom_button" type="submit" value="Save" form="save">
 		</form>
+		
+		<?php
+	}
+	
+	function getSearchAnnotationPage( $annotations, $url ) {
+		?>
+		
+		<h2><?php _e( 'Search Results for:', 'annotation-plugin' ); echo ' ' . $_GET['search']; ?></h2>
+		<ul>
+		<?php
+		if( empty( $annotations ) ) {
+			?>
+			<p><?php _e( 'No annotations found!', 'annotation-plugin' ); ?></p>
+			<?php
+		} else {
+			foreach ( $annotations as $annotation ) {
+				?>
+				<li><a href='<?php 
+					if( is_page( 'annotations' ) ) { 
+						echo get_site_url() . '/annotations/' . urlencode( $annotation->name ); 
+					} else {
+						echo $url . 'edit=' . urlencode( $annotation->name );
+					} 
+				?>'><?php echo $annotation->name ?></a>
+				</li> 				
+				<?php
+			}
+		}
+		?>
+		</ul>
 		
 		<?php
 	}
