@@ -91,6 +91,12 @@ jQuery(document).ready(function(jQuery){
 										}
 									});
 									
+									jQuery('body').ajaxStart(function() {
+									    jQuery(this).css({'cursor' : 'wait'});
+									}).ajaxStop(function() {
+									    jQuery(this).css({'cursor' : 'default'});
+									});
+									
 									//on submit, enter selections to content
 									jQuery(iframe_identifier).contents().find('form').submit(function( event ) {
 										var selection = [];
@@ -106,18 +112,25 @@ jQuery(document).ready(function(jQuery){
 										//create database entry for each selected annotation and edit content as settings require
 										selection.some(function(element) {
 											var post_title = jQuery('#titlewrap input').val();
-
+											element.hash = response.lang + '_' + element.hash;
+											
+											var img;
+											if (typeof element.complogo !== 'undefined') {
+												img = element.complogo;
+											} else if(typeof element.thumbimg !== 'undefined') {
+												img = element.thumbimg;
+											}
+											
 											//define data for POST request
 											var data = {
 												'function': 'add',
 												'title': post_title,
-												'lang': response.lang,
 												'hash': element.hash,
 												'name': cleanName(element.concept),
 												'type': element.type,
 												'link': element.link,
 												'description': element.abstract,
-												'image': element.thumbimg
+												'image': img
 											};
 											
 											//POST request to add annotation to database
@@ -200,9 +213,14 @@ jQuery(document).ready(function(jQuery){
 	 */
 	function createAnnotation( element ) {
 		var name = cleanName(element.concept);
-		var link = window.location.hostname + '/annotations?search=' + encode(name);
+		var link = CONSTANTS.site_url + '/annotations/' + encode(name);
 		
-		return '<annotation id="' + name + '"><a href=' + link + '><span>' + element.phrase + '</span></a></annotation>';
+		return '<annotation id="' + element.hash + '">' 
+			+ '<a href=' + link + '>'
+			//+ '<span>' 
+			+ element.phrase 
+			//+ '</span>'
+			+ '</a></annotation>';
 	}
 	
 	/**
@@ -210,7 +228,7 @@ jQuery(document).ready(function(jQuery){
 	 */
 	function createMicrodataAnnotation( element, url ) {
 		var name = cleanName(element.concept);
-		var link = window.location.hostname + '/annotations?search=' + encode(name);
+		var link = CONSTANTS.site_url + '/annotations/' + encode(name);
 		var schema;
 		
 		if(element.type == 'location') {
@@ -223,16 +241,23 @@ jQuery(document).ready(function(jQuery){
 			schema = 'http://schema.org/Thing';
 		}
 		
-		return '<annotation id="' + name + '"><a href=' + link + ' itemscope itemtype=' + schema + '>'
-			+ '<span itemprop="name">' + element.phrase + '</span></a></annotation>';
+		return '<annotation id="' + element.hash + '">' 
+			+ '<a href=' + link 
+			//+ ' itemscope itemtype=' + schema 
+			+ '>'
+			//+ '<span itemprop="name">'
+			+ element.phrase
+			// + '</span>'
+			+ '</a></annotation>';
 	}
 	
 	/**
 	 * Encodes part of a URL including parentheses.
 	 */
 	function encode(url) {
+		url = url.replace(/ /g, '');
 		url = encodeURIComponent(url);
-		url = url.replace(/\(/g, '%28').replace(/\)/g, '%29').replace(/'/g, "%27");
+		//url = url.replace(/\(/g, '%28').replace(/\)/g, '%29').replace(/'/g, "%27");
 		return url;
 	}
 	

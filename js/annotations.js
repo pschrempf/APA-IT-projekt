@@ -36,15 +36,21 @@ jQuery(document).ready(function() {
 			checkboxes = jQuery('input[class=anno]');
 			for (var i = 0; i < checkboxes.length; i++) {
 				if(checkboxes[i].checked) {
-					var name = checkboxes[i].value;
-					jQuery('input[value="'+name+'"]').parent().parent().addClass('delete');
+					var hash = checkboxes[i].value;
+					jQuery('input[value="'+hash+'"]').parent().parent().addClass('delete');
+					
+					jQuery('body').ajaxStart(function() {
+					    jQuery(this).css({'cursor' : 'wait'});
+					}).ajaxStop(function() {
+					    jQuery(this).css({'cursor' : 'default'});
+					});
 					
 					jQuery.ajax({
 						type: 'POST',
 						url: CONSTANTS.annotate_db, 
 						data: {
 							'function': 'delete',
-							'name': name
+							'hash': hash
 						},
 						datatype: JSON,
 						success: function( response ) {

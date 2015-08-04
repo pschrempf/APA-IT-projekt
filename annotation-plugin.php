@@ -42,7 +42,7 @@ class Annotation_Plugin {
 	 */
 	function install() {
 		$this->createPluginDatabase();
-		$this->addAnnotationsPage();
+		$this->addMainAnnotationsPage();
 	}
 
 	/**
@@ -84,7 +84,7 @@ class Annotation_Plugin {
 	/**
 	 * Adds a WordPress page for annotations if it does not already exist.
 	 */
-	function addAnnotationsPage() {
+	function addMainAnnotationsPage() {
 		global $wpdb;
 		$results = $wpdb->query(
 			"
@@ -124,23 +124,26 @@ class Annotation_Plugin {
 		global $wpdb;
 		global $annotation_db;
 		$annotation_db = $wpdb->prefix . 'annotations';
-		
+		global $annotation_rel_db;
+		$annotation_rel_db = $wpdb->prefix . 'annotation_relationships';
+				
 		//set all necessary constants
 		global $plugin_constants;
 		$plugin_constants = array(
-				'ps_annotate_url' => 'http://apapses5.apa.at:7070/fliptest_tmp/cgi-bin/ps_annotate',
-				'annotate_db' => plugins_url( 'annotate_db.php', __FILE__ ),
-				'selection_form' => plugins_url( 'templates/selection_form.html', __FILE__ ),
-				'button_text' => __( 'Annotate', 'annotation-plugin' ),
-				'button_tooltip' => __( 'Annotate', 'annotation-plugin' ),
-				'no_text_alert' => __( 'Please enter text to be annotated!', 'annotation-plugin' ),
-				'no_annotations_alert' => __( 'No annotations could be found', 'annotation-plugin' ),
-				'results_title' => __( 'Annotation results', 'annotation-plugin' ),
-				'results_name' => __( 'Name', 'annotation-plugin' ),
-				'results_type' => __( 'Type', 'annotation-plugin' ),
-				'delete_error' => __( 'Please select annotations to be deleted', 'annotation-plugin' ),
-				'delete_confirmation' => __( 'Would you really like to delete these annotations permanently?', 'annotation-plugin' ),
-				'success' => __('Annotated successfully! Please make sure to save the post.', 'annotation-plugin')
+			'site_url' => get_site_url(),
+			'ps_annotate_url' => 'http://apapses5.apa.at:7070/fliptest_tmp/cgi-bin/ps_annotate',
+			'annotate_db' => plugins_url( 'annotate_db.php', __FILE__ ),
+			'selection_form' => plugins_url( 'templates/selection_form.html', __FILE__ ),
+			'button_text' => __( 'Annotate', 'annotation-plugin' ),
+			'button_tooltip' => __( 'Annotate', 'annotation-plugin' ),
+			'no_text_alert' => __( 'Please enter text to be annotated!', 'annotation-plugin' ),
+			'no_annotations_alert' => __( 'No annotations could be found', 'annotation-plugin' ),
+			'results_title' => __( 'Annotation results', 'annotation-plugin' ),
+			'results_name' => __( 'Name', 'annotation-plugin' ),
+			'results_type' => __( 'Type', 'annotation-plugin' ),
+			'delete_error' => __( 'Please select annotations to be deleted', 'annotation-plugin' ),
+			'delete_confirmation' => __( 'Would you really like to delete these annotations permanently?', 'annotation-plugin' ),
+			'success' => __('Annotated successfully! Please make sure to save the post.', 'annotation-plugin')
 		);
 	}
 	
@@ -416,13 +419,15 @@ class Annotation_Plugin {
 				<?php
 			} else {
 				?>
-				<h2><?php echo $search_string ?></h2>
+				<h2>Search: <?php echo $search_string ?></h2>
 				<p class='error'><?php _e( 'No annotations found.', 'annotation-plugin' ) ?></p>
 				<?php
 			}
 		} else {
-			if ( '%' !== $search_string ) {
-				$this->getSpecificAnnotationPage( $annotations, $search_string, $url );
+			if ( isset( $_GET['search'] ) ) {
+				
+			} else if ( isset( $_GET['edit'] ) ) {
+				$this->getEditAnnotationPage( $annotations, $url );
 			} else {
 				$this->getGeneralAnnotationPage( $annotations, $url );
 			}
@@ -473,32 +478,34 @@ class Annotation_Plugin {
 			</tr>
 		<?php
 		
-		//only display each annotation once in table (no duplicate entries)
-		$names = array();
+		//display each annotation in table
 		foreach ( $annotations as $result ) {
-			if ( !in_array( $result->name, $names ) ) {
+			?>
+			<tr class='annotation'>
+			<?php
+			if ( current_user_can( 'edit_posts' ) ) {
 				?>
-				<tr class='annotation'>
+				<td class='input'>
+					<input type='checkbox' class='anno' value="<?php echo $result->id ?>">
+				</td>
 				<?php
-				if ( current_user_can( 'edit_posts' ) ) {
-					?>
-					<td class='input'>
-						<input type='checkbox' class='anno' value="<?php echo $result->name ?>">
-					</td>
-					<?php
-				}
-				?>
-					<td>
-						<a href='<?php echo $url ?> search=<?php echo rawurlencode( $result->name ); ?>'>
-							<strong><?php echo stripslashes( $result->name ) ?></strong>
-						</a>
-					</td>
-			
-					<td><?php echo $result->type ?></td>
-				</tr>
-				<?php
-				array_push( $names, $result->name );
 			}
+			?>
+				<td>
+					<a href='<?php 
+						if( is_page( 'annotations' ) ) { 
+							echo get_site_url() . '/annotations/' . urlencode( $result->name ); 
+						} else {
+							echo $url . 'edit=' . urlencode( $result->name );
+						}
+					?>'>
+						<strong><?php echo stripslashes( $result->name ) ?></strong>
+					</a>
+				</td>
+		
+				<td><?php echo $result->type ?></td>
+			</tr>
+			<?php
 		}
 		?>
 		</table></div></div></article>
@@ -507,25 +514,57 @@ class Annotation_Plugin {
 		//if current user can edit post show delete button
 		if ( current_user_can( 'edit_posts' ) ) {
 			?>
-			<button id="delete"><?php _e( 'Delete', 'annotation-plugin' ) ?></button>
+			<button id="delete" class="custom_button"><?php _e( 'Delete', 'annotation-plugin' ) ?></button>
 			<?php
 		}
 	}
 	
 	/**
-	 * Creates annotation page for a specific search string.
+	 * Creates edit annotation page for a specific name.
 	 */
-	function getSpecificAnnotationPage( $annotations, $search_string, $url ) {
+	function getEditAnnotationPage( $annotations, $url ) {
+		wp_enqueue_style( 'annotation-stylesheet', plugins_url( 'css/annotations.css', __FILE__ ) );
+		if( !current_user_can( 'edit_posts' ) ) {
+			wp_die( __( 'You do not have sufficient permissions to access this page.', 'annotation-plugin' ) );
+		}
 		?>
 		<h2><?php echo stripslashes( $annotations[0]->name ) ?></h2>
-		<ul class='annotation-details'>
-			<li><?php _e( 'Type', 'annotation-plugin' ); ?>: <?php echo $annotations[0]->type ?></li>
-			<li><?php _e( 'Posts', 'annotation-plugin' ); ?>: 
-				<ul class='inner-list annotation-details'>
+		<img src='<?php echo $annotations[0]->image ?>' alt='No picture available' class="anno_img">
+		<form id="save" action="<?php echo plugins_url( 'edit_annotation.php', __FILE__ ) ?>" method ="post">
+		<table class='annotation-details'>
+			<tr>
+				<td><?php _e( 'Type', 'annotation-plugin' ); ?></td>
+				<td><input type="text" name="type" value="<?php echo $annotations[0]->type ?>"></td>
+			</tr>
+			<tr>
+				<td><?php _e( 'URL', 'annotation-plugin' ); ?></td>
+				<td><input type="url" size="90" name="url" value="<?php echo $annotations[0]->url ?>"></td>
+			</tr>
+			<tr>
+				<td><?php _e( 'Image URL', 'annotation-plugin' ); ?></td>
+				<td><input type="url" size="90" name="image_url" value="<?php echo $annotations[0]->image ?>"></td>
+			</tr>
+			<tr>
+				<td style="vertical-align: middle"><?php _e( 'Description', 'annotation-plugin' ); ?></td>
+				<td><textarea type="text" form="save" name="description" wrap="hard" rows="10" cols="90"><?php echo $annotations[0]->description ?></textarea></td>
+			</tr>
+			<tr>
+				<td><?php _e( 'Posts', 'annotation-plugin' ); ?></td> 
+				<td><ul class='inner-list annotation-details'>
 		<?php
 		
+		global $wpdb;
+		global $annotation_rel_db;
+		$relations = $wpdb->get_results( $wpdb->prepare( 
+			"
+			SELECT post_id 
+			FROM $annotation_rel_db 
+			WHERE anno_id = %s
+			"
+		, $annotations[0]->id ) );
+		
 		//add 'li' for each annotation
-		foreach ( $annotations as $result ) {
+		foreach ( $relations as $result ) {
 			$guid = '';
 			
 			//deal with database errors
@@ -534,16 +573,24 @@ class Annotation_Plugin {
 			} else if ( $result->post_id == 0 ) {
 				$post_title = '<p class="error">[' + __( 'Error when reading from database', 'annotation-plugin' ) + ']</p>';
 			} else {
-				$post = get_post($result->post_id);
+				$post = get_post( $result->post_id );
 				$post_title = $post->post_title;
 				$guid = $post->guid;
 			}
 			?>
-			<li> <a href='<?php echo $guid ?>'> <?php echo $post_title ?> </a> </li> 
+				<li> <a href='<?php echo $guid ?>'><?php echo $post_title ?></a> </li> 
 			<?php
 		}
 		?>
-		</ul></li></ul>
+				</ul></td>
+			</tr>
+		</table>
+		<br>
+		<input hidden type="text" name="back" value="<?php echo $_SERVER['REQUEST_URI'] ?>">
+		<input hidden type="text" name="id" value="<?php echo $annotations[0]->id ?>">
+		<input class="custom_button" type="submit" value="Save" form="save">
+		</form>
+		
 		<?php
 	}
 }
