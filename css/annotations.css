@@ -62,6 +62,10 @@ h2 {
 	color:  		darkslateblue;
 }
 
+.small-list {
+	padding: 10px;
+}
+
 .annotation-details {
 	list-style-position:	inside;
 	line-height: 			150%;

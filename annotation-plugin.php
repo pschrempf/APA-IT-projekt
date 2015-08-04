@@ -35,6 +35,49 @@ class Annotation_Plugin {
 		add_action( 'delete_post', array( $this, 'deleteAnnotationRelations' ) );
 		
 		add_filter( 'template_include', array( $this, 'include_annotations_template' ) );
+		
+		add_action( 'pre_get_comments', array( $this, 'test' ) );
+	}
+	
+	function test( $a ) {
+		
+		global $wpdb;
+		global $annotation_db;
+		global $annotation_rel_db;
+		
+		global $post;
+		$post_id = $post->ID;
+		
+		$annotations = $wpdb->get_results( $wpdb->prepare(
+			"
+			SELECT * 
+			FROM $annotation_db a
+			INNER JOIN $annotation_rel_db r 
+			ON a.id = r.anno_id
+			WHERE r.post_id = %d
+			"
+		, $post_id ) );
+		
+		$options = get_option( $this->option_name );
+		if( ! empty( $annotations ) && isset( $options['display_annotations'] ) ) {
+			wp_enqueue_style( 'annotation-stylesheet', plugins_url( 'css/annotations.css', __FILE__ ) );
+			?>
+			<br>
+			<div class="small-list">
+			<h2><?php _e( 'Annotations in this post', 'annotation-plugin' ); ?></h2>
+			<ul class="small-table">
+				<?php 
+				foreach ( $annotations as $annotation ) { 
+				?>
+					<li><td><a href="<?php echo get_site_url() . '/annotations/' . urlencode( $annotation->name ); ?>"><?php echo $annotation->name ?></a></td></li>
+				<?php
+				}
+				?>
+			</ul>
+			</div>
+			<?php
+		}
+		return $a;
 	}
 		
 	/**
@@ -285,6 +328,16 @@ class Annotation_Plugin {
 					</td>
 				</tr>
 				
+				<!-- [display_table] -->
+				<tr valign="top">
+					<th scope="row"><?php _e( 'Show list of annotations below posts?', 'annotation-plugin' ) ?></th>
+					<td>
+						<input type='checkbox' name='<?php echo $this->option_name . "[display_annotations]" ?>' value='yes' 
+							<?php if( isset( $options['display_annotations'] ) ) { checked( 'yes', $options['display_annotations'] ); } ?> >
+						<?php _e( 'A brief list of the annotations in the post will be shown below each post.', 'annotation-plugin' ); ?>
+					</td>
+				</tr>
+				
 				<!-- [lang] -->
 				<tr valign="top">
 					<th scope="row"><?php _e( 'Select an annotation language', 'annotation-plugin' ) ?></th>
@@ -455,7 +508,7 @@ class Annotation_Plugin {
 			}
 		}
 		?>
-		<hr>
+		<!-- <hr> -->
 		<?php
 	}
 	
