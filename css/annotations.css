@@ -30,13 +30,13 @@ tr.title {
 	border:			1px solid lightgray; 
 	border-bottom:	none;
 	font-size:		20px;
-	padding:		15px 10px;
+	padding:		10px;
 	font-weight: 	600;
 }
 
 .annotation>td {	
 	min-width:		200px; 
-	padding:		15px 10px;
+	padding:		10px;
 	border:			1px solid black;
 	color:			gray;
 }
@@ -60,10 +60,7 @@ tr.delete>td>a {
 h2 {
 	font-size: 		20px;
 	color:  		darkslateblue;
-}
-
-.small-list {
-	padding: 10px;
+	display: 		inline;
 }
 
 .annotation-details {
@@ -78,9 +75,8 @@ img.triangle {
 }
 
 img.anno_img {
-	position: 		fixed;
-	right: 			20px;
-	top: 			75px;
+	float: 			right;
+	margin: 		0px 30px 15px 15px;
 	max-height: 	150px;
 	max-width: 		150px
 }

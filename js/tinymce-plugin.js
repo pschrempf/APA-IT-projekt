@@ -109,6 +109,12 @@ jQuery(document).ready(function(jQuery){
 											}
 										};
 										
+										var data = {
+											'function': 'add',
+											'elements': []
+										};
+										
+										var elements = [];
 										//create database entry for each selected annotation and edit content as settings require
 										selection.some(function(element) {
 											var post_title = jQuery('#titlewrap input').val();
@@ -121,9 +127,8 @@ jQuery(document).ready(function(jQuery){
 												img = element.thumbimg;
 											}
 																																
-											//define data for POST request
-											var data = {
-												'function': 'add',
+											//define element data for POST request
+											data.elements.push({
 												'title': post_title,
 												'hash': element.hash,
 												'name': cleanName(element.concept),
@@ -131,20 +136,6 @@ jQuery(document).ready(function(jQuery){
 												'link': element.link,
 												'description': element.abstract,
 												'image': img
-											};
-											
-											//POST request to add annotation to database
-											jQuery.ajax({
-												type: 'POST',
-												url: CONSTANTS.annotate_db,
-												data: data,
-												datatype: JSON,
-												success: function(response) {
-													//after the last element has been annotated alert user
-													if(element === selection[selection.length-1]) {
-														wm.alert(CONSTANTS.success);
-													}
-												}
 											});
 											
 											//if add_links setting is activated add link
@@ -168,6 +159,18 @@ jQuery(document).ready(function(jQuery){
 											}
 											
 										}, this);
+										
+										//POST request to add annotation to database
+										jQuery.ajax({
+											type: 'POST',
+											url: CONSTANTS.annotate_db,
+											data: data,
+											datatype: JSON,
+											success: function(response) {
+												//after the last element has been annotated alert user
+												wm.alert(CONSTANTS.success);
+											}
+										});
 										
 										editor.setContent(content);
 										

@@ -1,6 +1,11 @@
 <?php
 
-include_once( $_SERVER['DOCUMENT_ROOT'] . '/wordpress/wp-load.php' );
+$path = $_SERVER['DOCUMENT_ROOT'] . "/" . explode('wp-content' , $_SERVER['REQUEST_URI'])[0];
+
+//needed to enable the use of the $wpdb connection
+include_once $path . '/wp-config.php';
+include_once $path . '/wp-includes/wp-db.php';
+include_once $path . '/wp-includes/pluggable.php';
 
 global $wpdb;
 global $annotation_db;
@@ -9,54 +14,56 @@ $posts = $wpdb->posts;
 
 //add entry to database
 if ( $_POST['function'] === 'add' ) {
-	$hash = $_POST['hash'];
+	$elements = $_POST['elements'];
+	foreach ( $elements as $element ) {
+		$hash = $element['hash'];
+		
+		//clean post title for SQL query
+		$post_title = stripslashes( rawurldecode( $element['title'] ) );
+		$post_type = '%post%';
+		
+		//try and get the ID of the post from database
+		$postids = $wpdb->get_col( $wpdb->prepare(
+			"
+			SELECT 	p.ID
+			FROM 	$posts p
+			WHERE 	p.post_title = %s
+			AND 	p.post_type LIKE %s
+			"
+		, $post_title, $post_type ) );
+		
+		//check that a post with specified title exists
+		if ( empty( $postids ) ) {
+			//'-1' represents an inconsistency in the database, this should not occur
+			$post_id = -1;
+		} else {
+			$post_id = $postids[0];
+		}
 	
-	//clean post title for SQL query
-	$post_title = stripslashes( rawurldecode( $_POST['title'] ) );
-	$post_type = '%post%';
+		$name = stripslashes( $element['name'] );
 	
-	//try and get the ID of the post from database
-	$postids = $wpdb->get_col( $wpdb->prepare(
-		"
-		SELECT 	p.ID
-		FROM 	$posts p
-		WHERE 	p.post_title = %s
-		AND 	p.post_type LIKE %s
-		"
-	, $post_title, $post_type ) );
+		//create entry for annotation database
+		$annotation_data = array(
+			'id' => $hash,
+			'name' => $name,
+			'type' => $element['type'],
+			'image' => $element['image'],
+			'url' => $element['link'],
+			'description' => $element['description']
+		);
 	
-	//check that a post with specified title exists
-	if ( empty( $postids ) ) {
-		//'-1' represents an inconsistency in the database, this should not occur
-		$post_id = -1;
-	} else {
-		$post_id = $postids[0];
+		$wpdb->insert( $annotation_db, $annotation_data );
+		
+		//create entry for annotation relationship database
+		$relationship_data = array(
+			'anno_id' => $hash,
+			'post_id' => $post_id
+		);
+		
+		$wpdb->insert( $annotation_rel_db, $relationship_data, array( '%s', '%d' ) );
+		
+		addAnnotationPage( $name, $hash );
 	}
-
-	$name = stripslashes( $_POST['name'] );
-
-	//create entry for annotation database
-	$annotation_data = array(
-		'id' => $hash,
-		'name' => $name,
-		'type' => $_POST['type'],
-		'image' => $_POST['image'],
-		'url' => $_POST['link'],
-		'description' => $_POST['description']
-	);
-
-	$wpdb->insert( $annotation_db, $annotation_data );
-	
-	//create entry for annotation relationship database
-	$relationship_data = array(
-		'anno_id' => $hash,
-		'post_id' => $post_id
-	);
-	
-	$wpdb->insert( $annotation_rel_db, $relationship_data, array( '%s', '%d' ) );
-	
-	addAnnotationPage( $name, $hash );
-	
 		
 //delete entry from database
 } else if ( $_POST['function'] === 'delete' ) {
