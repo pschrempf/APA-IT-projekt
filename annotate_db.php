@@ -67,46 +67,47 @@ if ( $_POST['function'] === 'add' ) {
 		
 //delete entry from database
 } else if ( $_POST['function'] === 'delete' ) {
+	$elements = $_POST['elements'];
 	
-	$hash = $_POST['hash'];
+	foreach ( $elements as $element ) {
+		$hash = $element['hash'];
+		
+		//get content and ID of all posts connected to the annotation
+		$results = $wpdb->get_results( $wpdb->prepare(
+			"
+			SELECT 		p.post_content, p.ID
+			FROM 		$posts p 
+			INNER JOIN 	$annotation_rel_db a 
+			ON 			a.post_id = p.ID 
+			WHERE 		a.anno_id = %s
+			"
+		, $hash ) );
 	
-	//get content and ID of all posts connected to the annotation
-	$results = $wpdb->get_results( $wpdb->prepare(
-		"
-		SELECT 	p.post_content, p.ID
-		FROM 	$annotation_rel_db a, $posts p
-		WHERE 	a.anno_id = %s
-		AND 	a.post_id = p.ID
-		"
-	, $hash ) );
-
-	$id = preg_quote( $hash );
-
-	//delete links from content of each of these posts
-	foreach( $results as $result ) {
-		//$search = rawurlencode( $name );
+		$id = preg_quote( $hash );
+	
+		//delete links from content of each of these posts
+		foreach( $results as $result ) {
+			
+			//Regexp to replace the annotation
+			$content = preg_replace( "#<annotation id=\"$id\".*?>([\p{L}\d].+?)<.*?\/annotation>#", '$1', $result->post_content );
+			
+			$update = array(
+				'ID' => $result->ID,
+				'post_content' => $content
+			);
+			
+			wp_update_post( $update );
+		}
 		
-		//Regexp to replace the annotation
-		$content = preg_replace( "#<annotation id=\"$id\".*?>\b(.+?)<.*?\/annotation>#", '$1', $result->post_content );
+		//delete relationships
+		$wpdb->delete( $annotation_rel_db, array( 'anno_id' => $hash ) );
 		
-		$update = array(
-			'ID' => $result->ID,
-			'post_content' => $content
-		);
+		//delete annotation from database
+		$wpdb->delete( $annotation_db, array( 'id' => $hash ) );
 		
-		wp_update_post( $update );
+		//delete annotation page
+		$wpdb->delete( $wpdb->posts, array( 'post_excerpt' => $hash, 'post_type' => 'page' ) );
 	}
-	
-	//delete relationships
-	$wpdb->delete( $annotation_rel_db, array( 'anno_id' => $hash ) );
-	
-	//delete annotation from database
-	$wpdb->delete( $annotation_db, array( 'id' => $hash ) );
-	
-	//delete annotation page
-	$wpdb->delete( $wpdb->posts, array( 'post_excerpt' => $hash, 'post_type' => 'page' ) );
-	
-	echo $hash;
 }
 
 function addAnnotationPage( $name, $hash ) {

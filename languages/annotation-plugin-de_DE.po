@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: APA-IT-projekt\n"
-"POT-Creation-Date: 2015-08-05 15:49+0200\n"
-"PO-Revision-Date: 2015-08-05 15:49+0200\n"
+"POT-Creation-Date: 2015-08-06 11:47+0200\n"
+"PO-Revision-Date: 2015-08-06 11:47+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de_DE\n"
@@ -58,8 +58,12 @@ msgid "Please select annotations to be deleted"
 msgstr "Bite wählen sie Annotationen aus, die gelöscht werden sollen"
 
 #: annotation-plugin.php:149
-msgid "Would you really like to delete these annotations permanently?"
-msgstr "Möchten sie diese Annotationen wirklich löschen?"
+msgid ""
+"Would you really like to delete these annotations permanently? (This can "
+"take a few minutes...)"
+msgstr ""
+"Wollen Sie diese Annotationen wirklich löschen? (Dieser Vorgang kann einige "
+"Minuten dauern...)"
 
 #: annotation-plugin.php:150
 msgid "Annotated successfully! Please make sure to save the post."
@@ -206,9 +210,12 @@ msgstr "Suchergebnisse für:"
 msgid "No annotations found!"
 msgstr "Keine Annotationen gefunden!"
 
-#: annotation-plugin.php:797 annotation-plugin.php:834
+#: annotation-plugin.php:797 annotation-plugin.php:837
 msgid "Annotations in this post"
 msgstr "Annotationen in diesem Beitrag"
+
+#~ msgid "Would you really like to delete these annotations permanently?"
+#~ msgstr "Möchten sie diese Annotationen wirklich löschen?"
 
 #~ msgid "No annotations found."
 #~ msgstr "Keine Annotationen gefunden."

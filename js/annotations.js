@@ -34,33 +34,40 @@ jQuery(document).ready(function() {
 			alert(CONSTANTS.delete_error);
 		} else if (confirm(CONSTANTS.delete_confirmation)) {	
 			checkboxes = jQuery('input[class=anno]');
+			var data = {
+				'function': 'delete',
+				'elements': []
+			};
+			
 			for (var i = 0; i < checkboxes.length; i++) {
 				if(checkboxes[i].checked) {
 					var hash = checkboxes[i].value;
-					jQuery('input[value="'+hash+'"]').parent().parent().addClass('delete');
+					jQuery('input[value="' + hash + '"]').parent().parent().addClass('delete');
 					
-					jQuery('body').ajaxStart(function() {
-					    jQuery(this).css({'cursor' : 'wait'});
-					}).ajaxStop(function() {
-					    jQuery(this).css({'cursor' : 'default'});
-					});
-					
-					jQuery.ajax({
-						type: 'POST',
-						url: CONSTANTS.annotate_db, 
-						data: {
-							'function': 'delete',
-							'hash': hash
-						},
-						datatype: JSON,
-						success: function( response ) {
-							jQuery('input[value="'+response+'"]').parent().parent().fadeOut(250);
-						}
-					});
+					data.elements.push({ 'hash': hash });
 					
 					checkboxes[i].checked = false;
 				}
 			}
+			
+			jQuery('body').ajaxStart(function() {
+			    jQuery(this).css({'cursor': 'wait'});
+			}).ajaxStop(function() {
+			    jQuery(this).css({'cursor': 'default'});
+			});
+			
+			jQuery.ajax({
+				type: 'POST',
+				url: CONSTANTS.annotate_db, 
+				data: data,
+				datatype: JSON,
+				success: function( response ) {
+					for (var i = 0; i < data.elements.length; i++) {
+						var element = data.elements[i];
+						jQuery('input[class=anno]').parent().parent().fadeOut(250);	
+					}
+				}
+			});
 		}
 	});
 });

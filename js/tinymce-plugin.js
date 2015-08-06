@@ -114,13 +114,12 @@ jQuery(document).ready(function(jQuery){
 											'elements': []
 										};
 										
-										var elements = [];
 										//create database entry for each selected annotation and edit content as settings require
 										selection.some(function(element) {
 											var post_title = jQuery('#titlewrap input').val();
 											element.hash = response.lang + '_' + element.hash;
 											
-											var img;
+											var img = '';
 											if (typeof element.complogo !== 'undefined') {
 												img = element.complogo;
 											} else if(typeof element.thumbimg !== 'undefined') {
@@ -138,20 +137,15 @@ jQuery(document).ready(function(jQuery){
 												'image': img
 											});
 											
-											//if add_links setting is activated add link
-											if( SETTINGS.add_links ) {
+											
+											if( SETTINGS.add_links || SETTINGS.add_microdata ) {
 												element.phrase = findPhraseInContent(response.content, element.concept);
 												if (element.phrase === false) {
 													return false;
 												}
 												
 												//get microdata to replace phrase with
-												var microdata;
-												if( SETTINGS.add_microdata ) {											
-													microdata = createMicrodataAnnotation(element, url);
-												} else {
-													microdata = createAnnotation( element );
-												}
+												var microdata = createAnnotation( element );
 												
 												//replace all occurences of the phrase with annotation
 												content = content.replace(
@@ -185,6 +179,16 @@ jQuery(document).ready(function(jQuery){
 		});	
 	});
 	
+	function createAnnotation(element) {
+		if (SETTINGS.add_links && SETTINGS.add_microdata) {
+			return createLinkMicrodataAnnotation(element);
+		} else if (SETTINGS.add_links) {
+			return createLinkAnnotation(element);
+		} else if (SETTINGS.add_microdata) {
+			return createMicrodataAnnotation(element);
+		}
+	}
+	
 	/**
 	 * Finds the phrase belonging to the concept.
 	 */
@@ -214,22 +218,19 @@ jQuery(document).ready(function(jQuery){
 	/**
 	 * Creates an annotation with a link to its annotation page.
 	 */
-	function createAnnotation( element ) {
+	function createLinkAnnotation( element ) {
 		var name = cleanName(element.concept);
 		var link = CONSTANTS.site_url + '/annotations/' + encode(name);
 		
 		return '<annotation id="' + element.hash + '">' 
-			+ '<a href=' + link + '>'
-			//+ '<span>' 
-			+ element.phrase 
-			//+ '</span>'
-			+ '</a></annotation>';
+			+ '<a href=' + link + '>' + element.phrase + '</a>'
+			+ '</annotation>';
 	}
 	
 	/**
-	 * Creates an annotations with 'schema.org' microdata.
+	 * Creates an annotation with 'schema.org' microdata and a link.
 	 */
-	function createMicrodataAnnotation( element, url ) {
+	function createLinkMicrodataAnnotation( element, url ) {
 		var name = cleanName(element.concept);
 		var link = CONSTANTS.site_url + '/annotations/' + encode(name);
 		var schema;
@@ -244,14 +245,33 @@ jQuery(document).ready(function(jQuery){
 			schema = 'http://schema.org/Thing';
 		}
 		
-		return '<annotation id="' + element.hash + '">' 
-			+ '<a href=' + link 
-			//+ ' itemscope itemtype=' + schema 
-			+ '>'
-			//+ '<span itemprop="name">'
-			+ element.phrase
-			// + '</span>'
+		return '<annotation id="' + element.hash + '" itemscope itemtype="' + schema + '">'
+			+ '<link itemprop="url" href="' + element.link + '" />'
+			+ '<a href="' + link + '">'
+			+ '<span itemprop="name">' + element.phrase + '</span>'
 			+ '</a></annotation>';
+	}
+	
+	/**
+	 * Creates an annotation with 'schema.org' microdata only.
+	 */
+	function createMicrodataAnnotation(element, url) {
+		var schema;
+		
+		if(element.type == 'location') {
+			schema = 'http://schema.org/Place';
+		} else if(element.type == 'person') {
+			schema = 'http://schema.org/Person';
+		} else if(element.type == 'organization') {
+			schema = 'http://schema.org/Organization';
+		} else {
+			schema = 'http://schema.org/Thing';
+		}
+		
+		return '<annotation id="' + element.hash + '" itemscope itemtype="' + schema + '">'
+			+ '<link itemprop="url" href="' + element.link + '" />'
+			+ '<span itemprop="name">' + element.phrase + '</span>'
+			+ '</annotation>';
 	}
 	
 	/**

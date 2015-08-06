@@ -36,7 +36,7 @@ class Annotation_Plugin {
 		
 		add_filter( 'template_include', array( $this, 'include_annotations_template' ) );
 		
-		add_filter( 'the_content', array( $this, 'a' ) );
+		add_filter( 'the_content', array( $this, 'add_annotation_list' ) );
 	}
 		
 	/**
@@ -146,7 +146,7 @@ class Annotation_Plugin {
 			'results_name' => __( 'Name', 'annotation-plugin' ),
 			'results_type' => __( 'Type', 'annotation-plugin' ),
 			'delete_error' => __( 'Please select annotations to be deleted', 'annotation-plugin' ),
-			'delete_confirmation' => __( 'Would you really like to delete these annotations permanently?', 'annotation-plugin' ),
+			'delete_confirmation' => __( 'Would you really like to delete these annotations permanently? (This can take a few minutes...)', 'annotation-plugin' ),
 			'success' => __('Annotated successfully! Please make sure to save the post.', 'annotation-plugin')
 		);
 	}
@@ -339,7 +339,7 @@ class Annotation_Plugin {
 	 * Adds microdata tags to tinymce editor's valid elements.
 	 */
 	function override_mce_options( $initArray ) {
-		$options = 'div[itemprop|itemscope|itemtype],a[href|itemprop|itemscope|itemtype],span[itemprop|itemscope|itemtype],annotation[id]';
+		$options = 'link[itemprop|href],a[href|itemprop|itemscope|itemtype],span[itemprop|itemscope|itemtype],annotation[id|itemprop|itemscope|itemtype]';
 		$initArray['extended_valid_elements'] = $options;
 		return $initArray;
 	}
@@ -807,7 +807,10 @@ class Annotation_Plugin {
 		return $content;
 	}
 	
-	function a( $content ) {
+	/**
+	 * Adds list of annotations to $content that is passed in.
+	 */
+	function add_annotation_list( $content ) {
 		global $wpdb;
 		global $annotation_db;
 		global $annotation_rel_db;
