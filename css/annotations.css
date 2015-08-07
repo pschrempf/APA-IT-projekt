@@ -8,7 +8,15 @@
 }
 
 .padded {
-	padding:		15px 0 0 0;
+	padding:		15px;
+}
+
+.block {
+	display: block;
+}
+
+.white {
+	background-color: white;
 }
 
 #wpfooter {
@@ -59,7 +67,6 @@ tr.delete>td>a {
 
 h2 {
 	font-size: 		20px;
-	color:  		darkslateblue;
 	display: 		inline;
 }
 
