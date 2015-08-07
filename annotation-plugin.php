@@ -565,11 +565,24 @@ class Annotation_Plugin {
 			}
 		}
 		
+		//add microdata for annotation
+		$schema;
+		if( $result->type == 'location' ) {
+			$schema = 'http://schema.org/Place';
+		} else if( $result->type == 'person' ) {
+			$schema = 'http://schema.org/Person';
+		} else if( $result->type == 'organization' ) {
+			$schema = 'http://schema.org/Organization';
+		} else {
+			$schema = 'http://schema.org/Thing';
+		}
+		echo '<div itemscope itemtype="' . $schema . '">';
+		
 		//display title with or without link
 		if ( '' === $annotation->url ) {
-			echo '<h2>' . get_the_title() . '</h2>';			
+			echo '<h2 itemprop="name">' . get_the_title() . '</h2>';			
 		} else {
-			echo '<a href="' . $annotation->url . '"><h2>' . get_the_title() . '</h2></a>';
+			echo '<a href="' . $annotation->url . '" itemprop="url"><h2 itemprop="name">' . get_the_title() . '</h2></a>';
 		}
 		
 		if ( current_user_can( 'edit_posts' ) ) {
@@ -586,7 +599,7 @@ class Annotation_Plugin {
 		echo '<p>
 				- ' . $annotation->type . '
 			</p>
-			<p>
+			<p itemprop="description">
 				'. stripslashes( $annotation->description ) . '
 			</p>
 			<hr>
@@ -612,9 +625,9 @@ class Annotation_Plugin {
 			
 			//deal with database errors
 			if ( $result->post_id == -1 ) {
-				$post_title = '<p class="error">[' + __('Post does not exist', 'annotation-plugin' ) + ']</p>';
+				$post_title = '<p class="error">[' . __('Post does not exist', 'annotation-plugin' ) . ']</p>';
 			} else if ( $result->post_id == 0 ) {
-				$post_title = '<p class="error">[' + __( 'Error when reading from database', 'annotation-plugin' ) + ']</p>';
+				$post_title = '<p class="error">[' . __( 'Error when reading from database', 'annotation-plugin' ) . ']</p>';
 			} else {
 				$post = get_post( $result->post_id );
 				$post_title = $post->post_title;
@@ -622,10 +635,13 @@ class Annotation_Plugin {
 			}
 			
 			//add 'li' for each relation
-			echo '<li><a href="' . $guid . '">' . $post_title . '</a></li>';
+			echo '<li itemscope itemtype="http://schema.org/Article">
+					<a href="' . $guid . '" itemprop="url">
+						<span itemprop="name">' . $post_title . '</span>
+					</a></li>';
 		}
 		
-		echo '</ul></p>';
+		echo '</ul></p></div>';
 	
 	}
 	
@@ -714,9 +730,9 @@ class Annotation_Plugin {
 			
 			//deal with database errors
 			if ( $result->post_id == -1 ) {
-				$post_title = '<p class="error">[' + __('Post does not exist', 'annotation-plugin' ) + ']</p>';
+				$post_title = '<p class="error">[' . __('Post does not exist', 'annotation-plugin' ) . ']</p>';
 			} else if ( $result->post_id == 0 ) {
-				$post_title = '<p class="error">[' + __( 'Error when reading from database', 'annotation-plugin' ) + ']</p>';
+				$post_title = '<p class="error">[' . __( 'Error when reading from database', 'annotation-plugin' ) . ']</p>';
 			} else {
 				$post = get_post( $result->post_id );
 				$post_title = $post->post_title;
@@ -743,7 +759,7 @@ class Annotation_Plugin {
 	function getSearchAnnotationPage( $annotations, $url ) {
 		?>
 		
-		<h2><?php echo __( 'Search results for:', 'annotation-plugin' ) . ' ' . str_replace( '%', '', $_GET['search'] ); ?></h2>
+		<h2><?php echo __( 'Search results for:', 'annotation-plugin' ) . ' ' . $_GET['search']; ?></h2>
 		<ul>
 		<?php
 		if( empty( $annotations ) ) {
