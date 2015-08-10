@@ -45,8 +45,6 @@ jQuery(document).ready(function() {
 					jQuery('input[value="' + hash + '"]').parent().parent().addClass('delete');
 					
 					data.elements.push({ 'hash': hash });
-					
-					checkboxes[i].checked = false;
 				}
 			}
 			
@@ -60,11 +58,16 @@ jQuery(document).ready(function() {
 				type: 'POST',
 				url: CONSTANTS.annotate_db, 
 				data: data,
-				datatype: JSON,
+				datatype: 'text',
 				success: function( response ) {
-					for (var i = 0; i < data.elements.length; i++) {
-						var element = data.elements[i];
-						jQuery('input[class=anno]').parent().parent().fadeOut(250);	
+					checkboxes = jQuery('input[class=anno]');
+					for (var i = 0; i < checkboxes.length; i++) {
+						if(checkboxes[i].checked) {
+							var hash = checkboxes[i].value;
+							jQuery('input[value="' + hash + '"]').parent().parent().hide();
+							
+							checkboxes[i].checked = false;
+						}
 					}
 				}
 			});

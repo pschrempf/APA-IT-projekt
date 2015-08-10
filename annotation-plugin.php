@@ -36,7 +36,7 @@ class Annotation_Plugin {
 		
 		add_filter( 'template_include', array( $this, 'include_annotations_template' ) );
 		
-		add_filter( 'the_content', array( $this, 'add_annotation_list' ) );
+		add_filter( 'the_content', array( $this, 'add_annotation_list' ) );		
 	}
 	
 	/**
@@ -147,7 +147,7 @@ class Annotation_Plugin {
 			'results_type' => __( 'Type', 'annotation-plugin' ),
 			'delete_error' => __( 'Please select annotations to be deleted', 'annotation-plugin' ),
 			'delete_confirmation' => 
-				__( 'Would you really like to delete these annotations permanently? (This can take a few minutes...)', 'annotation-plugin' ),
+				__( 'Would you really like to delete this annotation/these annotations permanently?', 'annotation-plugin' ),
 			'success' => __('Annotated successfully! Please make sure to save the post.', 'annotation-plugin')
 		);
 	}
@@ -694,10 +694,10 @@ class Annotation_Plugin {
 			global $annotation_db;
 			
 			$update_data = array(
-				'type' => $_POST['type'],
-				'image' => $_POST['image_url'],
-				'url' => $_POST['url'],
-				'description' => $_POST['description']
+				'type' => stripslashes( $_POST['type'] ),
+				'image' => stripslashes( $_POST['image_url'] ),
+				'url' => stripslashes( $_POST['url'] ),
+				'description' => stripslashes( $_POST['description'] )
 			);
 			
 			$wpdb->update( 
@@ -790,8 +790,13 @@ class Annotation_Plugin {
 		echo '<input hidden type="text" name="id" value="' . $annotation->id . '">';
 		echo '<input class="custom_button" type="submit" value="' . __( 'Save', 'annotation-plugin' ) . '" form="save">';
 		
-		echo '</form>';
+		echo '</form><br>';
 		
+		echo '<form action="' . $_SERVER['REQUEST_URI'] . '">';
+		echo '<input hidden type="text" name="page" value="annotations">';
+		echo '<input type="checkbox" class="anno" value="' . $annotation->id . '" required="required">' . __( 'Delete this annotation.', 'annotation-plugin' ) . '<br><br>';
+		echo '<button id="delete" class="custom_button">' .  __( 'Delete', 'annotation-plugin' ) . '</button>';
+		echo '</form>';
 		}
 	}
 	
@@ -883,7 +888,7 @@ class Annotation_Plugin {
 				wp_enqueue_style( 'annotation-stylesheet', plugins_url( 'css/annotations.css', __FILE__ ) );
 				
 				$content .= '<br>';
-				$content .= '<h2>' . __( 'Annotations in this post', 'annotation-plugin' ) . '</h2>
+				$content .= '<h3>' . __( 'Annotations in this post', 'annotation-plugin' ) . '</h3>
 					<ul>';
 				
 				foreach ( $annotations as $annotation ) { 

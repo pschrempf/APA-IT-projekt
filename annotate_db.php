@@ -41,7 +41,7 @@ if ( $_POST['function'] === 'add' ) {
 		}
 	
 		$name = stripslashes( $element['name'] );
-	
+		
 		//create entry for annotation database
 		$annotation_data = array(
 			'id' => $hash,
