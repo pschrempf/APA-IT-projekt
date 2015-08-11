@@ -83,7 +83,7 @@ jQuery( document ).ready( function( jQuery ){
 									jQuery( iframe_identifier ).contents().find( 'table' ).append( table_contents );
 									jQuery( iframe_identifier ).contents().find( 'table' ).after(
 										'<br>' + 
-										'<input id="button" type="submit" value="' + CONSTANTS.button_text + '" form="target">'
+										'<input id="button" class="custom_button" type="submit" value="' + CONSTANTS.button_text + '" form="target">'
 									);
 									
 									jQuery( iframe_identifier ).contents().find( 'input[class=select-all]' ).click( function() {

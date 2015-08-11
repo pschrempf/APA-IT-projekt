@@ -597,9 +597,9 @@ class Annotation_Plugin {
 		
 		// display title with or without link
 		if ( '' === $annotation->url ) {
-			echo '<h2 itemprop="name">' . get_the_title() . '</h2>';			
+			echo '<h2 class="inline" itemprop="name">' . get_the_title() . '</h2>';			
 		} else {
-			echo '<a href="' . $annotation->url . '" itemprop="url"><h2 itemprop="name">' . get_the_title() 
+			echo '<a href="' . $annotation->url . '" itemprop="url"><h2 class="inline" itemprop="name">' . get_the_title() 
 				. '</h2></a>';
 		}
 		
