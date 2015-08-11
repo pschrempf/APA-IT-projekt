@@ -62,7 +62,7 @@ if ( $_POST['function'] === 'add' ) {
 		
 		$wpdb->insert( $annotation_rel_db, $relationship_data, array( '%s', '%d' ) );
 		
-		addAnnotationPage( $name, $hash );
+		add_annotation_page( $name, $hash );
 	}
 		
 //delete entry from database
@@ -110,7 +110,7 @@ if ( $_POST['function'] === 'add' ) {
 	}
 }
 
-function addAnnotationPage( $name, $hash ) {
+function add_annotation_page( $name, $hash ) {
 	global $wpdb;
 	
 	$results = $wpdb->query( $wpdb->prepare(

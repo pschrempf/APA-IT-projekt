@@ -7,7 +7,7 @@ get_header();
 		<main id="main" class="site-main" role="main">
 			<article class="page type-page status-publish hentry">
 				<div class="entry-content">
-					<?php $Annotation_Plugin->getAnnotations(); ?>
+					<?php $Annotation_Plugin->get_annotations(); ?>
 				</div>
 			</article>
 		</main>
