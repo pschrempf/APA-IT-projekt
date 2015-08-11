@@ -131,13 +131,13 @@ class Annotation_Plugin {
 		global $annotation_rel_db;
 		$annotation_rel_db = $wpdb->prefix . 'annotation_relationships';
 		
-		//set all necessary constants
+		// set all necessary constants
 		global $plugin_constants;
 		$plugin_constants = array(
 			'site_url' => get_site_url(),
 			'ps_annotate_url' => 'http://apapses5.apa.at:7070/fliptest_tmp/cgi-bin/ps_annotate',
-			'annotate_db' => plugins_url( 'annotate_db.php', __FILE__ ),
-			'selection_form' => plugins_url( 'templates/selection_form.html', __FILE__ ),
+			'annotate_db' => plugins_url( 'annotate-db.php', __FILE__ ),
+			'selection_form' => plugins_url( 'templates/selection-form.html', __FILE__ ),
 			'button_text' => __( 'Annotate', 'annotation-plugin' ),
 			'button_tooltip' => __( 'Annotate', 'annotation-plugin' ),
 			'no_text_alert' => __( 'Please enter text to be annotated!', 'annotation-plugin' ),
@@ -171,10 +171,10 @@ class Annotation_Plugin {
 	 * Adds the annotation plugin to the tinymce editor and localizes SETTINGS and CONSTANTS.
 	 */
 	function add_annotate_plugin( $plugin_array ) {
-		//enqueue so that variables can be localized
+		// enqueue so that variables can be localized
 		wp_enqueue_script( 'tinymce', plugins_url( 'js/tinymce-plugin.js', __FILE__ ), array( 'jquery' ) );		
 		
-		//localize SETTINGS
+		// localize SETTINGS
 		$options = get_option( $this->option_name );
 		wp_localize_script( 
 			'tinymce', 
@@ -190,7 +190,7 @@ class Annotation_Plugin {
 			) 
 		);
 		
-		//localize CONSTANTS
+		// localize CONSTANTS
 		global $plugin_constants;
 		wp_localize_script(
 			'tinymce',
@@ -198,7 +198,7 @@ class Annotation_Plugin {
 			$plugin_constants
 		);
 		
-		//add annotation plugin to plugin array
+		// add annotation plugin to plugin array
 		$plugin_array['annotate'] = plugins_url( 'js/tinymce-plugin.js', __FILE__ );		
 		return $plugin_array;
 	}
@@ -215,7 +215,7 @@ class Annotation_Plugin {
 	 * Adds plugin pages.
 	 */
 	function add_pages() {
-		//add plugin options page
+		// add plugin options page
 		add_options_page(
 			__( 'Annotation Plugin Options', 'annotation-plugin' ), 
 			__( 'Annotation Plugin Options', 'annotation-plugin' ), 
@@ -224,7 +224,7 @@ class Annotation_Plugin {
 			array( $this, 'options_page' ) 
 		);
 		
-		//add dashboard annotation page
+		// add dashboard annotation page
 		add_object_page( 
 			__( 'Annotations', 'annotation-plugin' ), 
 			__( 'Annotations', 'annotation-plugin' ), 
@@ -246,7 +246,7 @@ class Annotation_Plugin {
 	 * Validates and sanitizes the settings text input field.
 	 */
 	function validate_input( $input ) {
-		if( isset( $input['skip'] ) ) {
+		if ( isset( $input['skip'] ) ) {
 			$input['skip'] = sanitize_text_field( $input['skip'] );
 		}
 		return $input;
@@ -260,10 +260,10 @@ class Annotation_Plugin {
 			wp_die( __( 'You do not have sufficient permissions to access this page.', 'annotation-plugin' ) );
 		}
 		
-		//get current options
+		// get current options
 		$options = get_option( $this->option_name );
 		
-		//display the options html
+		// display the options html
 		
 		echo '<div class="wrap">';
 		echo '<h2>' . __( 'Annotation Plugin Settings', 'annotation-plugin' ) . '</h2>';
@@ -278,7 +278,7 @@ class Annotation_Plugin {
 					'<th scope="row">' . __( 'Add links to posts?', 'annotation-plugin' ) . '</th>' . 
 					'<td>' . 
 						'<input type="checkbox" name="' . $this->option_name . "[add_links]" . '" value="yes" ';  
-							if( isset( $options['add_links'] ) ) { 
+							if ( isset( $options['add_links'] ) ) { 
 								checked( 'yes', $options['add_links'] ); 
 							} 
 		echo 			'>' . 
@@ -293,7 +293,7 @@ class Annotation_Plugin {
 					'<th scope="row">' . __( 'Add schema.org microdata?', 'annotation-plugin' ) . '</th>' . 
 					'<td>' . 
 						'<input type="checkbox" name="' . $this->option_name . '[add_microdata]' . '" value="yes" ';
-							if( isset( $options['add_microdata'] ) ) { 
+							if ( isset( $options['add_microdata'] ) ) { 
 								checked( 'yes', $options['add_microdata'] ); 
 							} 
 		echo			'>';
@@ -306,7 +306,7 @@ class Annotation_Plugin {
 					'<th scope="row">' . __( 'Show list of annotations below posts?', 'annotation-plugin' ) . '</th>' . 
 					'<td>' . 
 						'<input type="checkbox" name="' . $this->option_name . '[display_annotations]' . '" value="yes"';
-							if( isset( $options['display_annotations'] ) ) { 
+							if ( isset( $options['display_annotations'] ) ) { 
 								checked( 'yes', $options['display_annotations'] ); 
 							} 
 		echo 			'>'; 
@@ -320,14 +320,14 @@ class Annotation_Plugin {
 					'<td>' . 
 						'<select name="' . $this->option_name . '[lang]' . '">' . 
 							'<option value="GER" '; 
-								if( isset( $options['lang'] ) ) { 
+								if ( isset( $options['lang'] ) ) { 
 									selected( $options['lang'], 'GER' ); 
 								} 
 		echo 				'>';
 								_e( 'German', 'annotation-plugin' );
 		echo 				'</option>';
 		echo 				'<option value="FRA" ';
-								if( isset( $options['lang'] ) ) { 
+								if ( isset( $options['lang'] ) ) { 
 									selected( $options['lang'], 'FRA' ); 
 								} 
 		echo 				'>';
@@ -344,7 +344,7 @@ class Annotation_Plugin {
 						'<input type="text" size="60" placeholder="' . __( 'e.g.', 'annotation-plugin' ) . 
 							' GER:Austria_Presse_Agentur|GER:Deutsche_Presse_Agentur" ' . 
 							'name="' . $this->option_name . '[skip]' .  '" value="';
-								if( isset ( $options['skip'] ) ) { 
+								if ( isset ( $options['skip'] ) ) { 
 									echo $options['skip']; 
 								}
 		echo			'">';
@@ -393,7 +393,7 @@ class Annotation_Plugin {
 			$anc = get_post_ancestors( $post->ID );
 			
 			foreach ( $anc as $ancestor ) {
-				if( is_page() && $ancestor == $page->ID ) {
+				if ( is_page() && $ancestor == $page->ID ) {
 					return true;
 				}
 			}
@@ -420,11 +420,11 @@ class Annotation_Plugin {
 			wp_die( __( 'You do not have sufficient permissions to access this page.', 'annotation-plugin' ) );
 		}
 		
-		//enqueue script and style for page
+		// enqueue script and style for page
 		wp_enqueue_script( 'annotation-script', plugins_url( 'js/annotations.js', __FILE__ ), array( 'jquery' ) );
 		wp_enqueue_style( 'annotation-stylesheet', plugins_url( 'css/annotations.css', __FILE__ ) );
 		
-		//localize CONSTANTS
+		// localize CONSTANTS
 		global $plugin_constants;
 		wp_localize_script( 'annotation-script', 'CONSTANTS', $plugin_constants );
 		
@@ -433,21 +433,21 @@ class Annotation_Plugin {
 			'type' => 'a.type',
 		);
 		
-		//check for orderby GET attribute
+		// check for orderby GET attribute
 		if ( isset( $_GET['orderby'] ) && isset( $allowed_orders[ $_GET['orderby'] ] ) ) {
 			$order_by = $allowed_orders[ $_GET['orderby'] ];
 		} else {
 			$order_by = 'a.name';
 		}
 		
-		//check for search GET attribute
+		// check for search GET attribute
 		if ( isset( $_GET['search'] ) ) {
 			$search_string = '%' . urldecode( $_GET['search'] ) . '%';
 		} else {
 			$search_string = '%';
 		}
 		
-		//get all annotations from database
+		// get all annotations from database
 		global $wpdb;
 		global $annotation_db;
 		$annotations = $wpdb->get_results( $wpdb->prepare(
@@ -459,14 +459,14 @@ class Annotation_Plugin {
 			"
 		, $search_string ) );
 		
-		//set $url to correct link
+		// set $url to correct link
 		if ( is_page( 'annotations' ) || $this->is_subpage('annotations') ) {
 			$url = 'annotations?';
 		} else {
 			$url = 'admin.php?page=annotations&';
 		}
 		
-		//display page
+		// display page
 		if ( is_page( 'annotations' ) || ( isset( $_GET['page'] ) && $_GET['page'] == 'annotations' ) ) {
 			echo '<input type="text" id="search" placeholder="' . __( 'Search', 'annotation-plugin' ) . '">';
 		}
@@ -498,23 +498,23 @@ class Annotation_Plugin {
 	 * Creates annotation page containing all annotations.
 	 */
 	function get_general_annotation_page( $annotations, $url ) {
-		//set image source for small triangles
+		// set image source for small triangles
 		$img_src = plugins_url( 'img/triangle.jpg', __FILE__ );
 		
-		//display general annotations in a table
+		// display general annotations in a table
 		echo '<div class="padded">';
 		echo '<table id="annotation-table">';
 		
 		echo '<tr class="title">';
 		
-		//if current user can edit posts then show checkbox column
+		// if current user can edit posts then show checkbox column
 		if ( current_user_can( 'edit_posts' ) ) {
 			echo '<th class="input">' . 
 					'<input type="checkbox" class="select-all">' . 
 				'</th>';
 		}
 		
-		//display table with annotations for all users
+		// display table with annotations for all users
 		echo '<th>' . 
 				__( 'Annotation', 'annotation-plugin' ) . 
 				'<a href="' . $url . ' orderby=name">' . 
@@ -531,7 +531,7 @@ class Annotation_Plugin {
 			
 		echo '</tr>';
 		
-		//display each annotation in table
+		// display each annotation in table
 		foreach ( $annotations as $result ) {
 			echo '<tr class="annotation">';
 			
@@ -543,7 +543,7 @@ class Annotation_Plugin {
 			
 			echo '<td>' . 
 					'<a href="'; 
-				if( is_page( 'annotations' ) ) { 
+				if ( is_page( 'annotations' ) ) { 
 					echo get_site_url() . '/annotations/' . urlencode( $result->name ); 
 				} else {
 					echo $url . 'edit=' . urlencode( $result->name );
@@ -560,7 +560,7 @@ class Annotation_Plugin {
 		
 		echo '</table></div>';
 		
-		//if current user can edit post show delete button
+		// if current user can edit post show delete button
 		if ( current_user_can( 'edit_posts' ) ) {
 			echo '<button id="delete" class="custom_button">' .  __( 'Delete', 'annotation-plugin' ) . '</button>';
 		}
@@ -574,28 +574,28 @@ class Annotation_Plugin {
 	function get_specific_annotation_page( $annotations ) {
 		wp_enqueue_style( 'annotation-stylesheet', plugins_url( 'css/annotations.css', __FILE__ ) );
 		
-		//find correct annotation
+		// find correct annotation
 		foreach ( $annotations as $result ) {
-			if( get_the_title() === $result->name ) {
+			if ( get_the_title() === $result->name ) {
 				$annotation = $result;
 				break;
 			}
 		}
 		
-		//add microdata for annotation
+		// add microdata for annotation
 		$schema;
-		if( $annotation->type == 'location' ) {
+		if ( $annotation->type == 'location' ) {
 			$schema = 'http://schema.org/Place';
-		} else if( $annotation->type == 'person' ) {
+		} else if ( $annotation->type == 'person' ) {
 			$schema = 'http://schema.org/Person';
-		} else if( $annotation->type == 'organization' ) {
+		} else if ( $annotation->type == 'organization' ) {
 			$schema = 'http://schema.org/Organization';
 		} else {
 			$schema = 'http://schema.org/Thing';
 		}
 		echo '<div class="padded block white" itemscope itemtype="' . $schema . '">';
 		
-		//display title with or without link
+		// display title with or without link
 		if ( '' === $annotation->url ) {
 			echo '<h2 itemprop="name">' . get_the_title() . '</h2>';			
 		} else {
@@ -608,13 +608,13 @@ class Annotation_Plugin {
 				. urlencode( $annotation->name ) . '">Edit</a>)';
 		}
 		
-		//display image if available
+		// display image if available
 		if ( '' !== $annotation->image ) { 
 			echo '<img class="anno_img" src="' . $annotation->image 
 				. '" alt="' . __( 'No picture available', 'annotation-plugin') . '">';
 		}
 		
-		//display annotation information
+		// display annotation information
 		echo '<p>
 				- ' . $annotation->type . '
 			</p>
@@ -627,7 +627,7 @@ class Annotation_Plugin {
 				<br>
 				<ul class="inner-list annotation-details">';
 		
-		//get all relations for this annotation
+		// get all relations for this annotation
 		global $wpdb;
 		global $annotation_rel_db;
 		$relations = $wpdb->get_results( $wpdb->prepare( 
@@ -638,11 +638,11 @@ class Annotation_Plugin {
 			"
 		, $annotation->id ) );
 		
-		//get information from each relation
+		// get information from each relation
 		foreach ( $relations as $result ) {
 			$guid = '';
 			
-			//deal with database errors
+			// deal with database errors
 			if ( $result->post_id == -1 ) {
 				$post_title = '<p class="error">[' . __('Post does not exist', 'annotation-plugin' ) . ']</p>';
 			} else if ( $result->post_id == 0 ) {
@@ -654,7 +654,7 @@ class Annotation_Plugin {
 				$guid = $post->guid;
 			}
 			
-			//add 'li' for each relation
+			// add 'li' for each relation
 			echo '<li itemscope itemtype="http://schema.org/Article">
 					<a href="' . $guid . '" itemprop="url">
 						<span itemprop="name">' . $post_title . '</span>
@@ -671,18 +671,18 @@ class Annotation_Plugin {
 	function get_edit_annotation_page( $annotations ) {
 		wp_enqueue_style( 'annotation-stylesheet', plugins_url( 'css/annotations.css', __FILE__ ) );
 		
-		//make sure user has right to edit posts and annotations
-		if( !current_user_can( 'edit_posts' ) ) {
+		// make sure user has right to edit posts and annotations
+		if ( !current_user_can( 'edit_posts' ) ) {
 			wp_die( __( 'You do not have sufficient permissions to access this page.', 'annotation-plugin' ) );
 		}
 		
 		foreach ( $annotations as $result ) {
-			if( urldecode( $_GET['edit'] ) === $result->name ) {
+			if ( urldecode( $_GET['edit'] ) === $result->name ) {
 				$annotation = $result;
 			}
 		}
 		
-		if( isset( $_GET['save'] ) && 'true' == $_GET['save'] ) {
+		if ( isset( $_GET['save'] ) && 'true' == $_GET['save'] ) {
 			global $wpdb;
 			global $annotation_db;
 			
@@ -697,12 +697,12 @@ class Annotation_Plugin {
 				$annotation_db, $update_data, array( 'id' => $_POST['id'] )
 			);
 			
-			//echo meta to refresh page
+			// echo meta to refresh page
 			echo '<meta http-equiv="refresh" 
 					content="0; url=' . str_replace( '&save=true', '&save=done', $_SERVER['REQUEST_URI'] ) . '">'; 
 			
 		} else {
-			//show message if annotation was saved
+			// show message if annotation was saved
 			if ( isset( $_GET['save'] ) && 'done' == $_GET['save'] ) {
 				echo '<div class="updated"><p>' . __( 'Saved annotation', 'annotation-plugin' ) . '</p></div><br>';
 			}
@@ -710,37 +710,46 @@ class Annotation_Plugin {
 		
 		echo '<h2>' . stripslashes( $annotation->name )  . '</h2><br><br>';
 		
-		if( '' !== $annotation->image ) {
+		if ( '' !== $annotation->image ) {
 			echo '<img src="' . $annotation->image . '" alt="' 
 				. __( 'No picture available', 'annotation-plugin' ) . '" class="anno_img">';
 		}
 		
+		// display edit form
 		echo '<form id="save" action="' . $_SERVER['REQUEST_URI'] . '&save=true" method ="post">';
 		echo '<table class="annotation-details">';
+		
+		// type
 		echo '<tr>' . 
 				'<td>' . __( 'Type', 'annotation-plugin' ) . '</td>' . 
 				'<td><input type="text" name="type" placeholder="' . __( 'Please add a type', 'annotation-plugin' ) . 
 					'" value="' . $annotation->type . '"></td>' .
 			'</tr>';
+		
+		// URL
 		echo '<tr>' .
 				'<td>' . __( 'URL', 'annotation-plugin' ) . '</td>' .
 				'<td><input type="url" size="100" name="url" placeholder="' . __( 'Please add a URL', 'annotation-plugin' ) . 
 					'" value="' . $annotation->url . '"></td>' . 
 			'</tr>';
+		
+		// image URL
 		echo '<tr>' . 
 				'<td>' . __( 'Image URL', 'annotation-plugin' ) . '</td>' . 
 				'<td><input type="url" size="100" name="image_url" 
 					placeholder="' . __( 'Please add an image URL', 'annotation-plugin' ) . '"  
 					value="' . $annotation->image . '"></td>' . 
-			'</tr>';
-		echo '<tr>' . 
-			'</tr>';
+			'</tr><tr></tr>';
+		
+		// description
 		echo '<tr>' . 
 				'<td style="vertical-align: middle">' . __( 'Description', 'annotation-plugin' ) . '</td>' . 
 				'<td><textarea type="text" form="save" name="description" wrap="hard" rows="10" cols="100" 
 					placeholder="' . __( 'Please add a description', 'annotation-plugin' ) . '">' .  
 						$annotation->description . '</textarea></td>' . 
 			'</tr>';
+		
+		// display list of posts
 		echo '<tr>' .
 				'<td>' . __( 'Posts', 'annotation-plugin' ) . '</td>' . 
 				'<td><ul class="inner-list annotation-details">';
@@ -755,11 +764,11 @@ class Annotation_Plugin {
 			"
 		, $annotation->id ) );
 		
-		//add 'li' for each annotation
+		// add 'li' for each annotation
 		foreach ( $relations as $result ) {
 			$guid = '';
 			
-			//deal with database errors
+			// deal with database errors
 			if ( $result->post_id == -1 ) {
 				$post_title = '<p class="error">[' . __('Post does not exist', 'annotation-plugin' ) . ']</p>';
 			} else if ( $result->post_id == 0 ) {
@@ -779,15 +788,21 @@ class Annotation_Plugin {
 			'</tr>' . 
 		'</table>';
 		echo '<br>';
+		
+		// hidden input needed for form submission
 		echo '<input hidden type="text" name="back" value="' . $_SERVER['REQUEST_URI'] . '">';
 		echo '<input hidden type="text" name="id" value="' . $annotation->id . '">';
+		
+		// save button
 		echo '<input class="custom_button" type="submit" value="' . __( 'Save', 'annotation-plugin' ) . '" form="save">';
 		
 		echo '</form><br>';
 		
+		// show option to delete annotation
 		echo '<form action="' . $_SERVER['REQUEST_URI'] . '">';
 		echo '<input hidden type="text" name="page" value="annotations">';
-		echo '<input type="checkbox" class="anno" value="' . $annotation->id . '" required="required">' . __( 'Delete this annotation.', 'annotation-plugin' ) . '<br><br>';
+		echo '<input type="checkbox" class="anno" value="' . $annotation->id . '" required="required">' 
+			. __( 'Delete this annotation.', 'annotation-plugin' ) . '<br><br>';
 		echo '<button id="delete" class="custom_button">' .  __( 'Delete', 'annotation-plugin' ) . '</button>';
 		echo '</form>';
 		}
@@ -797,16 +812,17 @@ class Annotation_Plugin {
 	 * Displays the results for an annotation search.
 	 */
 	function get_search_annotation_page( $annotations, $url ) {
-		
+		// display title
 		echo '<h2>' . __( 'Search results for:', 'annotation-plugin' ) . ' ' . $_GET['search'] . '</h2>';
 		echo '<ul>';
 		
-		if( empty( $annotations ) ) {
+		if ( empty( $annotations ) ) {
 			echo '<p>' . __( 'No annotations found!', 'annotation-plugin' ) . '</p>';
 		} else {
+			// display list of annotations
 			foreach ( $annotations as $annotation ) {
 				echo '<li><a href="'; 
-					if( is_page( 'annotations' ) ) { 
+					if ( is_page( 'annotations' ) ) { 
 						echo get_site_url() . '/annotations/' . urlencode( $annotation->name ); 
 					} else {
 						echo $url . 'edit=' . urlencode( $annotation->name );
@@ -828,9 +844,10 @@ class Annotation_Plugin {
 		global $annotation_rel_db;
 		global $post;
 		
-		if( isset( $post->ID ) ) {
+		if ( isset( $post->ID ) ) {
 			$post_id = $post->ID;
 			
+			// get all annotations that fit to the current post_id
 			$annotations = $wpdb->get_results( $wpdb->prepare(
 				"
 				SELECT * 
@@ -842,7 +859,9 @@ class Annotation_Plugin {
 			, $post_id ) );
 			
 			$options = get_option( $this->option_name );
-			if( ! empty( $annotations ) && isset( $options['display_annotations'] ) ) {
+			
+			// display list of annotations if the option is selected and annotations were found
+			if ( ! empty( $annotations ) && isset( $options['display_annotations'] ) ) {
 				wp_enqueue_style( 'annotation-stylesheet', plugins_url( 'css/annotations.css', __FILE__ ) );
 				
 				$content .= '<br>';
@@ -862,7 +881,7 @@ class Annotation_Plugin {
 	}
 }
 
-//Initialize plugin
+// Initialize plugin
 $Annotation_Plugin = new Annotation_Plugin();
 
 ?>

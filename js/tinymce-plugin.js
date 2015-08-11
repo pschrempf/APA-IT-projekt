@@ -1,27 +1,29 @@
-jQuery(document).ready(function(jQuery){
+jQuery( document ).ready( function( jQuery ){
 	
-	tinymce.PluginManager.add('annotate', function(editor, url) {
+	tinymce.PluginManager.add( 'annotate', function( editor, url ) {
 		var wm = editor.windowManager;
 		
-		// Add annotate button to editor
-		editor.addButton('annotate', {
+		// add annotate button to editor
+		editor.addButton( 'annotate', {
 			title: 'Annotate',
 			tooltip: CONSTANTS.button_tooltip,
 			text: CONSTANTS.button_text, 
 			
-			//on click annotate if there is text in the editor
+			// on click annotate if there is text in the editor
 			onclick: function() {
 				//get content from editor
 				var content = editor.getContent();
-				var cleanContent = editor.getContent({format:'text'});
+				var cleanContent = editor.getContent({
+					format: 'text'
+				});
 				
-				//if there is no content alert user
-				if ('' === content) {
-					wm.alert(CONSTANTS.no_text_alert);
+				// if there is no content alert user
+				if ( '' === content ) {
+					wm.alert( CONSTANTS.no_text_alert );
 				} 
-				//else annotate content
+				// else annotate content
 				else {
-					//set data for POST request
+					// set data for POST request
 					var data = {
 						contenttype: 'application/json',
 						reqid: 'request',
@@ -30,7 +32,7 @@ jQuery(document).ready(function(jQuery){
 						skip: SETTINGS.skip
 					};
 					
-					//POST request to ps_annotate server
+					// POST request to ps_annotate server
 					jQuery.ajax({
 						type: 'POST',
 						url: CONSTANTS.ps_annotate_url,
@@ -39,15 +41,15 @@ jQuery(document).ready(function(jQuery){
 						data: data,
 						error: handle_request_error,		
 										
-						//on success work with response
+						// on success work with response
 						success: function( response ) {
-							response = cleanResponse(response);
+							response = cleanResponse( response );
 							
-							//if no annotations could be found alert user
-							if (!response.hasOwnProperty('concepts')) {
-								wm.alert(CONSTANTS.no_annotations_alert);
+							// if no annotations could be found alert user
+							if ( ! response.hasOwnProperty( 'concepts' )) {
+								wm.alert( CONSTANTS.no_annotations_alert );
 							} 
-							//else open selection form
+							// else open selection form
 							else {
 								var selection_form_id = 'selectionform';
 								var selection_window = wm.open({
@@ -62,11 +64,11 @@ jQuery(document).ready(function(jQuery){
 									custom_param : 1
 								});
 								
-								//wait until iframe is loaded
+								// wait until iframe is loaded
 								var iframe_identifier = '#' + selection_form_id + ' iframe';
-								jQuery(iframe_identifier).load(function() {
+								jQuery( iframe_identifier ).load( function() {
 									
-									//add information to table in 'selection_form.html' from results
+									// add information to table in 'selection_form.html' from results
 									var table_contents = 
 										'<tr class="title">' + 
 											'<th class="input"><input type="checkbox" class="select-all"></th>' + 
@@ -75,36 +77,36 @@ jQuery(document).ready(function(jQuery){
 											'<th></th>' +
 										'</tr>';
 									
-									response.concepts.forEach(function(element) {
-										table_contents += generateRow(element);
+									response.concepts.forEach( function( element ) {
+										table_contents += generateRow( element );
 									});
-									jQuery(iframe_identifier).contents().find('table').append(table_contents);
-									jQuery(iframe_identifier).contents().find('table').after(
+									jQuery( iframe_identifier ).contents().find( 'table' ).append( table_contents );
+									jQuery( iframe_identifier ).contents().find( 'table' ).after(
 										'<br>' + 
 										'<input id="button" type="submit" value="' + CONSTANTS.button_text + '" form="target">'
 									);
 									
-									jQuery(iframe_identifier).contents().find('input[class=select-all]').click(function() {
-										var checkboxes = jQuery(iframe_identifier).contents().find('input[name=checkbox]');
-										for(var i=0; i < checkboxes.length; i++) {
+									jQuery( iframe_identifier ).contents().find( 'input[class=select-all]' ).click( function() {
+										var checkboxes = jQuery( iframe_identifier ).contents().find( 'input[name=checkbox]' );
+										for ( var i=0; i < checkboxes.length; i++ ) {
 											checkboxes[i].checked = this.checked;
 										}
 									});
 									
-									jQuery('body').ajaxStart(function() {
-									    jQuery(this).css({'cursor' : 'wait'});
-									}).ajaxStop(function() {
-									    jQuery(this).css({'cursor' : 'default'});
+									jQuery( 'body' ).ajaxStart( function() {
+									    jQuery( this ).css({ 'cursor' : 'wait' });
+									}).ajaxStop( function() {
+									    jQuery( this ).css({ 'cursor' : 'default' });
 									});
 									
-									//on submit, enter selections to content
-									jQuery(iframe_identifier).contents().find('form').submit(function( event ) {
+									// on submit, enter selections to content
+									jQuery( iframe_identifier ).contents().find( 'form' ).submit( function( event ) {
 										var selection = [];
 										
-										//add selected annotations to selection
-										var checkboxes = jQuery(iframe_identifier).contents().find('input[class=selector]');
-										for (var i = 0; i < checkboxes.length; i++) {
-											if(checkboxes[i].checked) {
+										// add selected annotations to selection
+										var checkboxes = jQuery( iframe_identifier ).contents().find( 'input[class=selector]' );
+										for ( var i = 0; i < checkboxes.length; i++ ) {
+											if ( checkboxes[i].checked ) {
 												selection[selection.length] = response.concepts[i];
 											}
 										};
@@ -114,19 +116,19 @@ jQuery(document).ready(function(jQuery){
 											'elements': []
 										};
 										
-										//create database entry for each selected annotation and edit content as settings require
-										selection.some(function(element) {
-											var post_title = jQuery('#titlewrap input').val();
+										// create database entry for each selected annotation and edit content as settings require
+										selection.some( function( element ) {
+											var post_title = jQuery( '#titlewrap input' ).val();
 											element.hash = response.lang + '_' + element.hash;
 											
 											var img = '';
-											if (typeof element.complogo !== 'undefined') {
+											if ( typeof element.complogo !== 'undefined' ) {
 												img = element.complogo;
-											} else if(typeof element.thumbimg !== 'undefined') {
+											} else if ( typeof element.thumbimg !== 'undefined' ) {
 												img = element.thumbimg;
 											}
 																																
-											//define element data for POST request
+											// define element data for POST request
 											data.elements.push({
 												'title': post_title,
 												'hash': element.hash,
@@ -138,37 +140,37 @@ jQuery(document).ready(function(jQuery){
 											});
 											
 											
-											if( SETTINGS.add_links || SETTINGS.add_microdata ) {
-												element.phrase = findPhraseInContent(response.content, element.concept);
-												if (element.phrase === false) {
+											if ( SETTINGS.add_links || SETTINGS.add_microdata ) {
+												element.phrase = findPhraseInContent( response.content, element.concept );
+												if ( element.phrase === false ) {
 													return false;
 												}
 												
-												//get microdata to replace phrase with
+												// get microdata to replace phrase with
 												var microdata = createAnnotation( element );
 												
-												//replace all occurences of the phrase with annotation
+												// replace all occurences of the phrase with annotation
 												content = content.replace(
-													new RegExp('([ ,.:_\-])(' + element.phrase + ')([ ,.:_\-])', 'g'), '$1' + microdata + "$3");
+													new RegExp( '([ ,.:_\-])(' + element.phrase + ')([ ,.:_\-])', 'g' ), '$1' + microdata + "$3" );
 											}
 											
-										}, this);
+										}, this );
 										
-										//POST request to add annotation to database
+										// POST request to add annotation to database
 										jQuery.ajax({
 											type: 'POST',
 											url: CONSTANTS.annotate_db,
 											data: data,
 											datatype: JSON,
-											success: function(response) {
-												//after the last element has been annotated alert user
-												wm.alert(CONSTANTS.success);
+											success: function( response ) {
+												// after the last element has been annotated alert user
+												wm.alert( CONSTANTS.success );
 											}
 										});
 										
-										editor.setContent(content);
+										editor.setContent( content );
 										
-										wm.close(selection_window);
+										wm.close( selection_window );
 									});
 								});
 							}
@@ -179,32 +181,32 @@ jQuery(document).ready(function(jQuery){
 		});	
 	});
 	
-	function createAnnotation(element) {
-		if (SETTINGS.add_links && SETTINGS.add_microdata) {
-			return createLinkMicrodataAnnotation(element);
-		} else if (SETTINGS.add_links) {
-			return createLinkAnnotation(element);
-		} else if (SETTINGS.add_microdata) {
-			return createMicrodataAnnotation(element);
+	function createAnnotation( element ) {
+		if ( SETTINGS.add_links && SETTINGS.add_microdata ) {
+			return createLinkMicrodataAnnotation( element );
+		} else if ( SETTINGS.add_links ) {
+			return createLinkAnnotation( element );
+		} else if ( SETTINGS.add_microdata ) {
+			return createMicrodataAnnotation( element );
 		}
 	}
 	
 	/**
 	 * Finds the phrase belonging to the concept.
 	 */
-	function findPhraseInContent(content, conceptToBeFound) {		
+	function findPhraseInContent( content, conceptToBeFound ) {		
 		var phrase = false;
-		for (var i = 0; i < content.length; i++) {
+		for ( var i = 0; i < content.length; i++ ) {
 			var element = content[i];
-			if (element.hasOwnProperty('content')) {
-				phrase = findPhraseInContent(element.content, conceptToBeFound);
-				if (false !== phrase) {
+			if ( element.hasOwnProperty( 'content' ) ) {
+				phrase = findPhraseInContent( element.content, conceptToBeFound );
+				if ( false !== phrase ) {
 					return phrase;
 				}
 			} else {
-				for (var j = 0; j < element.concepts.length; j++) {
+				for ( var j = 0; j < element.concepts.length; j++ ) {
 					var el = element.concepts[j];
-					if (el.concept === conceptToBeFound) {
+					if ( el.concept === conceptToBeFound ) {
 						phrase = element.phrase;
 						return phrase;
 					}
@@ -219,8 +221,8 @@ jQuery(document).ready(function(jQuery){
 	 * Creates an annotation with a link to its annotation page.
 	 */
 	function createLinkAnnotation( element ) {
-		var name = cleanName(element.concept);
-		var link = CONSTANTS.site_url + '/annotations/' + encode(name);
+		var name = cleanName( element.concept );
+		var link = CONSTANTS.site_url + '/annotations/' + encode( name );
 		
 		return '<annotation id="' + element.hash + '">' 
 			+ '<a href=' + link + '>' + element.phrase + '</a>'
@@ -231,21 +233,10 @@ jQuery(document).ready(function(jQuery){
 	 * Creates an annotation with 'schema.org' microdata and a link.
 	 */
 	function createLinkMicrodataAnnotation( element, url ) {
-		var name = cleanName(element.concept);
-		var link = CONSTANTS.site_url + '/annotations/' + encode(name);
-		var schema;
+		var name = cleanName( element.concept );
+		var link = CONSTANTS.site_url + '/annotations/' + encode( name );
 		
-		if(element.type == 'location') {
-			schema = 'http://schema.org/Place';
-		} else if(element.type == 'person') {
-			schema = 'http://schema.org/Person';
-		} else if(element.type == 'organization') {
-			schema = 'http://schema.org/Organization';
-		} else {
-			schema = 'http://schema.org/Thing';
-		}
-		
-		return '<annotation id="' + element.hash + '" itemscope itemtype="' + schema + '">'
+		return '<annotation id="' + element.hash + '" itemscope itemtype="' + getSchema( element.type ) + '">'
 			+ '<link itemprop="url" href="' + element.link + '" />'
 			+ '<a href="' + link + '">'
 			+ '<span itemprop="name">' + element.phrase + '</span>'
@@ -255,48 +246,54 @@ jQuery(document).ready(function(jQuery){
 	/**
 	 * Creates an annotation with 'schema.org' microdata only.
 	 */
-	function createMicrodataAnnotation(element, url) {
-		var schema;
-		
-		if(element.type == 'location') {
-			schema = 'http://schema.org/Place';
-		} else if(element.type == 'person') {
-			schema = 'http://schema.org/Person';
-		} else if(element.type == 'organization') {
-			schema = 'http://schema.org/Organization';
-		} else {
-			schema = 'http://schema.org/Thing';
-		}
-		
-		return '<annotation id="' + element.hash + '" itemscope itemtype="' + schema + '">'
+	function createMicrodataAnnotation( element, url ) {
+		return '<annotation id="' + element.hash + '" itemscope itemtype="' + getSchema( element.type ) + '">'
 			+ '<link itemprop="url" href="' + element.link + '" />'
 			+ '<span itemprop="name">' + element.phrase + '</span>'
 			+ '</annotation>';
 	}
 	
 	/**
+	 * Creates a 'schema.org' schema according to the element type.
+	 */
+	function getSchema( elementType ) {
+		var schema = 'http://schema.org/';
+		
+		if ( elementType == 'location' ) {
+			schema += 'Place';
+		} else if ( elementType == 'person' ) {
+			schema += 'Person';
+		} else if ( elementType == 'organization' ) {
+			schema += 'Organization';
+		} else {
+			schema += 'Thing';
+		}
+		
+		return schema;
+	} 
+	
+	/**
 	 * Encodes part of a URL including parentheses.
 	 */
-	function encode(url) {
-		url = url.replace(/ /g, '');
-		url = encodeURIComponent(url);
-		//url = url.replace(/\(/g, '%28').replace(/\)/g, '%29').replace(/'/g, "%27");
+	function encode( url ) {
+		url = url.replace( / /g, '' );
+		url = encodeURIComponent( url );
 		return url;
 	}
 	
 	/**
 	 * Generates an individual table row depending on information
 	 */
-	function generateRow(element) {
+	function generateRow( element ) {
 		var table_row = '<tr class="annotation">'
 			+ '\n\t<td class="input"><input type="checkbox" class="selector" name="checkbox"></td>'
-			+ '\n\t<td><span title="' + element.abstract+'">' + cleanName(element.concept) + '</span></td>'
+			+ '\n\t<td><span title="' + element.abstract+'">' + cleanName( element.concept ) + '</span></td>'
 			+ '\n\t<td>' + element.type + '</td>';
 		
-		//prefer company logos over thumbimages
-		if(typeof element.complogo !== 'undefined') {
+		// prefer company logos over thumbimages
+		if ( typeof element.complogo !== 'undefined' ) {
 			table_row += '\n\t<td class="image"><img src="' + element.complogo + '" alt=""/></td>';
-		} else if(typeof element.thumbimg !== 'undefined') {
+		} else if ( typeof element.thumbimg !== 'undefined' ) {
 			table_row += '\n\t<td class="image"><img src="' + element.thumbimg + '" alt=""/></td>';
 		} else {
 			table_row += '\n\t<td></td>';
@@ -306,9 +303,9 @@ jQuery(document).ready(function(jQuery){
 	}
 	
 	/**
-	 * Removes unwanted annotations from response according to plugin settings.
+	 * Removes unwanted annotations from response.
 	 */
-	function cleanResponse(response) {
+	function cleanResponse( response ) {
 		var indices = [];
 		var counter = 0;
 		
@@ -316,21 +313,21 @@ jQuery(document).ready(function(jQuery){
 			return response;
 		}
 		
-		response.concepts.forEach(function(element) {
-			if (element.type == 'mailaddr' || element.type == 'date' || element.type == 'URL' ) {
+		response.concepts.forEach( function( element ) {
+			if ( element.type == 'mailaddr' || element.type == 'date' || element.type == 'URL' ) {
 				indices[indices.length] = counter;
 			}
 			counter++;
 		});
 		
-		//remove unwanted indices
-		for (var index = indices.length-1; index >= 0; index--) {
+		// remove unwanted indices
+		for ( var index = indices.length-1; index >= 0; index-- ) {
 			var element = indices[index];
-			response.concepts.splice(element, 1);
+			response.concepts.splice( element, 1 );
 		}
 		
-		//check if there are no annotations left in array
-		if (response.concepts.length == 0) {
+		// check if there are no annotations left in array
+		if ( response.concepts.length == 0 ) {
 			delete response.concepts;
 		}
 		return response;
@@ -339,38 +336,38 @@ jQuery(document).ready(function(jQuery){
 	/**
 	 * Reports various errors from post requests. 
 	 */
-	function handle_request_error(jqxhr, exception) {
-		if (jqxhr.status === 0) {
-			alert('Not connected.\nVerify Network.');
-		} else if (jqxhr.status == 404) {
-			alert('Requested page not found.');
-		} else if (jqxhr.status == 500) {
-			alert('Internal Server Error.');
-		} else if (exception === 'parsererror') {
-			alert('Requested JSON parse failed.');
-		} else if (exception === 'timeout') {
-			alert('Time out error.');
-		} else if (exception === 'abort') {
-			alert('Ajax request aborted.');
+	function handle_request_error( jqxhr, exception ) {
+		if ( jqxhr.status === 0 ) {
+			alert( 'Not connected.\nVerify Network.' );
+		} else if ( jqxhr.status == 404 ) {
+			alert( 'Requested page not found.' );
+		} else if ( jqxhr.status == 500 ) {
+			alert( 'Internal Server Error.' );
+		} else if ( exception === 'parsererror' ) {
+			alert( 'Requested JSON parse failed.' );
+		} else if ( exception === 'timeout' ) {
+			alert( 'Time out error.' );
+		} else if ( exception === 'abort' ) {
+			alert( 'Ajax request aborted.' );
 		} else {
-			alert('Uncaught Error.\n' + jqxhr.responseText);
+			alert( 'Uncaught Error.\n' + jqxhr.responseText );
 		}
 	}
 	
 	/**
-	 * Removes the language tag from the name of an annotation.
+	 * Removes the language tag and underscores from the name of an annotation.
 	 */
-	function cleanName(name) {
-		return name.substr(4, name.length).replace(new RegExp('_', 'gi'), ' ');
+	function cleanName( name ) {
+		return name.substr( 4, name.length ).replace( new RegExp( '_', 'gi' ), ' ' );
 	}
 	
 	/**
-	 * Sends a POST request to the 'annotate_db.php' file to add an entry to the database.
+	 * Sends a POST request to the 'annotate-db.php' file to add an entry to the database.
 	 */
-	function addAnnotationToDB(post_title, element) {
+	function addAnnotationToDB( post_title, element ) {
 		var data = {
 			'function': 'add',
-			'name': cleanName(element.concept),
+			'name': cleanName( element.concept ),
 			'title': post_title,
 			'type': element.type
 		};
