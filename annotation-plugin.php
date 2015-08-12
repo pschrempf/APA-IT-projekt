@@ -416,10 +416,6 @@ class Annotation_Plugin {
 	 * Echos an annotations page according to the query.
 	 */
 	public function get_annotations() {
-		if ( ! current_user_can( 'publish_posts' ) ) {
-			wp_die( __( 'You do not have sufficient permissions to access this page.', 'annotation-plugin' ) );
-		}
-		
 		// enqueue script and style for page
 		wp_enqueue_script( 'annotation-script', plugins_url( 'js/annotations.js', __FILE__ ), array( 'jquery' ) );
 		wp_enqueue_style( 'annotation-stylesheet', plugins_url( 'css/annotations.css', __FILE__ ) );
