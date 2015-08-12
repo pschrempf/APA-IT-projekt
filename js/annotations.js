@@ -83,7 +83,7 @@ jQuery(document).ready(function() {
 					for ( var i = 0; i < checkboxes.length; i++ ) {
 						if ( checkboxes[i].checked ) {
 							var hash = checkboxes[i].value;
-							jQuery( 'input[value="' + hash + '"]' ).parent().parent().hide();
+							jQuery( 'input[value="' + hash + '"]' ).parent().parent().fadeOut();
 							
 							checkboxes[i].checked = false;
 						}

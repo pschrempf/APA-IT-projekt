@@ -755,21 +755,21 @@ class Annotation_Plugin {
 			echo '<form id="save" action="' . $_SERVER['REQUEST_URI'] . '&save=true" method ="post">';
 			echo '<table class="annotation-details">';
 			
-			// type
+			// [type]
 			echo '<tr>' . 
 					'<td>' . __( 'Type', 'annotation-plugin' ) . '</td>' . 
 					'<td><input type="text" name="type" placeholder="' . __( 'Please add a type', 'annotation-plugin' ) . 
 						'" value="' . $annotation->type . '"></td>' .
 				'</tr>';
 			
-			// URL
+			// [URL]
 			echo '<tr>' .
 					'<td>' . __( 'URL', 'annotation-plugin' ) . '</td>' .
 					'<td><input type="url" size="100" name="url" placeholder="' . __( 'Please add a URL', 'annotation-plugin' ) . 
 						'" value="' . $annotation->url . '"></td>' . 
 				'</tr>';
 			
-			// image URL
+			// [image URL]
 			echo '<tr>' . 
 					'<td>' . __( 'Image URL', 'annotation-plugin' ) . '</td>' . 
 					'<td><input type="url" size="100" name="image_url" 
@@ -777,7 +777,7 @@ class Annotation_Plugin {
 						value="' . $annotation->image . '"></td>' . 
 				'</tr><tr></tr>';
 			
-			// description
+			// [description]
 			echo '<tr>' . 
 					'<td style="vertical-align: middle">' . __( 'Description', 'annotation-plugin' ) . '</td>' . 
 					'<td><textarea type="text" form="save" name="description" wrap="hard" rows="10" cols="100" 
