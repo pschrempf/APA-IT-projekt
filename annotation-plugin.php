@@ -12,12 +12,20 @@ Domain Path: languages/
 defined( 'ABSPATH' ) or wp_die( __( 'Plugin cannot be accessed correctly!', 'annotation-plugin' ) );
 define( 'WPLANG', '' );
 
+/**
+ * Main class of the plugin.
+ */
 class Annotation_Plugin {
 
+	/**
+	 * Name of the options for the database used by the plugin.
+	 * 
+	 * @var string $option_name
+	 */
 	private $option_name = 'annotation-plugin-options';
 
 	/**
-	 * Add and register various hooks, actions and filters.
+	 * Adds and registers various hooks, actions and filters.
 	 */
 	function __construct() {
 		add_action( 'admin_init', array( $this, 'annotation_settings_init' ) );
@@ -169,6 +177,9 @@ class Annotation_Plugin {
 	
 	/**
 	 * Adds the annotation plugin to the tinymce editor and localizes SETTINGS and CONSTANTS.
+	 * 
+	 * @param array $plugin_array
+	 * @return array $plugin_array Array of plugins containing the added plugin
 	 */
 	function add_annotate_plugin( $plugin_array ) {
 		// enqueue so that variables can be localized
@@ -204,7 +215,10 @@ class Annotation_Plugin {
 	}
 	
 	/**
-	 * Registers the 'Annotate' button in the tinymce editor
+	 * Registers the 'Annotate' button in the tinymce editor.
+	 * 
+	 * @param array $buttons
+	 * @return array $buttons Array of tinymce buttons with added 'Annotate' button
 	 */
 	function register_annotate_button( $buttons ) {
 		array_push( $buttons, 'separator', 'annotate' );
@@ -244,6 +258,9 @@ class Annotation_Plugin {
 	
 	/**
 	 * Validates and sanitizes the settings text input field.
+	 * 
+	 * @param array $input
+	 * @return array $input Sanitized input
 	 */
 	function validate_input( $input ) {
 		if ( isset( $input['skip'] ) ) {
@@ -361,16 +378,22 @@ class Annotation_Plugin {
 		
 	/**
 	 * Adds microdata tags to tinymce editor's valid elements.
+	 * 
+	 * @param array $init_array
+	 * @return array $init_array Array containing the added custom valid tags
 	 */
-	function override_mce_options( $initArray ) {
+	function override_mce_options( $init_array ) {
 		$options = 'link[itemprop|href],a[href|itemprop|itemscope|itemtype],span[itemprop|itemscope|itemtype],' 
 			. 'annotation[id|itemprop|itemscope|itemtype]';
-		$initArray['extended_valid_elements'] = $options;
-		return $initArray;
+		$init_array['extended_valid_elements'] = $options;
+		return $init_array;
 	}
 	
 	/**
 	 * Use 'annotations-template.php' for annotations page.
+	 * 
+	 * @param string $template
+	 * @return string $template Link to 'annotations-template.php' if on annotations page, else normal template
 	 */
 	function include_annotations_template( $template ) {
 		if ( is_page( 'Annotations' ) || $this->is_subpage( 'annotations' ) ) {
@@ -384,6 +407,9 @@ class Annotation_Plugin {
 	
 	/**
 	 * Checks if the current page is a subpage of the page with the provided slug.
+	 * 
+	 * @param string $slug Slug of the parent page to be checked against
+	 * @return boolean True if the current page is a subpage of the given page, false otherwise
 	 */
 	function is_subpage( $slug ) {
 		global $post;
@@ -404,6 +430,9 @@ class Annotation_Plugin {
 	
 	/**
 	 * Deletes all relations to annotations from a post.
+	 * 
+	 * @param int $post_id
+	 * @return int $post_id
 	 */
 	function delete_annotation_relations( $postid ) {
 		global $wpdb;
@@ -413,7 +442,7 @@ class Annotation_Plugin {
 	}
 	
 	/**
-	 * Echos an annotations page according to the query.
+	 * Displays an annotations page according to the query.
 	 */
 	public function get_annotations() {
 		// enqueue script and style for page
@@ -492,6 +521,9 @@ class Annotation_Plugin {
 	
 	/**
 	 * Creates annotation page containing all annotations.
+	 * 
+	 * @param array $annotations
+	 * @param string $url
 	 */
 	function get_general_annotation_page( $annotations, $url ) {
 		// set image source for small triangles
@@ -566,6 +598,8 @@ class Annotation_Plugin {
 	
 	/**
 	 * Creates the information page for a specific annotation.
+	 * 
+	 * @param array $annotations
 	 */
 	function get_specific_annotation_page( $annotations ) {
 		wp_enqueue_style( 'annotation-stylesheet', plugins_url( 'css/annotations.css', __FILE__ ) );
@@ -663,6 +697,8 @@ class Annotation_Plugin {
 	
 	/**
 	 * Creates edit annotation page for a specific name.
+	 * 
+	 * @param array $annotations
 	 */
 	function get_edit_annotation_page( $annotations ) {
 		wp_enqueue_style( 'annotation-stylesheet', plugins_url( 'css/annotations.css', __FILE__ ) );
@@ -806,6 +842,9 @@ class Annotation_Plugin {
 	
 	/**
 	 * Displays the results for an annotation search.
+	 * 
+	 * @param array $annotations
+	 * @param string $url
 	 */
 	function get_search_annotation_page( $annotations, $url ) {
 		// display title
@@ -833,6 +872,9 @@ class Annotation_Plugin {
 	
 	/**
 	 * Adds list of annotations to $content that is passed in.
+	 * 
+	 * @param string $content
+	 * @return string $content String containing content with an annotation list added at the end.
 	 */
 	function add_annotation_list( $content ) {
 		global $wpdb;

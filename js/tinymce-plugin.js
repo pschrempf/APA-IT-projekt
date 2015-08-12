@@ -68,7 +68,7 @@ jQuery( document ).ready( function( jQuery ){
 								var iframe_identifier = '#' + selection_form_id + ' iframe';
 								jQuery( iframe_identifier ).load( function() {
 									
-									// add information to table in 'selection_form.html' from results
+									// create table contents from elements in response
 									var table_contents = 
 										'<tr class="title">' + 
 											'<th class="input"><input type="checkbox" class="select-all"></th>' + 
@@ -80,12 +80,17 @@ jQuery( document ).ready( function( jQuery ){
 									response.concepts.forEach( function( element ) {
 										table_contents += generateRow( element );
 									});
+									
+									// add information to table in 'selection_form.html' from results
 									jQuery( iframe_identifier ).contents().find( 'table' ).append( table_contents );
+									
+									// add button to page
 									jQuery( iframe_identifier ).contents().find( 'table' ).after(
 										'<br>' + 
 										'<input id="button" class="custom_button" type="submit" value="' + CONSTANTS.button_text + '" form="target">'
 									);
 									
+									// add 'select all' functionality
 									jQuery( iframe_identifier ).contents().find( 'input[class=select-all]' ).click( function() {
 										var checkboxes = jQuery( iframe_identifier ).contents().find( 'input[name=checkbox]' );
 										for ( var i=0; i < checkboxes.length; i++ ) {
@@ -93,6 +98,7 @@ jQuery( document ).ready( function( jQuery ){
 										}
 									});
 									
+									// set cursor wheel for ajax request
 									jQuery( 'body' ).ajaxStart( function() {
 									    jQuery( this ).css({ 'cursor' : 'wait' });
 									}).ajaxStop( function() {
@@ -103,7 +109,7 @@ jQuery( document ).ready( function( jQuery ){
 									jQuery( iframe_identifier ).contents().find( 'form' ).submit( function( event ) {
 										var selection = [];
 										
-										// add selected annotations to selection
+										// add selected annotations to selection array
 										var checkboxes = jQuery( iframe_identifier ).contents().find( 'input[class=selector]' );
 										for ( var i = 0; i < checkboxes.length; i++ ) {
 											if ( checkboxes[i].checked ) {
@@ -146,8 +152,15 @@ jQuery( document ).ready( function( jQuery ){
 													return false;
 												}
 												
-												// get microdata to replace phrase with
-												var microdata = createAnnotation( element );
+												// get microdata to replace phrase with according to SETTINGS
+												var microdata;
+												if ( SETTINGS.add_links && SETTINGS.add_microdata ) {
+													microdata = createLinkMicrodataAnnotation( element );
+												} else if ( SETTINGS.add_links ) {
+													microdata = createLinkAnnotation( element );
+												} else if ( SETTINGS.add_microdata ) {
+													microdata = createMicrodataAnnotation( element );
+												}
 												
 												// replace all occurences of the phrase with annotation
 												content = content.replace(
@@ -181,18 +194,12 @@ jQuery( document ).ready( function( jQuery ){
 		});	
 	});
 	
-	function createAnnotation( element ) {
-		if ( SETTINGS.add_links && SETTINGS.add_microdata ) {
-			return createLinkMicrodataAnnotation( element );
-		} else if ( SETTINGS.add_links ) {
-			return createLinkAnnotation( element );
-		} else if ( SETTINGS.add_microdata ) {
-			return createMicrodataAnnotation( element );
-		}
-	}
-	
 	/**
 	 * Finds the phrase belonging to the concept.
+	 * 
+	 * @param {object} content 
+	 * @param {string} conceptToBeFound
+	 * @return {string} Phrase that was found or false if nothing was found
 	 */
 	function findPhraseInContent( content, conceptToBeFound ) {		
 		var phrase = false;
@@ -219,6 +226,9 @@ jQuery( document ).ready( function( jQuery ){
 
 	/**
 	 * Creates an annotation with a link to its annotation page.
+	 * 
+	 * @param {object} element The element to be annotated.
+	 * @return {string} The html to represent the annotation.
 	 */
 	function createLinkAnnotation( element ) {
 		var name = cleanName( element.concept );
@@ -231,6 +241,10 @@ jQuery( document ).ready( function( jQuery ){
 	
 	/**
 	 * Creates an annotation with 'schema.org' microdata and a link.
+	 * 
+	 * @param {object} element The element to be annotated.
+	 * @param {string} url 
+	 * @return {string} The html to represent the annotation.
 	 */
 	function createLinkMicrodataAnnotation( element, url ) {
 		var name = cleanName( element.concept );
@@ -245,6 +259,10 @@ jQuery( document ).ready( function( jQuery ){
 	
 	/**
 	 * Creates an annotation with 'schema.org' microdata only.
+	 * 
+	 * @param {object} element The element to be annotated.
+	 * @param {string} url 
+	 * @return {string} The html to represent the annotation.
 	 */
 	function createMicrodataAnnotation( element, url ) {
 		return '<annotation id="' + element.hash + '" itemscope itemtype="' + getSchema( element.type ) + '">'
@@ -255,6 +273,9 @@ jQuery( document ).ready( function( jQuery ){
 	
 	/**
 	 * Creates a 'schema.org' schema according to the element type.
+	 * 
+	 * @param {string} elementType The type of element that is to be matched.
+	 * @return {string} 'Schema.org' schema according to type.
 	 */
 	function getSchema( elementType ) {
 		var schema = 'http://schema.org/';
@@ -273,7 +294,10 @@ jQuery( document ).ready( function( jQuery ){
 	} 
 	
 	/**
-	 * Encodes part of a URL including parentheses.
+	 * Encodes part of a URL.
+	 * 
+	 * @param {string} url URL to be encoded.
+	 * @return {string} Encoded URL.
 	 */
 	function encode( url ) {
 		url = url.replace( / /g, '' );
@@ -282,7 +306,10 @@ jQuery( document ).ready( function( jQuery ){
 	}
 	
 	/**
-	 * Generates an individual table row depending on information
+	 * Generates an individual table row depending on information.
+	 * 
+	 * @param {object} element The element holding the necessary information for the table row.
+	 * @return {string} String representing the html for the table row.
 	 */
 	function generateRow( element ) {
 		var table_row = '<tr class="annotation">'
@@ -304,6 +331,9 @@ jQuery( document ).ready( function( jQuery ){
 	
 	/**
 	 * Removes unwanted annotations from response.
+	 * 
+	 * @param {object} response The server response to be cleaned.
+	 * @return {object} Cleaned response object.
 	 */
 	function cleanResponse( response ) {
 		var indices = [];
@@ -335,6 +365,9 @@ jQuery( document ).ready( function( jQuery ){
 	
 	/**
 	 * Reports various errors from post requests. 
+	 * 
+	 * @param {object} jqxhr
+	 * @param {string} exception
 	 */
 	function handle_request_error( jqxhr, exception ) {
 		if ( jqxhr.status === 0 ) {
@@ -356,6 +389,8 @@ jQuery( document ).ready( function( jQuery ){
 	
 	/**
 	 * Removes the language tag and underscores from the name of an annotation.
+	 * 
+	 * @param {string} name Name to be cleaned.
 	 */
 	function cleanName( name ) {
 		return name.substr( 4, name.length ).replace( new RegExp( '_', 'gi' ), ' ' );
@@ -363,6 +398,9 @@ jQuery( document ).ready( function( jQuery ){
 	
 	/**
 	 * Sends a POST request to the 'annotate-db.php' file to add an entry to the database.
+	 * 
+	 * @param {string} post_title
+	 * @param {object} element
 	 */
 	function addAnnotationToDB( post_title, element ) {
 		var data = {

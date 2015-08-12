@@ -63,6 +63,7 @@ jQuery(document).ready(function() {
 				}
 			}
 			
+			// set cursor wheel for ajax request
 			jQuery( 'body' ).ajaxStart( function() {
 			    jQuery( this ).css({ 'cursor': 'wait' });
 			}).ajaxStop( function() {

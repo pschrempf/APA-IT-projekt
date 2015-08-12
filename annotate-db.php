@@ -62,7 +62,39 @@ if ( $_POST['function'] === 'add' ) {
 		
 		$wpdb->insert( $annotation_rel_db, $relationship_data, array( '%s', '%d' ) );
 		
-		add_annotation_page( $name, $hash );
+		// check if the page for this annotation already exists in database
+		$results = $wpdb->query( $wpdb->prepare(
+			"
+			SELECT * 
+			FROM $wpdb->posts p 
+			WHERE p.post_type = 'page' 
+			AND p.post_excerpt = %s
+			"
+		, $hash ) );
+		
+		if ( empty( $results ) ) {
+			// find id of 'annotations' page for post_parent
+			$annotationPageID = $wpdb->get_col( 
+				"
+				SELECT p.ID 
+				FROM $wpdb->posts p 
+				WHERE p.post_type = 'page' 
+				AND p.post_name = 'annotations'
+				" 
+			)[0];
+			
+			// add annotation page to database
+			$annotation_page = array(
+				'post_name' => urlencode( $name ),
+				'post_title' => $name,
+				'post_content' => '',
+				'post_status' => 'publish',
+				'post_type' => 'page',
+				'post_excerpt' => $hash,
+				'post_parent' => $annotationPageID
+			);
+			wp_insert_post( $annotation_page );
+		}
 	}
 		
 // delete entry from database
@@ -108,40 +140,6 @@ if ( $_POST['function'] === 'add' ) {
 		
 		// delete annotation page
 		$wpdb->delete( $wpdb->posts, array( 'post_excerpt' => $hash, 'post_type' => 'page' ) );
-	}
-}
-
-function add_annotation_page( $name, $hash ) {
-	global $wpdb;
-	
-	$results = $wpdb->query( $wpdb->prepare(
-		"
-		SELECT * 
-		FROM $wpdb->posts p 
-		WHERE p.post_type = 'page' 
-		AND p.post_excerpt = %s
-		"
-	, $hash ) );
-	if ( empty( $results ) ) {
-		$annotationPageID = $wpdb->get_col( 
-			"
-			SELECT p.ID 
-			FROM $wpdb->posts p 
-			WHERE p.post_type = 'page' 
-			AND p.post_name = 'annotations'
-			" 
-		)[0];
-	
-		$annotation_page = array(
-			'post_name' => urlencode( $name ),
-			'post_title' => $name,
-			'post_content' => '',
-			'post_status' => 'publish',
-			'post_type' => 'page',
-			'post_excerpt' => $hash,
-			'post_parent' => $annotationPageID
-		);
-		wp_insert_post( $annotation_page );
 	}
 }
 
