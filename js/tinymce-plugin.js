@@ -128,9 +128,9 @@ jQuery( document ).ready( function( jQuery ){
 											element.hash = response.lang + '_' + element.hash;
 											
 											var img = '';
-											if ( typeof element.complogo !== 'undefined' ) {
+											if ( 'undefined' !== typeof element.complogo ) {
 												img = element.complogo;
-											} else if ( typeof element.thumbimg !== 'undefined' ) {
+											} else if ( 'undefined' !== typeof element.thumbimg ) {
 												img = element.thumbimg;
 											}
 																																
@@ -148,7 +148,7 @@ jQuery( document ).ready( function( jQuery ){
 											
 											if ( SETTINGS.add_links || SETTINGS.add_microdata ) {
 												element.phrase = findPhraseInContent( response.content, element.concept );
-												if ( element.phrase === false ) {
+												if ( false === element.phrase ) {
 													return false;
 												}
 												
@@ -280,11 +280,11 @@ jQuery( document ).ready( function( jQuery ){
 	function getSchema( elementType ) {
 		var schema = 'http://schema.org/';
 		
-		if ( elementType == 'location' ) {
+		if ( 'location' == elementType ) {
 			schema += 'Place';
-		} else if ( elementType == 'person' ) {
+		} else if ( 'person' == elementType ) {
 			schema += 'Person';
-		} else if ( elementType == 'organization' ) {
+		} else if ( 'organization' == elementType ) {
 			schema += 'Organization';
 		} else {
 			schema += 'Thing';
@@ -318,9 +318,9 @@ jQuery( document ).ready( function( jQuery ){
 			+ '\n\t<td>' + element.type + '</td>';
 		
 		// prefer company logos over thumbimages
-		if ( typeof element.complogo !== 'undefined' ) {
+		if ( 'undefined' !== typeof element.complogo ) {
 			table_row += '\n\t<td class="image"><img src="' + element.complogo + '" alt=""/></td>';
-		} else if ( typeof element.thumbimg !== 'undefined' ) {
+		} else if ( 'undefined' !== typeof element.thumbimg ) {
 			table_row += '\n\t<td class="image"><img src="' + element.thumbimg + '" alt=""/></td>';
 		} else {
 			table_row += '\n\t<td></td>';
@@ -344,7 +344,7 @@ jQuery( document ).ready( function( jQuery ){
 		}
 		
 		response.concepts.forEach( function( element ) {
-			if ( element.type == 'mailaddr' || element.type == 'date' || element.type == 'URL' ) {
+			if ( 'mailaddr' == element.type || 'date' == element.type || 'URL' == element.type ) {
 				indices[indices.length] = counter;
 			}
 			counter++;
@@ -357,7 +357,7 @@ jQuery( document ).ready( function( jQuery ){
 		}
 		
 		// check if there are no annotations left in array
-		if ( response.concepts.length == 0 ) {
+		if ( 0 == response.concepts.length ) {
 			delete response.concepts;
 		}
 		return response;
@@ -370,17 +370,17 @@ jQuery( document ).ready( function( jQuery ){
 	 * @param {string} exception
 	 */
 	function handle_request_error( jqxhr, exception ) {
-		if ( jqxhr.status === 0 ) {
+		if ( 0 === jqxhr.status ) {
 			alert( 'Not connected.\nVerify Network.' );
-		} else if ( jqxhr.status == 404 ) {
+		} else if ( 404 == jqxhr.status ) {
 			alert( 'Requested page not found.' );
-		} else if ( jqxhr.status == 500 ) {
+		} else if ( 500 == jqxhr.status ) {
 			alert( 'Internal Server Error.' );
-		} else if ( exception === 'parsererror' ) {
+		} else if ( 'parsererror' === exception ) {
 			alert( 'Requested JSON parse failed.' );
-		} else if ( exception === 'timeout' ) {
+		} else if ( 'timeout' === exception ) {
 			alert( 'Time out error.' );
-		} else if ( exception === 'abort' ) {
+		} else if ( 'abort' === exception ) {
 			alert( 'Ajax request aborted.' );
 		} else {
 			alert( 'Uncaught Error.\n' + jqxhr.responseText );

@@ -13,12 +13,12 @@ jQuery(document).ready(function() {
 		var val;
 		
 		// if enter was pressed get search value
-		if ( e.keyCode == 13 && '' != ( val = jQuery( '#search' ).val() ) ) {
+		if ( 13 == e.keyCode && '' != ( val = jQuery( '#search' ).val() ) ) {
 			var attribute_tag = 'search=';
 			val = encodeURIComponent( val ).replace( /'/g, '%27' );
 			
 			// redirect to the correct page
-			if ( window.location.search == '' ) {
+			if ( '' == window.location.search ) {
 				window.location.search = '?' + attribute_tag + val;
 			} else if ( window.location.search.includes( attribute_tag ) ) {
 				var url_parts = window.location.search.split( attribute_tag );
@@ -40,7 +40,7 @@ jQuery(document).ready(function() {
 		var checkboxes = jQuery( 'input[class=anno]:checked' );
 		
 		// make sure at least one checkbox is selected
-		if ( checkboxes.length == 0 ) {
+		if ( 0 == checkboxes.length ) {
 			alert( CONSTANTS.delete_error );
 		} 
 		// else check that the user would really like to delete

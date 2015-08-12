@@ -364,7 +364,7 @@ class Annotation_Plugin {
 								if ( isset ( $options['skip'] ) ) { 
 									echo $options['skip']; 
 								}
-		echo			'">';
+		echo			'"> ';
 						_e( '(multiple entries should be separated by "|")', 'annotation-plugin' );						
 		echo		'</td>' . 
 				'</tr>' . 
@@ -393,7 +393,7 @@ class Annotation_Plugin {
 	 * Use 'annotations-template.php' for annotations page.
 	 * 
 	 * @param string $template
-	 * @return string $template Link to 'annotations-template.php' if on annotations page, else normal template
+	 * @return string Link to 'annotations-template.php' if on annotations page, else normal template
 	 */
 	function include_annotations_template( $template ) {
 		if ( is_page( 'Annotations' ) || $this->is_subpage( 'annotations' ) ) {
@@ -409,7 +409,7 @@ class Annotation_Plugin {
 	 * Checks if the current page is a subpage of the page with the provided slug.
 	 * 
 	 * @param string $slug Slug of the parent page to be checked against
-	 * @return boolean True if the current page is a subpage of the given page, false otherwise
+	 * @return bool True if the current page is a subpage of the given page, false otherwise
 	 */
 	function is_subpage( $slug ) {
 		global $post;
@@ -431,7 +431,7 @@ class Annotation_Plugin {
 	/**
 	 * Deletes all relations to annotations from a post.
 	 * 
-	 * @param int $post_id
+	 * @param int $post_id ID of the post to delete the relations of.
 	 * @return int $post_id
 	 */
 	function delete_annotation_relations( $postid ) {
@@ -492,7 +492,7 @@ class Annotation_Plugin {
 		}
 		
 		// display page
-		if ( is_page( 'annotations' ) || ( isset( $_GET['page'] ) && $_GET['page'] == 'annotations' ) ) {
+		if ( is_page( 'annotations' ) || ( isset( $_GET['page'] ) && 'annotations' == $_GET['page'] ) ) {
 			echo '<input type="text" id="search" placeholder="' . __( 'Search', 'annotation-plugin' ) . '">';
 		}
 		
@@ -574,7 +574,7 @@ class Annotation_Plugin {
 				if ( is_page( 'annotations' ) ) { 
 					echo get_site_url() . '/annotations/' . urlencode( $result->name ); 
 				} else {
-					echo $url . 'edit=' . urlencode( $result->name );
+					echo $url . 'edit=' . urlencode( $result->id );
 				}
 			echo 	'">' . 
 						'<strong>' . stripslashes( $result->name ) . '</strong>' . 
@@ -614,11 +614,11 @@ class Annotation_Plugin {
 		
 		// add microdata for annotation
 		$schema;
-		if ( $annotation->type == 'location' ) {
+		if ( 'location' == $annotation->type ) {
 			$schema = 'http://schema.org/Place';
-		} else if ( $annotation->type == 'person' ) {
+		} else if ( 'person' == $annotation->type ) {
 			$schema = 'http://schema.org/Person';
-		} else if ( $annotation->type == 'organization' ) {
+		} else if ( 'organization' == $annotation->type ) {
 			$schema = 'http://schema.org/Organization';
 		} else {
 			$schema = 'http://schema.org/Thing';
@@ -635,7 +635,7 @@ class Annotation_Plugin {
 		
 		if ( current_user_can( 'edit_posts' ) ) {
 			echo ' (<a href="' . get_site_url() . '/wp-admin/admin.php?page=annotations&edit=' 
-				. urlencode( $annotation->name ) . '">Edit</a>)';
+				. urlencode( $annotation->id ) . '">Edit</a>)';
 		}
 		
 		// display image if available
@@ -668,14 +668,18 @@ class Annotation_Plugin {
 			"
 		, $annotation->id ) );
 		
+		if ( empty( $relations ) ) {
+			_e( 'No posts found with this annotation.', 'annotation-plugin' );
+		}
+		
 		// get information from each relation
 		foreach ( $relations as $result ) {
 			$guid = '';
 			
 			// deal with database errors
-			if ( $result->post_id == -1 ) {
+			if ( -1 == $result->post_id ) {
 				$post_title = '<p class="error">[' . __('Post does not exist', 'annotation-plugin' ) . ']</p>';
-			} else if ( $result->post_id == 0 ) {
+			} else if ( 0 == $result->post_id ) {
 				$post_title = '<p class="error">[' . __( 'Error when reading from database', 'annotation-plugin' ) 
 					. ']</p>';
 			} else {
@@ -709,7 +713,7 @@ class Annotation_Plugin {
 		}
 		
 		foreach ( $annotations as $result ) {
-			if ( urldecode( $_GET['edit'] ) === $result->name ) {
+			if ( urldecode( $_GET['edit'] ) === $result->id ) {
 				$annotation = $result;
 			}
 		}
@@ -739,104 +743,108 @@ class Annotation_Plugin {
 				echo '<div class="updated"><p>' . __( 'Saved annotation', 'annotation-plugin' ) . '</p></div><br>';
 			}
 		
-		
-		echo '<h2>' . stripslashes( $annotation->name )  . '</h2><br><br>';
-		
-		if ( '' !== $annotation->image ) {
-			echo '<img src="' . $annotation->image . '" alt="' 
-				. __( 'No picture available', 'annotation-plugin' ) . '" class="anno_img">';
-		}
-		
-		// display edit form
-		echo '<form id="save" action="' . $_SERVER['REQUEST_URI'] . '&save=true" method ="post">';
-		echo '<table class="annotation-details">';
-		
-		// type
-		echo '<tr>' . 
-				'<td>' . __( 'Type', 'annotation-plugin' ) . '</td>' . 
-				'<td><input type="text" name="type" placeholder="' . __( 'Please add a type', 'annotation-plugin' ) . 
-					'" value="' . $annotation->type . '"></td>' .
-			'</tr>';
-		
-		// URL
-		echo '<tr>' .
-				'<td>' . __( 'URL', 'annotation-plugin' ) . '</td>' .
-				'<td><input type="url" size="100" name="url" placeholder="' . __( 'Please add a URL', 'annotation-plugin' ) . 
-					'" value="' . $annotation->url . '"></td>' . 
-			'</tr>';
-		
-		// image URL
-		echo '<tr>' . 
-				'<td>' . __( 'Image URL', 'annotation-plugin' ) . '</td>' . 
-				'<td><input type="url" size="100" name="image_url" 
-					placeholder="' . __( 'Please add an image URL', 'annotation-plugin' ) . '"  
-					value="' . $annotation->image . '"></td>' . 
-			'</tr><tr></tr>';
-		
-		// description
-		echo '<tr>' . 
-				'<td style="vertical-align: middle">' . __( 'Description', 'annotation-plugin' ) . '</td>' . 
-				'<td><textarea type="text" form="save" name="description" wrap="hard" rows="10" cols="100" 
-					placeholder="' . __( 'Please add a description', 'annotation-plugin' ) . '">' .  
-						$annotation->description . '</textarea></td>' . 
-			'</tr>';
-		
-		// display list of posts
-		echo '<tr>' .
-				'<td>' . __( 'Posts', 'annotation-plugin' ) . '</td>' . 
-				'<td><ul class="inner-list annotation-details">';
-				
-		global $wpdb;
-		global $annotation_rel_db;
-		$relations = $wpdb->get_results( $wpdb->prepare( 
-			"
-			SELECT post_id 
-			FROM $annotation_rel_db 
-			WHERE anno_id = %s
-			"
-		, $annotation->id ) );
-		
-		// add 'li' for each annotation
-		foreach ( $relations as $result ) {
-			$guid = '';
+			// display heading and image (if available)
+			echo '<h2>' . stripslashes( $annotation->name )  . '</h2><br><br>';
 			
-			// deal with database errors
-			if ( $result->post_id == -1 ) {
-				$post_title = '<p class="error">[' . __('Post does not exist', 'annotation-plugin' ) . ']</p>';
-			} else if ( $result->post_id == 0 ) {
-				$post_title = '<p class="error">[' . __( 'Error when reading from database', 'annotation-plugin' ) 
-					. ']</p>';
-			} else {
-				$post = get_post( $result->post_id );
-				$post_title = $post->post_title;
-				$guid = $post->guid;
+			if ( '' !== $annotation->image ) {
+				echo '<img src="' . $annotation->image . '" alt="' 
+					. __( 'No picture available', 'annotation-plugin' ) . '" class="anno_img">';
 			}
 			
-			echo '<li><a href="' . $guid . '">' . $post_title . '</a></li>'; 
+			// display edit form
+			echo '<form id="save" action="' . $_SERVER['REQUEST_URI'] . '&save=true" method ="post">';
+			echo '<table class="annotation-details">';
 			
-		}
-		
-		echo 	'</ul></td>' . 
-			'</tr>' . 
-		'</table>';
-		echo '<br>';
-		
-		// hidden input needed for form submission
-		echo '<input hidden type="text" name="back" value="' . $_SERVER['REQUEST_URI'] . '">';
-		echo '<input hidden type="text" name="id" value="' . $annotation->id . '">';
-		
-		// save button
-		echo '<input class="custom_button" type="submit" value="' . __( 'Save', 'annotation-plugin' ) . '" form="save">';
-		
-		echo '</form><br>';
-		
-		// show option to delete annotation
-		echo '<form action="' . $_SERVER['REQUEST_URI'] . '">';
-		echo '<input hidden type="text" name="page" value="annotations">';
-		echo '<input type="checkbox" class="anno" value="' . $annotation->id . '" required="required">' 
-			. __( 'Delete this annotation.', 'annotation-plugin' ) . '<br><br>';
-		echo '<button id="delete" class="custom_button">' .  __( 'Delete', 'annotation-plugin' ) . '</button>';
-		echo '</form>';
+			// type
+			echo '<tr>' . 
+					'<td>' . __( 'Type', 'annotation-plugin' ) . '</td>' . 
+					'<td><input type="text" name="type" placeholder="' . __( 'Please add a type', 'annotation-plugin' ) . 
+						'" value="' . $annotation->type . '"></td>' .
+				'</tr>';
+			
+			// URL
+			echo '<tr>' .
+					'<td>' . __( 'URL', 'annotation-plugin' ) . '</td>' .
+					'<td><input type="url" size="100" name="url" placeholder="' . __( 'Please add a URL', 'annotation-plugin' ) . 
+						'" value="' . $annotation->url . '"></td>' . 
+				'</tr>';
+			
+			// image URL
+			echo '<tr>' . 
+					'<td>' . __( 'Image URL', 'annotation-plugin' ) . '</td>' . 
+					'<td><input type="url" size="100" name="image_url" 
+						placeholder="' . __( 'Please add an image URL', 'annotation-plugin' ) . '"  
+						value="' . $annotation->image . '"></td>' . 
+				'</tr><tr></tr>';
+			
+			// description
+			echo '<tr>' . 
+					'<td style="vertical-align: middle">' . __( 'Description', 'annotation-plugin' ) . '</td>' . 
+					'<td><textarea type="text" form="save" name="description" wrap="hard" rows="10" cols="100" 
+						placeholder="' . __( 'Please add a description', 'annotation-plugin' ) . '">' .  
+							$annotation->description . '</textarea></td>' . 
+				'</tr>';
+			
+			// display list of posts
+			echo '<tr>' .
+					'<td>' . __( 'Posts', 'annotation-plugin' ) . '</td>' . 
+					'<td><ul class="inner-list annotation-details">';
+					
+			global $wpdb;
+			global $annotation_rel_db;
+			$relations = $wpdb->get_results( $wpdb->prepare( 
+				"
+				SELECT post_id 
+				FROM $annotation_rel_db 
+				WHERE anno_id = %s
+				"
+			, $annotation->id ) );
+			
+			if ( empty( $relations ) ) {
+				_e( 'No posts found with this annotation.', 'annotation-plugin' );
+			}
+			
+			// add 'li' for each annotation
+			foreach ( $relations as $result ) {
+				$guid = '';
+				
+				// deal with database errors
+				if ( -1 == $result->post_id ) {
+					$post_title = '<p class="error">[' . __('Post does not exist', 'annotation-plugin' ) . ']</p>';
+				} else if ( 0 == $result->post_id ) {
+					$post_title = '<p class="error">[' . __( 'Error when reading from database', 'annotation-plugin' ) 
+						. ']</p>';
+				} else {
+					$post = get_post( $result->post_id );
+					$post_title = $post->post_title;
+					$guid = $post->guid;
+				}
+				
+				echo '<li><a href="' . $guid . '">' . $post_title . '</a></li>'; 
+				
+			}
+			
+			echo 	'</ul></td>' . 
+				'</tr>' . 
+			'</table>';
+			echo '<br>';
+			
+			// hidden input needed for form submission
+			echo '<input hidden type="text" name="back" value="' . $_SERVER['REQUEST_URI'] . '">';
+			echo '<input hidden type="text" name="id" value="' . $annotation->id . '">';
+			
+			// save button
+			echo '<input class="custom_button" type="submit" value="' . __( 'Save', 'annotation-plugin' ) . '" form="save">';
+			
+			echo '</form><br>';
+			
+			// show option to delete annotation
+			echo '<form action="' . $_SERVER['REQUEST_URI'] . '">';
+			echo '<input hidden type="text" name="page" value="annotations">';
+			echo '<input type="checkbox" class="anno" value="' . $annotation->id . '" required="required">' 
+				. __( 'Delete this annotation.', 'annotation-plugin' ) . '<br><br>';
+			echo '<button id="delete" class="custom_button">' .  __( 'Delete', 'annotation-plugin' ) . '</button>';
+			echo '</form>';
 		}
 	}
 	
@@ -860,7 +868,7 @@ class Annotation_Plugin {
 					if ( is_page( 'annotations' ) ) { 
 						echo get_site_url() . '/annotations/' . urlencode( $annotation->name ); 
 					} else {
-						echo $url . 'edit=' . urlencode( $annotation->name );
+						echo $url . 'edit=' . urlencode( $annotation->id );
 					} 
 				echo '">' . $annotation->name . '</a></li>'; 				
 			}

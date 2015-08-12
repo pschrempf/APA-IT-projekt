@@ -13,7 +13,7 @@ global $annotation_rel_db;
 $posts = $wpdb->posts;
 
 // add entry to database
-if ( $_POST['function'] === 'add' ) {
+if ( 'add' === $_POST['function'] ) {
 	$elements = $_POST['elements'];
 	foreach ( $elements as $element ) {
 		$hash = $element['hash'];
@@ -98,7 +98,7 @@ if ( $_POST['function'] === 'add' ) {
 	}
 		
 // delete entry from database
-} else if ( $_POST['function'] === 'delete' ) {
+} else if ( 'delete' === $_POST['function'] ) {
 	$elements = $_POST['elements'];
 	
 	foreach ( $elements as $element ) {
