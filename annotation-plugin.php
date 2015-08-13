@@ -32,7 +32,9 @@ class Annotation_Plugin {
 	
 		add_action( 'admin_menu', array( $this, 'add_pages' ) );
 
-		register_activation_hook( __FILE__, array( $this, 'install' ) );
+		register_activation_hook( __FILE__, array( $this, 'activate' ) );
+		
+		register_deactivation_hook( __FILE__, array( $this, 'deactivate') );
 
 		add_action( 'init', array( $this, 'plugin_init' ) );
 		
@@ -48,11 +50,12 @@ class Annotation_Plugin {
 	}
 	
 	/**
-	 * Complete all necessary installation tasks on plugin activation.
+	 * Complete all necessary activation tasks on plugin activation.
 	 */
-	function install() {
+	function activate() {
 		$this->create_plugin_database();
 		$this->add_main_annotations_page();
+		$this->add_other_annotation_pages();
 	}
 
 	/**
@@ -116,6 +119,81 @@ class Annotation_Plugin {
 			);
 			wp_insert_post( $page );
 		}
+	}
+	
+	/**
+	 * Creates all annotation pages for annotations in database.
+	 */
+	function add_other_annotation_pages() {
+		global $wpdb;
+		global $annotation_db;
+		
+		// get all annotations
+		$annotations = $wpdb->get_results(
+			"
+			SELECT * 
+			FROM $annotation_db a
+			"
+		);
+		
+		// find id of 'annotations' page for post_parent
+		$annotationPageID = $wpdb->get_col( 
+			"
+			SELECT p.ID 
+			FROM $wpdb->posts p 
+			WHERE p.post_type = 'page' 
+			AND p.post_name = 'annotations'
+			" 
+		)[0];
+		
+		foreach ( $annotations as $annotation ) {	
+			$results = $wpdb->query( $wpdb->prepare(
+				"
+				SELECT * 
+				FROM $wpdb->posts p 
+				WHERE p.post_type = 'page' 
+				AND p.post_excerpt = %s
+				"
+			, $annotation->id ) );
+			
+			if ( empty( $results ) ) {	
+				// add annotation page to database
+				$annotation_page = array(
+					'post_name' => urlencode( $annotation->name ),
+					'post_title' => $annotation->name,
+					'post_content' => '',
+					'post_status' => 'publish',
+					'post_type' => 'page',
+					'post_excerpt' => $annotation->id,
+					'post_parent' => $annotationPageID
+				);
+				wp_insert_post( $annotation_page );
+			}
+		}
+	}
+	
+	/**
+	 * Deletes all pages belonging to annotations
+	 */
+	function deactivate() {
+		global $wpdb;
+		global $annotation_db;
+		
+		// get all annotations
+		$annotations = $wpdb->get_results(
+			"
+			SELECT * 
+			FROM $annotation_db a
+			"
+		);
+		
+		// delete all specific annotation pages
+		foreach ( $annotations as $annotation ) {
+			$wpdb->delete( $wpdb->posts, array( 'post_excerpt' => $annotation->id ) );
+		}
+		
+		// delete 'annotations' page
+		$wpdb->delete( $wpdb->posts, array( 'post_name' => 'annotations' ) );
 	}
 
 	/**
