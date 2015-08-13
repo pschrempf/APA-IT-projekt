@@ -4,7 +4,7 @@ Plugin Name: Annotation Plugin
 Plugin URI: http://www.apa-it.at
 Description: Annotations service
 Author: Patrick Schrempf
-Version: Alpha
+Version: Alpha 2.0
 Text Domain: annotation-plugin
 Domain Path: languages/
 */
@@ -61,7 +61,7 @@ class Annotation_Plugin {
 	}
 
 	/**
-	 * Creates the necessary MYSQL databases for the plugin annotations.
+	 * Creates the necessary MySQL databases for the plugin annotations.
 	 */
 	function create_plugin_database() {
 		global $wpdb;
