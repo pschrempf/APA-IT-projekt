@@ -217,7 +217,7 @@ class Annotation_Plugin {
 		wp_enqueue_script( 'jquery' );
 
 		$this->init_global_variables();
-		$this->init_annotation_service();
+		$this->init_annotation_service();		
 	}
 	
 	/**
@@ -290,7 +290,6 @@ class Annotation_Plugin {
 				'add_links' => isset( $options['add_links'] ) ? true : false,				
 				'lang' => $options['lang'],
 				'skip' => $options['skip'],
-				'nonce' => wp_create_nonce( 'add' ),
 			) 
 		);
 		
@@ -301,6 +300,8 @@ class Annotation_Plugin {
 			'CONSTANTS',
 			$plugin_constants
 		);
+		
+		wp_localize_script( 'tinymce', 'SECURITY', array( 'nonce' => wp_create_nonce( 'add' ) ) );
 		
 		// add annotation plugin to plugin array
 		$plugin_array['annotate'] = plugins_url( 'js/tinymce-plugin.js', __FILE__ );		
@@ -545,7 +546,7 @@ class Annotation_Plugin {
 		// localize CONSTANTS
 		global $plugin_constants;
 		wp_localize_script( 'annotation-script', 'CONSTANTS', $plugin_constants );
-		wp_localize_script( 'annotation-script', 'SETTINGS', array( 'nonce' => wp_create_nonce( 'delete' ) ) );
+		wp_localize_script( 'annotation-script', 'SECURITY', array( 'nonce' => wp_create_nonce( 'delete' ) ) );	
 		
 		$allowed_orders = array(
 			'name' => 'a.name',

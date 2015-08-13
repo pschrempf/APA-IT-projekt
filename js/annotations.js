@@ -48,7 +48,7 @@ jQuery(document).ready(function() {
 			checkboxes = jQuery( 'input[class=anno]' );
 			var data = {
 				'function': 'delete',
-				'nonce': SETTINGS.nonce,
+				'_ajax_nonce': SECURITY.nonce,
 				'elements': []
 			};
 			

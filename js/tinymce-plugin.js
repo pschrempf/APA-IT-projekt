@@ -119,7 +119,7 @@ jQuery( document ).ready( function( jQuery ){
 										
 										var data = {
 											'function': 'add',
-											'nonce': SETTINGS.nonce,
+											'_ajax_nonce': SECURITY.nonce,
 											'elements': []
 										};
 										

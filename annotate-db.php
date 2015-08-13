@@ -14,8 +14,8 @@ $posts = $wpdb->posts;
 
 // add entry to database
 if ( 'add' === $_POST['function'] ) {
-	//check_ajax_referer( 'add' );
-	wp_verify_nonce( $_POST['nonce'], 'add' );
+	check_ajax_referer( 'add' );
+	
 	$elements = $_POST['elements'];
 	foreach ( $elements as $element ) {
 		$hash = $element['hash'];
@@ -101,8 +101,8 @@ if ( 'add' === $_POST['function'] ) {
 		
 // delete entry from database
 } else if ( 'delete' === $_POST['function'] ) {
-	//check_ajax_referer( 'delete' );
-	wp_verify_nonce( $_POST['nonce'], 'delete' );
+	check_ajax_referer( 'delete' );
+	
 	$elements = $_POST['elements'];
 	foreach ( $elements as $element ) {
 		$hash = $element['hash'];
