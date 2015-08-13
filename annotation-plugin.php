@@ -31,6 +31,8 @@ class Annotation_Plugin {
 		register_activation_hook( __FILE__, array( $this, 'activate' ) );
 		
 		register_deactivation_hook( __FILE__, array( $this, 'deactivate') );
+		
+		register_uninstall_hook( __FILE__, array( $this, 'uninstall' ) );
 
 		add_action( 'admin_init', array( $this, 'annotation_settings_init' ) );
 
@@ -194,6 +196,18 @@ class Annotation_Plugin {
 		
 		// delete 'annotations' page
 		$wpdb->delete( $wpdb->posts, array( 'post_name' => 'annotations' ) );
+	}
+	
+	/**
+	 * Clean up databases when plugin is uninstalled.
+	 */
+	function uninstall() {
+		global $wpdb;
+		global $annotation_db;
+		global $annotation_rel_db;
+		
+		$wpdb->query( "DROP TABLE IF EXISTS $annotation_db" );
+		$wpdb->query( "DROP TABLE IF EXISTS $annotation_rel_db" );		
 	}
 
 	/**
