@@ -100,15 +100,15 @@ class Annotation_Plugin {
 	function add_main_annotations_page() {
 		global $wpdb;
 		
-		$results = $wpdb->query(
+		$results_num = $wpdb->get_var(
 			"
-			SELECT * 
+			SELECT COUNT(*) 
 			FROM $wpdb->posts p 
 			WHERE p.post_type = 'page' 
 			AND p.post_name = 'annotations'
 			"
 		);
-		if ( empty( $results ) ) {
+		if ( 0 == $results_num ) {
 			$page = array(
 				'post_name' => 'annotations',
 				'post_title' => __( 'Annotations', 'annotation-plugin'),
@@ -131,7 +131,7 @@ class Annotation_Plugin {
 		// get all annotations
 		$annotations = $wpdb->get_results(
 			"
-			SELECT * 
+			SELECT a.name, a.id 
 			FROM $annotation_db a
 			"
 		);
@@ -147,16 +147,16 @@ class Annotation_Plugin {
 		)[0];
 		
 		foreach ( $annotations as $annotation ) {	
-			$results = $wpdb->query( $wpdb->prepare(
+			$results_num = $wpdb->get_var( $wpdb->prepare(
 				"
-				SELECT * 
+				SELECT COUNT(*) 
 				FROM $wpdb->posts p 
 				WHERE p.post_type = 'page' 
 				AND p.post_excerpt = %s
 				"
 			, $annotation->id ) );
 			
-			if ( empty( $results ) ) {	
+			if ( 0 == $results_num ) {	
 				// add annotation page to database
 				$annotation_page = array(
 					'post_name' => urlencode( $annotation->name ),
@@ -182,7 +182,7 @@ class Annotation_Plugin {
 		// get all annotations
 		$annotations = $wpdb->get_results(
 			"
-			SELECT * 
+			SELECT a.id 
 			FROM $annotation_db a
 			"
 		);
@@ -275,7 +275,8 @@ class Annotation_Plugin {
 				'add_microdata' => isset( $options['add_microdata'] ) ? true : false,
 				'add_links' => isset( $options['add_links'] ) ? true : false,				
 				'lang' => $options['lang'],
-				'skip' => $options['skip']
+				'skip' => $options['skip'],
+				'nonce' => wp_create_nonce( 'add' ),
 			) 
 		);
 		
@@ -530,6 +531,7 @@ class Annotation_Plugin {
 		// localize CONSTANTS
 		global $plugin_constants;
 		wp_localize_script( 'annotation-script', 'CONSTANTS', $plugin_constants );
+		wp_localize_script( 'annotation-script', 'SETTINGS', array( 'nonce' => wp_create_nonce( 'delete' ) ) );
 		
 		$allowed_orders = array(
 			'name' => 'a.name',
@@ -857,7 +859,7 @@ class Annotation_Plugin {
 			
 			// [description]
 			echo '<tr>' . 
-					'<td style="vertical-align: middle">' . __( 'Description', 'annotation-plugin' ) . '</td>' . 
+					'<td class="valign-middle">' . __( 'Description', 'annotation-plugin' ) . '</td>' . 
 					'<td><textarea type="text" form="save" name="description" wrap="hard" rows="10" cols="100" 
 						placeholder="' . __( 'Please add a description', 'annotation-plugin' ) . '">' .  
 							$annotation->description . '</textarea></td>' . 
@@ -974,7 +976,7 @@ class Annotation_Plugin {
 			// get all annotations that fit to the current post_id
 			$annotations = $wpdb->get_results( $wpdb->prepare(
 				"
-				SELECT * 
+				SELECT a.name 
 				FROM $annotation_db a
 				INNER JOIN $annotation_rel_db r 
 				ON a.id = r.anno_id

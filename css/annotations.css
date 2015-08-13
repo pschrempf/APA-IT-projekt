@@ -95,6 +95,10 @@ img.anno_img {
 	text-align:			center;
 }
 
+.valign-middle {
+	vertical-align: 	middle;
+}
+
 #search {
 	height:				20px;
 	font-size:			15px;

@@ -14,6 +14,8 @@ $posts = $wpdb->posts;
 
 // add entry to database
 if ( 'add' === $_POST['function'] ) {
+	//check_ajax_referer( 'add' );
+	wp_verify_nonce( $_POST['nonce'], 'add' );
 	$elements = $_POST['elements'];
 	foreach ( $elements as $element ) {
 		$hash = $element['hash'];
@@ -63,16 +65,16 @@ if ( 'add' === $_POST['function'] ) {
 		$wpdb->insert( $annotation_rel_db, $relationship_data, array( '%s', '%d' ) );
 		
 		// check if the page for this annotation already exists in database
-		$results = $wpdb->query( $wpdb->prepare(
+		$results_num = $wpdb->get_var( $wpdb->prepare(
 			"
-			SELECT * 
+			SELECT COUNT(*) 
 			FROM $wpdb->posts p 
 			WHERE p.post_type = 'page' 
 			AND p.post_excerpt = %s
 			"
 		, $hash ) );
 		
-		if ( empty( $results ) ) {
+		if ( 0 == $results_num ) {
 			// find id of 'annotations' page for post_parent
 			$annotationPageID = $wpdb->get_col( 
 				"
@@ -99,8 +101,9 @@ if ( 'add' === $_POST['function'] ) {
 		
 // delete entry from database
 } else if ( 'delete' === $_POST['function'] ) {
+	//check_ajax_referer( 'delete' );
+	wp_verify_nonce( $_POST['nonce'], 'delete' );
 	$elements = $_POST['elements'];
-	
 	foreach ( $elements as $element ) {
 		$hash = $element['hash'];
 		

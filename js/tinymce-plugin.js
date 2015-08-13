@@ -119,6 +119,7 @@ jQuery( document ).ready( function( jQuery ){
 										
 										var data = {
 											'function': 'add',
+											'nonce': SETTINGS.nonce,
 											'elements': []
 										};
 										
@@ -394,26 +395,5 @@ jQuery( document ).ready( function( jQuery ){
 	 */
 	function cleanName( name ) {
 		return name.substr( 4, name.length ).replace( new RegExp( '_', 'gi' ), ' ' );
-	}
-	
-	/**
-	 * Sends a POST request to the 'annotate-db.php' file to add an entry to the database.
-	 * 
-	 * @param {string} post_title
-	 * @param {object} element
-	 */
-	function addAnnotationToDB( post_title, element ) {
-		var data = {
-			'function': 'add',
-			'name': cleanName( element.concept ),
-			'title': post_title,
-			'type': element.type
-		};
-		jQuery.ajax({
-			type: 'POST',
-			url: CONSTANTS.annotate_db,
-			data: data,
-			datatype: JSON
-		});
 	}
 });
