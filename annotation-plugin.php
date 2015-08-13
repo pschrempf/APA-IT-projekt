@@ -9,7 +9,7 @@ Text Domain: annotation-plugin
 Domain Path: languages/
 */
 
-defined( 'ABSPATH' ) or wp_die( __( 'Plugin cannot be accessed correctly!', 'annotation-plugin' ) );
+defined( 'ABSPATH' ) or die( 'Plugin cannot be accessed correctly!' );
 define( 'WPLANG', '' );
 
 /**
@@ -28,13 +28,13 @@ class Annotation_Plugin {
 	 * Adds and registers various hooks, actions and filters.
 	 */
 	function __construct() {
-		add_action( 'admin_init', array( $this, 'annotation_settings_init' ) );
-	
-		add_action( 'admin_menu', array( $this, 'add_pages' ) );
-
 		register_activation_hook( __FILE__, array( $this, 'activate' ) );
 		
 		register_deactivation_hook( __FILE__, array( $this, 'deactivate') );
+
+		add_action( 'admin_init', array( $this, 'annotation_settings_init' ) );
+
+		add_action( 'admin_menu', array( $this, 'add_pages' ) );
 
 		add_action( 'init', array( $this, 'plugin_init' ) );
 		
@@ -50,7 +50,7 @@ class Annotation_Plugin {
 	}
 	
 	/**
-	 * Complete all necessary activation tasks on plugin activation.
+	 * Complete all necessary tasks on plugin activation.
 	 */
 	function activate() {
 		$this->create_plugin_database();
@@ -173,7 +173,7 @@ class Annotation_Plugin {
 	}
 	
 	/**
-	 * Deletes all pages belonging to annotations
+	 * Deletes all pages belonging to annotations on deactivation.
 	 */
 	function deactivate() {
 		global $wpdb;
@@ -346,6 +346,71 @@ class Annotation_Plugin {
 		}
 		return $input;
 	}
+		
+	/**
+	 * Adds microdata tags to tinymce editor's valid elements.
+	 * 
+	 * @param array $init_array
+	 * @return array $init_array Array containing the added custom valid tags
+	 */
+	function override_mce_options( $init_array ) {
+		$options = 'link[itemprop|href],a[href|itemprop|itemscope|itemtype],span[itemprop|itemscope|itemtype],' 
+			. 'annotation[id|itemprop|itemscope|itemtype]';
+		$init_array['extended_valid_elements'] = $options;
+		return $init_array;
+	}
+	
+	/**
+	 * Use 'annotations-template.php' for annotations page.
+	 * 
+	 * @param string $template
+	 * @return string Link to 'annotations-template.php' if on annotations page, else normal template
+	 */
+	function include_annotations_template( $template ) {
+		if ( is_page( 'Annotations' ) || $this->is_subpage( 'annotations' ) ) {
+			$annotations_template = plugin_dir_path( __FILE__ ) . 'templates/annotations-template.php' ;
+			if ( '' != $annotations_template ) {
+				$template = $annotations_template;
+			}
+		}
+		return $template;		
+	}
+	
+	/**
+	 * Checks if the current page is a subpage of the page with the provided slug.
+	 * 
+	 * @param string $slug Slug of the parent page to be checked against
+	 * @return bool True if the current page is a subpage of the given page, false otherwise
+	 */
+	function is_subpage( $slug ) {
+		global $post;
+		
+		if ( isset( $post ) ) {
+			$page = get_page_by_path( $slug );
+			$anc = get_post_ancestors( $post->ID );
+			
+			foreach ( $anc as $ancestor ) {
+				if ( is_page() && $ancestor == $page->ID ) {
+					return true;
+				}
+			}
+		}
+		
+		return false;  // the page is not a subpage of $slug
+	}
+	
+	/**
+	 * Deletes all relations to annotations from a post.
+	 * 
+	 * @param int $post_id ID of the post to delete the relations of.
+	 * @return int $post_id
+	 */
+	function delete_annotation_relations( $postid ) {
+		global $wpdb;
+		global $annotation_rel_db;
+		$wpdb->delete( $annotation_rel_db, array( 'post_id' => $postid ) );
+		return $postid;
+	}
 	
 	/**
 	 * Displays the options page for the plugin.
@@ -452,71 +517,6 @@ class Annotation_Plugin {
 		
 		echo '</form>';
 		echo '</div>';
-	}
-		
-	/**
-	 * Adds microdata tags to tinymce editor's valid elements.
-	 * 
-	 * @param array $init_array
-	 * @return array $init_array Array containing the added custom valid tags
-	 */
-	function override_mce_options( $init_array ) {
-		$options = 'link[itemprop|href],a[href|itemprop|itemscope|itemtype],span[itemprop|itemscope|itemtype],' 
-			. 'annotation[id|itemprop|itemscope|itemtype]';
-		$init_array['extended_valid_elements'] = $options;
-		return $init_array;
-	}
-	
-	/**
-	 * Use 'annotations-template.php' for annotations page.
-	 * 
-	 * @param string $template
-	 * @return string Link to 'annotations-template.php' if on annotations page, else normal template
-	 */
-	function include_annotations_template( $template ) {
-		if ( is_page( 'Annotations' ) || $this->is_subpage( 'annotations' ) ) {
-			$annotations_template = plugin_dir_path( __FILE__ ) . 'templates/annotations-template.php' ;
-			if ( '' != $annotations_template ) {
-				$template = $annotations_template;
-			}
-		}
-		return $template;		
-	}
-	
-	/**
-	 * Checks if the current page is a subpage of the page with the provided slug.
-	 * 
-	 * @param string $slug Slug of the parent page to be checked against
-	 * @return bool True if the current page is a subpage of the given page, false otherwise
-	 */
-	function is_subpage( $slug ) {
-		global $post;
-		
-		if ( isset( $post ) ) {
-			$page = get_page_by_path( $slug );
-			$anc = get_post_ancestors( $post->ID );
-			
-			foreach ( $anc as $ancestor ) {
-				if ( is_page() && $ancestor == $page->ID ) {
-					return true;
-				}
-			}
-		}
-		
-		return false;  // the page is not a subpage of $slug
-	}
-	
-	/**
-	 * Deletes all relations to annotations from a post.
-	 * 
-	 * @param int $post_id ID of the post to delete the relations of.
-	 * @return int $post_id
-	 */
-	function delete_annotation_relations( $postid ) {
-		global $wpdb;
-		global $annotation_rel_db;
-		$wpdb->delete( $annotation_rel_db, array( 'post_id' => $postid ) );
-		return $postid;
 	}
 	
 	/**
@@ -713,7 +713,7 @@ class Annotation_Plugin {
 		
 		if ( current_user_can( 'edit_posts' ) ) {
 			echo ' (<a href="' . get_site_url() . '/wp-admin/admin.php?page=annotations&edit=' 
-				. urlencode( $annotation->id ) . '">Edit</a>)';
+				. urlencode( $annotation->id ) . '">' . __( 'Edit', 'annotation-plugin' ) . '</a>)';
 		}
 		
 		// display image if available
@@ -920,7 +920,7 @@ class Annotation_Plugin {
 			echo '<form action="' . $_SERVER['REQUEST_URI'] . '">';
 			echo '<input hidden type="text" name="page" value="annotations">';
 			echo '<input type="checkbox" class="anno" value="' . $annotation->id . '" required="required">' 
-				. __( 'Delete this annotation.', 'annotation-plugin' ) . '<br><br>';
+				. __( 'Delete this annotation', 'annotation-plugin' ) . '?<br><br>';
 			echo '<button id="delete" class="custom_button">' .  __( 'Delete', 'annotation-plugin' ) . '</button>';
 			echo '</form>';
 		}
