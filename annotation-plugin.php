@@ -1,10 +1,9 @@
 <?php
 /*
 Plugin Name: Annotation Plugin
-Plugin URI: http://www.apa-it.at
 Description: Annotations service
 Author: Patrick Schrempf
-Version: Alpha 2.0
+Version: 1.0
 Text Domain: annotation-plugin
 Domain Path: languages/
 */
@@ -546,7 +545,8 @@ class Annotation_Plugin {
 		// localize CONSTANTS
 		global $plugin_constants;
 		wp_localize_script( 'annotation-script', 'CONSTANTS', $plugin_constants );
-		wp_localize_script( 'annotation-script', 'SECURITY', array( 'nonce' => wp_create_nonce( 'delete' ) ) );	
+		wp_localize_script( 'annotation-script', 'SECURITY', array( 'nonce' => wp_create_nonce( 'delete' ) ) );
+		wp_localize_script( 'annotation-script', 'COLOR', array( 'background' => get_user_option('admin_color') ) );
 		
 		$allowed_orders = array(
 			'name' => 'a.name',
@@ -841,7 +841,7 @@ class Annotation_Plugin {
 			}
 		
 			// display heading and image (if available)
-			echo '<h2>' . stripslashes( $annotation->name )  . '</h2><br><br>';
+			echo '<h2>' . stripslashes( $annotation->name )  . '</h2><br>';
 			
 			if ( '' !== $annotation->image ) {
 				echo '<img src="' . $annotation->image . '" alt="' 

@@ -1,5 +1,12 @@
 jQuery(document).ready(function() {
 	
+	// set color for table and buttons
+	var color = jQuery( '.entry-content a' ).css('color');
+	jQuery( 'tr.title' ).css( { 'background-color': color } );
+	jQuery( '.custom_button' ).css( { 'color': color } );
+	jQuery( '.custom_button' ).css( { 'border-color': color } );
+	
+	
 	// select all checkboxes on page
 	jQuery( '.select-all' ).click( function() {
 		var checkboxes = jQuery( 'input[type=checkbox]' );
