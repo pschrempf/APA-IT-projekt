@@ -814,6 +814,8 @@ class Annotation_Plugin {
 		}
 		
 		if ( isset( $_GET['save'] ) && 'true' == $_GET['save'] ) {
+			check_ajax_referer( 'save', 'save_nonce' );
+			
 			global $wpdb;
 			global $annotation_db;
 			
@@ -927,6 +929,7 @@ class Annotation_Plugin {
 			// hidden input needed for form submission
 			echo '<input hidden type="text" name="back" value="' . $_SERVER['REQUEST_URI'] . '">';
 			echo '<input hidden type="text" name="id" value="' . $annotation->id . '">';
+			wp_nonce_field( 'save', 'save_nonce' );
 			
 			// save button
 			echo '<input class="custom_button" type="submit" value="' . __( 'Save', 'annotation-plugin' ) . '" form="save">';
