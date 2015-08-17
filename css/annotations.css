@@ -1,10 +1,9 @@
-.container {
-	font-family: 		Verdana, Geneva, Tahoma, sans-serif;
-}
-
 #title {
 	font-size:			2em;
-	text-align:			center; 
+	margin-left: 		auto;
+	margin-right: 		auto;
+	width: 				500px;
+	text-align: 		center;
 }
 
 .padded {
@@ -24,9 +23,13 @@
 }
 
 table#annotation-table {
-	border-collapse:	collapse;
+	border-collapse: 	collapse;
 	margin-right:		auto;
 	margin-left:		auto;
+}
+
+.even {
+	background-color: 	white;
 }
 
 tr.title {
@@ -37,13 +40,13 @@ tr.title {
 	border:				1px solid lightgray; 
 	border-bottom:		none;
 	color:				white;	
-	font-size:			20px;
+	font-size:			1.5em;
 	font-weight: 		600;
 	padding:			10px;
 }
 
 .annotation>td {	
-	border:				1px solid black;
+	border:				1px solid gray;
 	color:				gray;
 	min-width:			200px; 
 	padding:			10px;
@@ -59,6 +62,11 @@ a {
 
 tr.delete>td>a {
 	color: 				red;
+}
+
+#annotation-table>tbody>tr:not(:first-child):hover,
+#annotation-table>tbody>tr:not(:first-child).hover {
+	background-color: 	lightgrey;
 }
 
 .inner-list {
@@ -77,7 +85,7 @@ h2.inline {
 img.triangle {
 	border:				none;
 	height:				10px;
-	margin: 			-1px 0px 0px 3px;
+	margin: 			0 0 0 5px;
 	width:				10px;
 }
 
@@ -126,18 +134,6 @@ img.anno_img {
 	bottom: 			10px;
 	position: 			fixed;
 	right: 				10px;
-}
-
-div.button-container {
-	background: 		white;
-	border-top: 		1px solid grey;
-	border-left: 		1px solid grey;
-	bottom: 			0;
-	height: 			65px;
-	position: 			fixed;
-	right: 				0;
-	width: 				140px;
-	z-index: 			100;
 }
 
 .custom_button:hover,

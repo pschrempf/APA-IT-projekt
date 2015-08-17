@@ -654,10 +654,15 @@ class Annotation_Plugin {
 			
 		echo '</tr>';
 		
+		$counter = 0;
 		// display each annotation in table
 		foreach ( $annotations as $result ) {
-			echo '<tr class="annotation">';
-			
+			$counter++;
+			if ( 0 == $counter%2 ) {
+				echo '<tr class="annotation even">';
+			} else {
+				echo '<tr class="annotation">';
+			}
 			if ( current_user_can( 'edit_posts' ) ) {
 				echo '<td class="input">' . 
 						'<input type="checkbox" class="anno" value="' . $result->id  . '">' . 
