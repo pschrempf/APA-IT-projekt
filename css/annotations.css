@@ -1,4 +1,9 @@
-#title {
+.entry-content {
+	background-color: 	rgba(254, 254, 254, 0.9);
+	padding: 			30px;
+}
+
+#annotation_title {
 	font-size:			2em;
 	margin-left: 		auto;
 	margin-right: 		auto;
@@ -6,38 +11,38 @@
 	text-align: 		center;
 }
 
-.padded {
+.anno_padded {
 	padding:			15px;
 }
 
-.block {
+.anno_block {
 	display: 			block;
 }
 
-.white {
+.anno_white {
 	background-color:	white;
+}
+
+.anno_grey {
+	background-color: 	rgb(240, 240, 240);
 }
 
 #wpfooter {
 	position: 			relative;
 }
 
-table#annotation-table {
+table#annotation_table {
+	border: 1px solid darkgrey;
 	border-collapse: 	collapse;
 	margin-right:		auto;
 	margin-left:		auto;
 }
 
-.even {
-	background-color: 	white;
-}
-
-tr.title {
+tr.anno_title {
 	background-color:	#788999; 
 }
 
-.title>th {
-	border:				1px solid lightgray; 
+.anno_title>th {
 	border-bottom:		none;
 	color:				white;	
 	font-size:			1.5em;
@@ -46,13 +51,12 @@ tr.title {
 }
 
 .annotation>td {	
-	border:				1px solid gray;
 	color:				gray;
 	min-width:			200px; 
 	padding:			10px;
 }
 
-.error {
+.anno_error {
 	font-style:			italic;
 }
 
@@ -60,20 +64,24 @@ a {
 	text-decoration: 	none;
 }
 
-tr.delete>td>a {
+tr.anno_delete>td>a {
 	color: 				red;
 }
 
-#annotation-table>tbody>tr:not(:first-child):hover,
-#annotation-table>tbody>tr:not(:first-child).hover {
+#annotation_table>tbody>tr>th:not(:first-child) {
+	text-align: left;
+}
+
+#annotation_table>tbody>tr:not(:first-child):hover,
+#annotation_table>tbody>tr:not(:first-child).hover {
 	background-color: 	lightgrey;
 }
 
-.inner-list {
+.anno_inner-list {
 	list-style-type:	circle;
 }
 
-h2.inline {
+h2.anno_inline {
 	display: 			inline;
 }
 
@@ -82,7 +90,11 @@ h2.inline {
 	list-style-position:inside;
 }
 
-img.triangle {
+.entry-content a img {
+	display: inline;
+}
+
+img.anno_triangle {
 	border:				none;
 	height:				10px;
 	margin: 			0 0 0 5px;
@@ -96,18 +108,18 @@ img.anno_img {
 	max-width: 			150px;
 }
 
-.input {
+.anno_input {
 	max-width:			50px;
 	min-width:			30px;
 	text-align:			center;
 	width:				50px;
 }
 
-.valign-middle {
+.anno_valign-middle {
 	vertical-align: 	middle;
 }
 
-#search {
+#anno_search {
 	color: 				black;
 	height:				20px;
 	float: 				right;
@@ -117,7 +129,7 @@ img.anno_img {
 	width:				180px;
 }
 
-.custom_button {
+.anno_custom_button {
 	background: 		white;
 	border: 			solid 2px #6496c8;
 	border-radius: 		0;
@@ -130,20 +142,20 @@ img.anno_img {
 	padding: 			5px 10px;
 }
 
-#button {
+#anno_button {
 	bottom: 			10px;
 	position: 			fixed;
 	right: 				10px;
 }
 
-.custom_button:hover,
-.custom_button.hover {
+.anno_custom_button:hover,
+.anno_custom_button.hover {
 	border-color:		#346392;
 	color: 				#346392;
 }
 
-.custom_button:active,
-.custom_button.active {
+.anno_custom_button:active,
+.anno_custom_button.active {
 	border-color:		#27496d;
 	color: 				#27496d;
 }

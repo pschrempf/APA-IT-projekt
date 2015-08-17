@@ -588,16 +588,16 @@ class Annotation_Plugin {
 		
 		// display page
 		if ( is_page( 'annotations' ) || ( isset( $_GET['page'] ) && 'annotations' == $_GET['page'] ) ) {
-			echo '<input type="text" id="search" placeholder="' . __( 'Search', 'annotation-plugin' ) . '">';
+			echo '<input type="text" id="anno_search" placeholder="' . __( 'Search', 'annotation-plugin' ) . '">';
 		}
 		
-		echo '<h1 id="title" class="padded">' . 
+		echo '<h1 id="annotation_title" class="anno_padded">' . 
 				'<a href="' . $url . '">' . __( 'Annotations', 'annotation-plugin' ) . '</a>' . 
 			'</h1>';
 		
 		if ( empty( $annotations ) ) {
 			if ( '%' === $search_string ) {
-				echo '<p class="error">' . __( 'Please add annotations to your posts.', 'annotation-plugin' ) . '</p>';
+				echo '<p class="anno_error">' . __( 'Please add annotations to your posts.', 'annotation-plugin' ) . '</p>';
 			} else {
 				$this->get_search_annotation_page( $annotations, $url );
 			}
@@ -625,14 +625,14 @@ class Annotation_Plugin {
 		$img_src = plugins_url( 'img/triangle.jpg', __FILE__ );
 		
 		// display general annotations in a table
-		echo '<div class="padded">';
-		echo '<table id="annotation-table">';
+		echo '<div class="anno_padded">';
+		echo '<table id="annotation_table">';
 		
-		echo '<tr class="title">';
+		echo '<tr class="anno_title">';
 		
 		// if current user can edit posts then show checkbox column
 		if ( current_user_can( 'edit_posts' ) ) {
-			echo '<th class="input">' . 
+			echo '<th class="anno_input">' . 
 					'<input type="checkbox" class="select-all">' . 
 				'</th>';
 		}
@@ -641,14 +641,14 @@ class Annotation_Plugin {
 		echo '<th>' . 
 				__( 'Annotation', 'annotation-plugin' ) . 
 				'<a href="' . $url . ' orderby=name">' . 
-					'<img src="' . $img_src . '" alt="sort" class="triangle">' . 
+					'<img src="' . $img_src . '" alt="sort" class="anno_triangle">' . 
 				'</a>';
 			'</th>';
 		
 		echo '<th>' . 
 				__( 'Type', 'annotation-plugin' ) . 
 				'<a href="' . $url . ' orderby=type">' . 
-					'<img src="' . $img_src . '" alt="sort" class="triangle">' . 
+					'<img src="' . $img_src . '" alt="sort" class="anno_triangle">' . 
 				'</a>' . 
 			'</th>';
 			
@@ -659,12 +659,12 @@ class Annotation_Plugin {
 		foreach ( $annotations as $result ) {
 			$counter++;
 			if ( 0 == $counter%2 ) {
-				echo '<tr class="annotation even">';
+				echo '<tr class="annotation anno_white">';
 			} else {
-				echo '<tr class="annotation">';
+				echo '<tr class="annotation anno_grey">';
 			}
 			if ( current_user_can( 'edit_posts' ) ) {
-				echo '<td class="input">' . 
+				echo '<td class="anno_input">' . 
 						'<input type="checkbox" class="anno" value="' . $result->id  . '">' . 
 					'</td>';
 			}
@@ -690,7 +690,7 @@ class Annotation_Plugin {
 		
 		// if current user can edit post show delete button
 		if ( current_user_can( 'edit_posts' ) ) {
-			echo '<button id="delete" class="custom_button">' .  __( 'Delete', 'annotation-plugin' ) . '</button>';
+			echo '<button id="anno_delete" class="anno_custom_button">' .  __( 'Delete', 'annotation-plugin' ) . '</button>';
 		}
 		
 		echo '</div></article>';
@@ -723,13 +723,13 @@ class Annotation_Plugin {
 		} else {
 			$schema = 'http://schema.org/Thing';
 		}
-		echo '<div class="padded block white" itemscope itemtype="' . $schema . '">';
+		echo '<div class="anno_padded anno_block anno_white" itemscope itemtype="' . $schema . '">';
 		
 		// display title with or without link
 		if ( '' === $annotation->url ) {
-			echo '<h2 class="inline" itemprop="name">' . get_the_title() . '</h2>';			
+			echo '<h2 class="anno_inline" itemprop="name">' . get_the_title() . '</h2>';			
 		} else {
-			echo '<a href="' . $annotation->url . '" itemprop="url"><h2 class="inline" itemprop="name">' . get_the_title() 
+			echo '<a href="' . $annotation->url . '" itemprop="url"><h2 class="anno_inline" itemprop="name">' . get_the_title() 
 				. '</h2></a>';
 		}
 		
@@ -755,7 +755,7 @@ class Annotation_Plugin {
 			<p>
 				<strong>' . __( 'Posts', 'annotation-plugin' ) . ': </strong>
 				<br>
-				<ul class="inner-list annotation-details">';
+				<ul class="anno_inner-list annotation-details">';
 		
 		// get all relations for this annotation
 		global $wpdb;
@@ -778,9 +778,9 @@ class Annotation_Plugin {
 			
 			// deal with database errors
 			if ( -1 == $result->post_id ) {
-				$post_title = '<p class="error">[' . __('Post does not exist', 'annotation-plugin' ) . ']</p>';
+				$post_title = '<p class="anno_error">[' . __('Post does not exist', 'annotation-plugin' ) . ']</p>';
 			} else if ( 0 == $result->post_id ) {
-				$post_title = '<p class="error">[' . __( 'Error when reading from database', 'annotation-plugin' ) 
+				$post_title = '<p class="anno_error">[' . __( 'Error when reading from database', 'annotation-plugin' ) 
 					. ']</p>';
 			} else {
 				$post = get_post( $result->post_id );
@@ -881,7 +881,7 @@ class Annotation_Plugin {
 			
 			// [description]
 			echo '<tr>' . 
-					'<td class="valign-middle">' . __( 'Description', 'annotation-plugin' ) . '</td>' . 
+					'<td class="anno_valign-middle">' . __( 'Description', 'annotation-plugin' ) . '</td>' . 
 					'<td><textarea type="text" form="save" name="description" wrap="hard" rows="10" cols="100" 
 						placeholder="' . __( 'Please add a description', 'annotation-plugin' ) . '">' .  
 							$annotation->description . '</textarea></td>' . 
@@ -890,7 +890,7 @@ class Annotation_Plugin {
 			// display list of posts
 			echo '<tr>' .
 					'<td>' . __( 'Posts', 'annotation-plugin' ) . '</td>' . 
-					'<td><ul class="inner-list annotation-details">';
+					'<td><ul class="anno_inner-list annotation-details">';
 					
 			global $wpdb;
 			global $annotation_rel_db;
@@ -912,9 +912,9 @@ class Annotation_Plugin {
 				
 				// deal with database errors
 				if ( -1 == $result->post_id ) {
-					$post_title = '<p class="error">[' . __('Post does not exist', 'annotation-plugin' ) . ']</p>';
+					$post_title = '<p class="anno_error">[' . __('Post does not exist', 'annotation-plugin' ) . ']</p>';
 				} else if ( 0 == $result->post_id ) {
-					$post_title = '<p class="error">[' . __( 'Error when reading from database', 'annotation-plugin' ) 
+					$post_title = '<p class="anno_error">[' . __( 'Error when reading from database', 'annotation-plugin' ) 
 						. ']</p>';
 				} else {
 					$post = get_post( $result->post_id );
@@ -937,7 +937,7 @@ class Annotation_Plugin {
 			wp_nonce_field( 'save', 'save_nonce' );
 			
 			// save button
-			echo '<input class="custom_button" type="submit" value="' . __( 'Save', 'annotation-plugin' ) . '" form="save">';
+			echo '<input class="anno_custom_button" type="submit" value="' . __( 'Save', 'annotation-plugin' ) . '" form="save">';
 			
 			echo '</form><br>';
 			
@@ -946,7 +946,7 @@ class Annotation_Plugin {
 			echo '<input hidden type="text" name="page" value="annotations">';
 			echo '<input type="checkbox" class="anno" value="' . $annotation->id . '" required="required">' 
 				. __( 'Delete this annotation', 'annotation-plugin' ) . '?<br><br>';
-			echo '<button id="delete" class="custom_button">' .  __( 'Delete', 'annotation-plugin' ) . '</button>';
+			echo '<button id="anno_delete" class="anno_custom_button">' .  __( 'Delete', 'annotation-plugin' ) . '</button>';
 			echo '</form>';
 		}
 	}

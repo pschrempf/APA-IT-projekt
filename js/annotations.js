@@ -2,9 +2,9 @@ jQuery(document).ready(function() {
 	
 	// set color for table and buttons
 	var color = jQuery( '.entry-content a' ).css('color');
-	jQuery( 'tr.title' ).css( { 'background-color': color } );
-	jQuery( '.custom_button' ).css( { 'color': color } );
-	jQuery( '.custom_button' ).css( { 'border-color': color } );
+	jQuery( 'tr.anno_title' ).css( { 'background-color': color } );
+	jQuery( '.anno_custom_button' ).css( { 'color': color } );
+	jQuery( '.anno_custom_button' ).css( { 'border-color': color } );
 	
 	
 	// select all checkboxes on page
@@ -16,11 +16,11 @@ jQuery(document).ready(function() {
 	});
 	
 	// when a key is pressed in the search bar
-	jQuery( '#search' ).on( 'keydown', function(e) {
+	jQuery( '#anno_search' ).on( 'keydown', function(e) {
 		var val;
 		
 		// if enter was pressed get search value
-		if ( 13 == e.keyCode && '' != ( val = jQuery( '#search' ).val() ) ) {
+		if ( 13 == e.keyCode && '' != ( val = jQuery( '#anno_search' ).val() ) ) {
 			var attribute_tag = 'search=';
 			val = encodeURIComponent( val ).replace( /'/g, '%27' );
 			
@@ -42,7 +42,7 @@ jQuery(document).ready(function() {
 	});
 	
 	// when a delete button is clicked
-	jQuery( '#delete' ).click( function() {
+	jQuery( '#anno_delete' ).click( function() {
 		// get all checked checkboxes on page
 		var checkboxes = jQuery( 'input[class=anno]:checked' );
 		

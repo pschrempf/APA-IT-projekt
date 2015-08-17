@@ -11,16 +11,16 @@ This plugin lets you annotate your posts using the Austrian Press Agency annotat
 
 == Description ==
 
-This annotation service uses the Austrian Press Agency's Power Search to deliver you possible annotations.
+This annotation service uses the Austria Press Agency (APA)'s Power Search to deliver you possible annotations.
 You will be presented with these results and will have the possibility to select suitable annotations to be saved.
 These annotations can then be shown on your website on their own landing pages.
 
 == Installation ==
 
 1. Download the plugin.
-2. Place the plugin folder into the `/wp-content/plugins/` directory.
-3. Activate the plugin through the 'Plugins' menu in WordPress.
-4. Various pages have now been added to your site, please go to the settings menu to set up the plugin.
+2. Place the plugin folder into the `/wp-content/plugins/` directory of your WordPress installation.
+3. Activate the plugin through the 'Plugins' menu in WordPress - various pages have now been added to your site.
+4. Please go to the settings menu to set up the plugin.
 5. Make sure the WYSISWG editor is activated in your user settings.
 6. To make the plugin fit a custom theme you may have to edit the 'annotations-template.php' and 'annotations.css' files.
 
