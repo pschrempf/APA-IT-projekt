@@ -6,7 +6,6 @@ jQuery(document).ready(function() {
 	jQuery( '.anno_custom_button' ).css( { 'color': color } );
 	jQuery( '.anno_custom_button' ).css( { 'border-color': color } );
 	
-	
 	// select all checkboxes on page
 	jQuery( '.select-all' ).click( function() {
 		var checkboxes = jQuery( 'input[type=checkbox]' );

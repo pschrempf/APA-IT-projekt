@@ -20,7 +20,7 @@
 }
 
 .anno_white {
-	background-color:	white;
+	background-color:	rgb(255, 255, 255);
 }
 
 .anno_grey {
@@ -32,26 +32,26 @@
 }
 
 table#annotation_table {
-	border: 1px solid darkgrey;
+	border: 			1px solid rgb(160, 160, 160);
 	border-collapse: 	collapse;
 	margin-right:		auto;
 	margin-left:		auto;
 }
 
 tr.anno_title {
-	background-color:	#788999; 
+	background-color:	rgb(112, 128, 144);
 }
 
 .anno_title>th {
 	border-bottom:		none;
-	color:				white;	
+	color:				rgb(255, 255, 255);	
 	font-size:			1.5em;
 	font-weight: 		600;
 	padding:			10px;
 }
 
 .annotation>td {	
-	color:				gray;
+	color:				rgb(128, 128, 128);
 	min-width:			200px; 
 	padding:			10px;
 }
@@ -65,7 +65,7 @@ a {
 }
 
 tr.anno_delete>td>a {
-	color: 				red;
+	color: 				rgb(255, 0, 0);
 }
 
 #annotation_table>tbody>tr>th:not(:first-child) {
@@ -74,7 +74,7 @@ tr.anno_delete>td>a {
 
 #annotation_table>tbody>tr:not(:first-child):hover,
 #annotation_table>tbody>tr:not(:first-child).hover {
-	background-color: 	lightgrey;
+	background-color: 	rgb(211, 211, 211);
 }
 
 .anno_inner-list {
@@ -91,7 +91,7 @@ h2.anno_inline {
 }
 
 .entry-content a img {
-	display: inline;
+	display: 			inline;
 }
 
 img.anno_triangle {
@@ -120,7 +120,7 @@ img.anno_img {
 }
 
 #anno_search {
-	color: 				black;
+	color: 				rgb(0, 0, 0);
 	height:				20px;
 	float: 				right;
 	font-size:			15px;
@@ -130,11 +130,11 @@ img.anno_img {
 }
 
 .anno_custom_button {
-	background: 		white;
-	border: 			solid 2px #6496c8;
+	background: 		rgb(255, 255, 255);
+	border: 			solid 2px rgb(100, 150, 200);
 	border-radius: 		0;
 	box-shadow: 		none;
-	color: 				#6496c8;
+	color: 				rgb(100, 150, 200);
 	display: 			inline-block;
 	font-size: 			15px;
 	line-height:		1.5;
@@ -150,12 +150,12 @@ img.anno_img {
 
 .anno_custom_button:hover,
 .anno_custom_button.hover {
-	border-color:		#346392;
-	color: 				#346392;
+	border-color:		rgb(52, 99, 146);
+	color: 				rgb(52, 99, 146);
 }
 
 .anno_custom_button:active,
 .anno_custom_button.active {
-	border-color:		#27496d;
-	color: 				#27496d;
+	border-color:		rgb(39, 73, 109);
+	color: 				rgb(39, 73, 109);
 }
