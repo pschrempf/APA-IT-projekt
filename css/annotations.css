@@ -1,6 +1,29 @@
+/* All already defined ids, tags and classes are modified here. */
+#wpfooter {
+	position: 			relative;
+}
+
 .entry-content {
 	background-color: 	rgba(254, 254, 254, 0.9);
 	padding: 			30px;
+}
+
+.entry-content a img {
+	display: 			inline;
+}
+
+a {
+	text-decoration: 	none;
+}
+
+form {
+	display: inline;
+}
+
+/* All the following ids, tags and classes are custom to the plugin. */
+.selection_table {
+	font-family: 		Verdana, Geneva, Tahoma, sans-serif;
+	font-size: 			15px;
 }
 
 #annotation_title {
@@ -27,8 +50,32 @@
 	background-color: 	rgb(240, 240, 240);
 }
 
-#wpfooter {
-	position: 			relative;
+.anno_left {
+	text-align: left;
+}
+
+.anno_error {
+	font-style:			italic;
+}
+
+.anno_inner_list {
+	list-style-type:	circle;
+	list-style-position:inside;
+}
+
+.anno_inline {
+	display: 			inline;
+}
+
+.anno_input {
+	max-width:			50px;
+	min-width:			30px;
+	text-align:			center;
+	width:				50px;
+}
+
+.anno_valign-middle {
+	vertical-align: 	middle;
 }
 
 table#annotation_table {
@@ -56,34 +103,13 @@ tr.anno_title {
 	padding:			10px;
 }
 
-.anno_error {
-	font-style:			italic;
-}
-
-a {
-	text-decoration: 	none;
-}
-
 tr.anno_delete>td>a {
 	color: 				rgb(255, 0, 0);
-}
-
-.anno_left {
-	text-align: left;
 }
 
 #annotation_table>tbody>tr:not(:first-child):hover,
 #annotation_table>tbody>tr:not(:first-child).hover {
 	background-color: 	rgb(211, 211, 211);
-}
-
-.anno_inner_list {
-	list-style-type:	circle;
-	list-style-position:inside;
-}
-
-h2.anno_inline {
-	display: 			inline;
 }
 
 h2#anno_edit {
@@ -103,10 +129,6 @@ table.annotation_details>tbody>tr>td {
 	font-size: 			15px;
 	min-width: 			125px;
 	padding: 			5px;
-} 
-
-.entry-content a img {
-	display: 			inline;
 }
 
 img.anno_triangle {
@@ -129,17 +151,6 @@ img.anno_list_img {
 
 .image {
 	text-align: 		center;
-}
-
-.anno_input {
-	max-width:			50px;
-	min-width:			30px;
-	text-align:			center;
-	width:				50px;
-}
-
-.anno_valign-middle {
-	vertical-align: 	middle;
 }
 
 #anno_search {
@@ -194,8 +205,4 @@ img.anno_list_img {
 #anno_delete:hover {
 	color: 				rgb(200, 0, 0);
 	border-color: 		rgb(200, 0, 0);
-}
-
-form {
-	display: inline;
 }
