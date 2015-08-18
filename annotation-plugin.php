@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Annotation Plugin
-Description: Annotations service
+Description: Annotation service
 Author: Patrick Schrempf
 Version: 1.0
 Text Domain: annotation-plugin
@@ -638,15 +638,21 @@ class Annotation_Plugin {
 		}
 		
 		// display table with annotations for all users
-		echo '<th>' . 
-				__( 'Annotation', 'annotation-plugin' ) . 
+		echo '<th';
+		if ( ! is_page( 'annotations' ) ) {
+			echo ' class="anno_left"';
+		}
+		echo '>' . __( 'Annotation', 'annotation-plugin' ) . 
 				'<a href="' . $url . ' orderby=name">' . 
 					'<img src="' . $img_src . '" alt="sort" class="anno_triangle">' . 
 				'</a>';
 			'</th>';
 		
-		echo '<th>' . 
-				__( 'Type', 'annotation-plugin' ) . 
+		echo '<th';
+		if ( ! is_page( 'annotations' ) ) {
+			echo ' class="anno_left"';
+		}
+		echo '>' . __( 'Type', 'annotation-plugin' ) . 
 				'<a href="' . $url . ' orderby=type">' . 
 					'<img src="' . $img_src . '" alt="sort" class="anno_triangle">' . 
 				'</a>' . 
@@ -755,7 +761,7 @@ class Annotation_Plugin {
 			<p>
 				<strong>' . __( 'Posts', 'annotation-plugin' ) . ': </strong>
 				<br>
-				<ul class="anno_inner-list annotation-details">';
+				<ul class="anno_inner_list annotation_details">';
 		
 		// get all relations for this annotation
 		global $wpdb;
@@ -840,13 +846,15 @@ class Annotation_Plugin {
 					content="0; url=' . str_replace( '&save=true', '&save=done', $_SERVER['REQUEST_URI'] ) . '">'; 
 			
 		} else {
+			wp_enqueue_style( 'annotation-stylesheet', plugins_url( 'css/annotations.css', __FILE__ ) );
+			
 			// show message if annotation was saved
 			if ( isset( $_GET['save'] ) && 'done' == $_GET['save'] ) {
 				echo '<div class="updated"><p>' . __( 'Saved annotation', 'annotation-plugin' ) . '</p></div><br>';
 			}
 		
 			// display heading and image (if available)
-			echo '<h2>' . stripslashes( $annotation->name )  . '</h2><br>';
+			echo '<h2 id="anno_edit">' . stripslashes( $annotation->name )  . '</h2>';
 			
 			if ( '' !== $annotation->image ) {
 				echo '<img src="' . $annotation->image . '" alt="' 
@@ -855,7 +863,7 @@ class Annotation_Plugin {
 			
 			// display edit form
 			echo '<form id="save" action="' . $_SERVER['REQUEST_URI'] . '&save=true" method ="post">';
-			echo '<table class="annotation-details">';
+			echo '<table class="annotation_details">';
 			
 			// [type]
 			echo '<tr>' . 
@@ -867,22 +875,22 @@ class Annotation_Plugin {
 			// [URL]
 			echo '<tr>' .
 					'<td>' . __( 'URL', 'annotation-plugin' ) . '</td>' .
-					'<td><input type="url" size="100" name="url" placeholder="' . __( 'Please add a URL', 'annotation-plugin' ) . 
+					'<td><input type="url" size="110" name="url" placeholder="' . __( 'Please add a URL', 'annotation-plugin' ) . 
 						'" value="' . $annotation->url . '"></td>' . 
 				'</tr>';
 			
 			// [image URL]
 			echo '<tr>' . 
 					'<td>' . __( 'Image URL', 'annotation-plugin' ) . '</td>' . 
-					'<td><input type="url" size="100" name="image_url" 
+					'<td><input type="url" size="110" name="image_url" 
 						placeholder="' . __( 'Please add an image URL', 'annotation-plugin' ) . '"  
 						value="' . $annotation->image . '"></td>' . 
-				'</tr><tr></tr>';
+				'</tr>';
 			
 			// [description]
 			echo '<tr>' . 
 					'<td class="anno_valign-middle">' . __( 'Description', 'annotation-plugin' ) . '</td>' . 
-					'<td><textarea type="text" form="save" name="description" wrap="hard" rows="10" cols="100" 
+					'<td><textarea type="text" form="save" name="description" wrap="hard" rows="10" cols="110" 
 						placeholder="' . __( 'Please add a description', 'annotation-plugin' ) . '">' .  
 							$annotation->description . '</textarea></td>' . 
 				'</tr>';
@@ -890,7 +898,7 @@ class Annotation_Plugin {
 			// display list of posts
 			echo '<tr>' .
 					'<td>' . __( 'Posts', 'annotation-plugin' ) . '</td>' . 
-					'<td><ul class="anno_inner-list annotation-details">';
+					'<td><ul class="anno_inner_list">';
 					
 			global $wpdb;
 			global $annotation_rel_db;
@@ -929,7 +937,6 @@ class Annotation_Plugin {
 			echo 	'</ul></td>' . 
 				'</tr>' . 
 			'</table>';
-			echo '<br>';
 			
 			// hidden input needed for form submission
 			echo '<input hidden type="text" name="back" value="' . $_SERVER['REQUEST_URI'] . '">';
@@ -939,14 +946,14 @@ class Annotation_Plugin {
 			// save button
 			echo '<input class="anno_custom_button" type="submit" value="' . __( 'Save', 'annotation-plugin' ) . '" form="save">';
 			
-			echo '</form><br>';
+			echo '</form>';
 			
 			// show option to delete annotation
 			echo '<form action="' . $_SERVER['REQUEST_URI'] . '">';
 			echo '<input hidden type="text" name="page" value="annotations">';
-			echo '<input type="checkbox" class="anno" value="' . $annotation->id . '" required="required">' 
-				. __( 'Delete this annotation', 'annotation-plugin' ) . '?<br><br>';
 			echo '<button id="anno_delete" class="anno_custom_button">' .  __( 'Delete', 'annotation-plugin' ) . '</button>';
+			echo '<input type="checkbox" class="anno" value="' . $annotation->id . '" required="required">' 
+				. __( 'Delete this annotation', 'annotation-plugin' ) . '?';
 			echo '</form>';
 		}
 	}

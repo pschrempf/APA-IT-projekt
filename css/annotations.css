@@ -68,7 +68,7 @@ tr.anno_delete>td>a {
 	color: 				rgb(255, 0, 0);
 }
 
-#annotation_table>tbody>tr>th:not(:first-child) {
+.anno_left {
 	text-align: left;
 }
 
@@ -77,18 +77,33 @@ tr.anno_delete>td>a {
 	background-color: 	rgb(211, 211, 211);
 }
 
-.anno_inner-list {
+.anno_inner_list {
 	list-style-type:	circle;
+	list-style-position:inside;
 }
 
 h2.anno_inline {
 	display: 			inline;
 }
 
-.annotation-details {
+h2#anno_edit {
+	font-size: 			30px;
+	color: 				rgb(52, 99, 146);
+	display: inline;
+}
+
+table.annotation_details {
 	line-height: 		150%;
 	list-style-position:inside;
+	margin: 			30px 10px 10px 10px;
+	
 }
+
+table.annotation_details>tbody>tr>td {
+	font-size: 			15px;
+	min-width: 			125px;
+	padding: 			5px;
+} 
 
 .entry-content a img {
 	display: 			inline;
@@ -103,7 +118,7 @@ img.anno_triangle {
 
 img.anno_img {
 	float: 				right;
-	margin: 			10px;
+	margin: 			0 10px;
 	max-height: 		150px;
 	max-width: 			150px;
 }
@@ -127,6 +142,7 @@ img.anno_img {
 	font-weight:		normal;
 	padding: 			10px;
 	width:				180px;
+	margin: 			10px;
 }
 
 .anno_custom_button {
@@ -138,8 +154,9 @@ img.anno_img {
 	display: 			inline-block;
 	font-size: 			15px;
 	line-height:		1.5;
-	margin: 			0 5px 0 0;
+	margin: 			5px 10px;
 	padding: 			5px 10px;
+	display: 			inline;
 }
 
 #anno_button {
@@ -158,4 +175,19 @@ img.anno_img {
 .anno_custom_button.active {
 	border-color:		rgb(39, 73, 109);
 	color: 				rgb(39, 73, 109);
+}
+
+#anno_delete {	
+	color: 				rgb(255, 0, 0);
+	border-color: 		rgb(255, 0, 0);
+}
+
+#anno_delete.hover,
+#anno_delete:hover {
+	color: 				rgb(200, 0, 0);
+	border-color: 		rgb(200, 0, 0);
+}
+
+form {
+	display: inline;
 }

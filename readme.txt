@@ -1,9 +1,9 @@
 === APA Annotation Plugin ===
 Contributors: (this should be a list of wordpress.org userid's)
-Tags: annotation, service, press
+Tags: annotation, service, press, APA
 Requires at least: 4.0.1
 Tested up to: 4.2.4
-Stable tag: trunk
+Stable tag: 1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -34,3 +34,13 @@ The annotations are only supported in French and German at the moment. The plugi
 
 Go to the annotations page, select the annotations to be deleted and click the 'delete' button on the bottom of the page. 
 Now wait until the desired annotations disappear from the list.
+
+== Changelog ==
+
+= 1.0 =
+* Initial release
+
+== Upgrade Notice ==
+
+= 1.0 =
+* Initial release
