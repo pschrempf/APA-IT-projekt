@@ -89,7 +89,7 @@ h2.anno_inline {
 h2#anno_edit {
 	font-size: 			30px;
 	color: 				rgb(52, 99, 146);
-	display: inline;
+	display: 			inline;
 }
 
 table.annotation_details {
@@ -121,6 +121,14 @@ img.anno_img {
 	margin: 			0 10px;
 	max-height: 		150px;
 	max-width: 			150px;
+}
+
+img.anno_list_img {
+	max-height: 		100px;
+}
+
+.image {
+	text-align: 		center;
 }
 
 .anno_input {

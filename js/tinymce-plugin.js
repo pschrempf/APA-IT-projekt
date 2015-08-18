@@ -70,15 +70,17 @@ jQuery( document ).ready( function( jQuery ){
 									
 									// create table contents from elements in response
 									var table_contents = 
-										'<tr class="title">' + 
-											'<th class="input"><input type="checkbox" class="select-all"></th>' + 
-											'<th>' + CONSTANTS.results_name + '</th>' + 
-											'<th>' + CONSTANTS.results_type + '</th>' +
+										'<tr class="anno_title">' + 
+											'<th class="anno_input"><input type="checkbox" class="select-all"></th>' + 
+											'<th class="anno_left">' + CONSTANTS.results_name + '</th>' + 
+											'<th class="anno_left">' + CONSTANTS.results_type + '</th>' +
 											'<th></th>' +
 										'</tr>';
 									
+									var grey = false;
 									response.concepts.forEach( function( element ) {
-										table_contents += generateRow( element );
+										table_contents += generateRow( element, grey );
+										grey = !grey;
 									});
 									
 									// add information to table in 'selection_form.html' from results
@@ -87,7 +89,7 @@ jQuery( document ).ready( function( jQuery ){
 									// add button to page
 									jQuery( iframe_identifier ).contents().find( 'table' ).after(
 										'<br>' + 
-										'<input id="button" class="custom_button" type="submit" value="' + CONSTANTS.button_text + '" form="target">'
+										'<input id="anno_button" class="anno_custom_button" type="submit" value="' + CONSTANTS.button_text + '" form="target">'
 									);
 									
 									// add 'select all' functionality
@@ -312,17 +314,22 @@ jQuery( document ).ready( function( jQuery ){
 	 * @param {object} element The element holding the necessary information for the table row.
 	 * @return {string} String representing the html for the table row.
 	 */
-	function generateRow( element ) {
-		var table_row = '<tr class="annotation">'
-			+ '\n\t<td class="input"><input type="checkbox" class="selector" name="checkbox"></td>'
+	function generateRow( element, grey ) {
+		var table_row;
+		if ( grey ) {
+			table_row = '<tr class="annotation anno_grey">';
+		} else {
+			table_row = '<tr class="annotation anno_white">';
+		}
+		table_row += '\n\t<td class="anno_input"><input type="checkbox" class="selector" name="checkbox"></td>'
 			+ '\n\t<td><span title="' + element.abstract+'">' + cleanName( element.concept ) + '</span></td>'
 			+ '\n\t<td>' + element.type + '</td>';
 		
 		// prefer company logos over thumbimages
 		if ( 'undefined' !== typeof element.complogo ) {
-			table_row += '\n\t<td class="image"><img src="' + element.complogo + '" alt=""/></td>';
+			table_row += '\n\t<td class="image"><img class="anno_list_img" src="' + element.complogo + '" alt=""/></td>';
 		} else if ( 'undefined' !== typeof element.thumbimg ) {
-			table_row += '\n\t<td class="image"><img src="' + element.thumbimg + '" alt=""/></td>';
+			table_row += '\n\t<td class="image"><img class="anno_list_img" src="' + element.thumbimg + '" alanno_list_imgt=""/></td>';
 		} else {
 			table_row += '\n\t<td></td>';
 		}
