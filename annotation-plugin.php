@@ -114,7 +114,7 @@ class Annotation_Plugin {
 				'post_name' => 'annotations',
 				'post_title' => __( 'Annotations', 'annotation-plugin'),
 				'post_content' => '<em>' . __( 'No annotations available', 'annotation-plugin' ) . '.</em>',
-				'post_excerpt' => 'Annotations',				
+				'post_excerpt' => 'Annotations',
 				'post_status' => 'publish',
 				'post_type' => 'page'
 			);
@@ -148,6 +148,7 @@ class Annotation_Plugin {
 		)[0];
 		
 		foreach ( $annotations as $annotation ) {	
+			// check if annotation page already exists
 			$results_num = $wpdb->get_var( $wpdb->prepare(
 				"
 				SELECT COUNT(*) 
@@ -273,7 +274,7 @@ class Annotation_Plugin {
 	 * @return array $plugin_array Array of plugins containing the added plugin
 	 */
 	function add_annotate_plugin( $plugin_array ) {
-		// enqueue so that variables can be localized
+		// enqueue script so that variables can be localized
 		wp_enqueue_script( 'tinymce', plugins_url( 'js/tinymce-plugin.js', __FILE__ ), array( 'jquery' ) );		
 		
 		// localize SETTINGS
@@ -294,12 +295,9 @@ class Annotation_Plugin {
 		
 		// localize CONSTANTS
 		global $plugin_constants;
-		wp_localize_script(
-			'tinymce',
-			'CONSTANTS',
-			$plugin_constants
-		);
+		wp_localize_script( 'tinymce', 'CONSTANTS', $plugin_constants );
 		
+		// localize nonce for security
 		wp_localize_script( 'tinymce', 'SECURITY', array( 'nonce' => wp_create_nonce( 'add' ) ) );
 		
 		// add annotation plugin to plugin array
@@ -382,7 +380,7 @@ class Annotation_Plugin {
 	 * @return string Link to 'annotations-template.php' if on annotations page, else normal template
 	 */
 	function include_annotations_template( $template ) {
-		if ( is_page( 'Annotations' ) || $this->is_subpage( 'annotations' ) ) {
+		if ( is_page( 'annotations' ) || $this->is_subpage( 'annotations' ) ) {
 			$annotations_template = plugin_dir_path( __FILE__ ) . 'templates/annotations-template.php' ;
 			if ( '' != $annotations_template ) {
 				$template = $annotations_template;
