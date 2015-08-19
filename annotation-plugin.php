@@ -245,7 +245,7 @@ class Annotation_Plugin {
 			'results_title' => __( 'Annotation results', 'annotation-plugin' ),
 			'results_name' => __( 'Name', 'annotation-plugin' ),
 			'results_type' => __( 'Type', 'annotation-plugin' ),
-			'delete_error' => __( 'Please select annotations to be deleted', 'annotation-plugin' ),
+			'delete_error' => __( 'No annotations selected', 'annotation-plugin' ),
 			'delete_confirmation' => 
 				__( 'Would you really like to delete this annotation/these annotations permanently?', 'annotation-plugin' ),
 			'success' => __('Annotated successfully! Please make sure to save the post.', 'annotation-plugin')
@@ -253,7 +253,7 @@ class Annotation_Plugin {
 	}
 	
 	/**
-	 * Loads the textdomain for different languagepacks.
+	 * Loads the textdomain for different language packs.
 	 */
 	function load_textdomain() {
 		load_plugin_textdomain( 'annotation-plugin', false, basename( dirname( __FILE__ ) ) . '/languages/' );
