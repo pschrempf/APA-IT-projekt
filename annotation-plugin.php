@@ -86,10 +86,10 @@ class Annotation_Plugin {
 		$posts = $wpdb->posts;
 		
 		$sql = "CREATE TABLE IF NOT EXISTS $annotation_rel_db (
-				anno_id VARCHAR(80) NOT NULL,
-				post_id INT NOT NULL,
-				PRIMARY KEY (anno_id, post_id)
-			) $charset_collate;";
+					anno_id VARCHAR(80) NOT NULL,
+					post_id INT NOT NULL,
+					PRIMARY KEY (anno_id, post_id)
+				) $charset_collate;";
 
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 		dbDelta( $sql );		

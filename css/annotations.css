@@ -1,4 +1,4 @@
-/* All already defined ids, tags and classes are modified here. */
+/* Already defined ids, classes and tags are modified here. */
 #wpfooter {
 	position: 			relative;
 }
@@ -20,7 +20,7 @@ form {
 	display: inline;
 }
 
-/* All the following ids, tags and classes are custom to the plugin. */
+/* All the following ids, classes and tags are custom to the plugin. */
 .selection_table {
 	font-family: 		Verdana, Geneva, Tahoma, sans-serif;
 	font-size: 			15px;

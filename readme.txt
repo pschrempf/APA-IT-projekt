@@ -24,13 +24,13 @@ These annotations can then be shown on your website on their own landing pages.
 5. Please go to the settings menu to set up the plugin. 
 6. Make sure the WYSISWG editor is activated in your user settings. 
 7. If the links on the plugin pages do not work properly, please set the 'Permalink' setting to 'Month and name'. 
-8. To make the plugin fit a custom theme you may have to edit the 'annotations-template.php' and 'annotations.css' files. 
+8. To make the plugin fit to a custom theme you may have to edit the 'annotations-template.php' and 'annotations.css' files. 
 
 == Frequently Asked Questions ==
 
 = How do I delete annotations? =
 
-Go to the annotations page, select the annotations to be deleted and click the 'delete' button on the bottom of the page. 
+Go to the annotations page, select the annotation(s) to be deleted and click the 'delete' button on the bottom of the page. 
 Now wait until the desired annotations disappear from the list.
 
 = Are there any other languages available? =
