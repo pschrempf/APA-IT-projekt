@@ -629,7 +629,7 @@ class Annotation_Plugin {
 		echo '<tr class="anno_title">';
 		
 		// if current user can edit posts then show checkbox column
-		if ( current_user_can( 'edit_posts' ) ) {
+		if ( current_user_can( 'delete_others_posts' ) ) {
 			echo '<th class="anno_input">' . 
 					'<input type="checkbox" class="select-all">' . 
 				'</th>';
@@ -667,7 +667,7 @@ class Annotation_Plugin {
 			} else {
 				echo '<tr class="annotation anno_grey">';
 			}
-			if ( current_user_can( 'edit_posts' ) ) {
+			if ( current_user_can( 'delete_others_posts' ) ) {
 				echo '<td class="anno_input">' . 
 						'<input type="checkbox" class="anno" value="' . $result->id  . '">' . 
 					'</td>';
@@ -693,7 +693,7 @@ class Annotation_Plugin {
 		echo '</table></div>';
 		
 		// if current user can edit post show delete button
-		if ( current_user_can( 'edit_posts' ) ) {
+		if ( current_user_can( 'delete_others_posts' ) ) {
 			echo '<button id="anno_delete" class="anno_custom_button">' .  __( 'Delete', 'annotation-plugin' ) . '</button>';
 		}
 		
@@ -737,7 +737,7 @@ class Annotation_Plugin {
 				. '</h2></a>';
 		}
 		
-		if ( current_user_can( 'edit_posts' ) ) {
+		if ( current_user_can( 'delete_others_posts' ) ) {
 			echo ' (<a href="' . get_site_url() . '/wp-admin/admin.php?page=annotations&edit=' 
 				. urlencode( $annotation->id ) . '">' . __( 'Edit', 'annotation-plugin' ) . '</a>)';
 		}
@@ -812,7 +812,7 @@ class Annotation_Plugin {
 		wp_enqueue_style( 'annotation-stylesheet', plugins_url( 'css/annotations.css', __FILE__ ) );
 		
 		// make sure user has right to edit posts and annotations
-		if ( !current_user_can( 'edit_posts' ) ) {
+		if ( !current_user_can( 'delete_others_posts' ) ) {
 			wp_die( __( 'You do not have sufficient permissions to access this page.', 'annotation-plugin' ) );
 		}
 		
