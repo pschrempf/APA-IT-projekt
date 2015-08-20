@@ -1,5 +1,5 @@
 === APA Annotation Plugin ===
-Contributors: (this should be a list of wordpress.org userid's)
+Contributors: PatrickSchrempf
 Tags: annotation, service, press, APA
 Requires at least: 4.0.1
 Tested up to: 4.3
@@ -22,7 +22,7 @@ These annotations can then be shown on your website on their own landing pages.
 3. Activate the plugin through the 'Plugins' menu in WordPress. 
 4. Various pages have now been added to your site - please do not edit the slug of the 'Annotations' page but feel free to change the title and add it to your menu.
 5. Please go to the settings menu to set up the plugin. 
-6. Make sure the WYSISWG editor is activated in your user settings. 
+6. Make sure the WYSIWYG editor is activated in your user settings. 
 7. If the links on the plugin pages do not work properly, please set the 'Permalink' setting to 'Month and name'. 
 8. To make the plugin fit to a custom theme you may have to edit the 'annotations-template.php' and 'annotations.css' files. 
 

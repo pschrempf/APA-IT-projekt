@@ -782,10 +782,10 @@ class Annotation_Plugin {
 			
 			// deal with database errors
 			if ( -1 == $result->post_id ) {
-				$post_title = '<p class="anno_error">[' . __('Post does not exist', 'annotation-plugin' ) . ']</p>';
+				$post_title = '<span class="anno_error">[' . __('Post does not exist', 'annotation-plugin' ) . ']</span>';
 			} else if ( 0 == $result->post_id ) {
-				$post_title = '<p class="anno_error">[' . __( 'Error when reading from database', 'annotation-plugin' ) 
-					. ']</p>';
+				$post_title = '<span class="anno_error">[' . __( 'Error when reading from database', 'annotation-plugin' ) 
+					. ']</span>';
 			} else {
 				$post = get_post( $result->post_id );
 				$post_title = $post->post_title;
@@ -918,10 +918,10 @@ class Annotation_Plugin {
 				
 				// deal with database errors
 				if ( -1 == $result->post_id ) {
-					$post_title = '<p class="anno_error">[' . __('Post does not exist', 'annotation-plugin' ) . ']</p>';
+					$post_title = '<span class="anno_error">[' . __('Post does not exist', 'annotation-plugin' ) . ']</span>';
 				} else if ( 0 == $result->post_id ) {
-					$post_title = '<p class="anno_error">[' . __( 'Error when reading from database', 'annotation-plugin' ) 
-						. ']</p>';
+					$post_title = '<span class="anno_error">[' . __( 'Error when reading from database', 'annotation-plugin' ) 
+						. ']</span>';
 				} else {
 					$post = get_post( $result->post_id );
 					$post_title = $post->post_title;

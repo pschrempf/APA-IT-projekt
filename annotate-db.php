@@ -22,7 +22,6 @@ if ( 'add' === $_POST['function'] ) {
 		
 		// clean post title for SQL query
 		$post_title = stripslashes( rawurldecode( $element['title'] ) );
-		$post_type = '%post%';
 		
 		// try and get the ID of the post from database
 		$postids = $wpdb->get_col( $wpdb->prepare(
@@ -30,9 +29,8 @@ if ( 'add' === $_POST['function'] ) {
 			SELECT 	p.ID
 			FROM 	$posts p
 			WHERE 	p.post_title = %s
-			AND 	p.post_type LIKE %s
 			"
-		, $post_title, $post_type ) );
+		, $post_title ) );
 		
 		// check that a post with specified title exists
 		if ( empty( $postids ) ) {
@@ -41,7 +39,7 @@ if ( 'add' === $_POST['function'] ) {
 		} else {
 			$post_id = $postids[0];
 		}
-	
+		
 		$name = stripslashes( $element['name'] );
 		
 		// create entry for annotation database
