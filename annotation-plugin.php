@@ -1,12 +1,15 @@
 <?php
 /*
 Plugin Name: Annotation Plugin
-Description: Annotation service
+Description: This plugin lets you annotate your posts using the Austrian Press Agency annotation service.
 Author: Patrick Schrempf
 Version: 1.0
 Text Domain: annotation-plugin
 Domain Path: languages/
 */
+
+// translation for plugin description
+$desc = __( 'This plugin lets you annotate your posts using the Austrian Press Agency annotation service.', 'annotation-plugin' );
 
 defined( 'ABSPATH' ) or die( 'Plugin cannot be accessed correctly!' );
 define( 'WPLANG', '' );

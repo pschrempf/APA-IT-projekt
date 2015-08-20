@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: APA-IT-projekt\n"
-"POT-Creation-Date: 2015-08-19 11:11+0200\n"
-"PO-Revision-Date: 2015-08-19 11:11+0200\n"
+"POT-Creation-Date: 2015-08-20 16:12+0200\n"
+"PO-Revision-Date: 2015-08-20 16:12+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de_DE\n"
@@ -15,207 +15,215 @@ msgstr ""
 "X-Poedit-KeywordsList: __;_e\n"
 "X-Poedit-SearchPath-0: annotation-plugin.php\n"
 
-#: annotation-plugin.php:115 annotation-plugin.php:334
-#: annotation-plugin.php:335 annotation-plugin.php:593
+#: annotation-plugin.php:11
+msgid ""
+"This plugin lets you annotate your posts using the Austrian Press Agency "
+"annotation service."
+msgstr ""
+"Mit diesem Plugin können sie ihre Beiträge mit Hilfe des Annotierungsservice "
+"der Austria Presse Agentur (APA) annotieren."
+
+#: annotation-plugin.php:117 annotation-plugin.php:336
+#: annotation-plugin.php:337 annotation-plugin.php:595
 msgid "Annotations"
 msgstr "Annotationen"
 
-#: annotation-plugin.php:116
+#: annotation-plugin.php:118
 msgid "No annotations available"
 msgstr "Keine Annotationen verfügbar"
 
-#: annotation-plugin.php:241 annotation-plugin.php:242
+#: annotation-plugin.php:243 annotation-plugin.php:244
 msgid "Annotate"
 msgstr "Annotieren"
 
-#: annotation-plugin.php:243
+#: annotation-plugin.php:245
 msgid "Please enter text to be annotated!"
 msgstr "Bitte geben sie einen Text ein, der annotiert werden soll!"
 
-#: annotation-plugin.php:244
+#: annotation-plugin.php:246
 msgid "No annotations could be found"
 msgstr "Es wurden keine Annotierungen gefunden"
 
-#: annotation-plugin.php:245
+#: annotation-plugin.php:247
 msgid "Annotation results"
 msgstr "Annotationsergebnisse"
 
-#: annotation-plugin.php:246
+#: annotation-plugin.php:248
 msgid "Name"
 msgstr "Name"
 
-#: annotation-plugin.php:247 annotation-plugin.php:653
-#: annotation-plugin.php:868
+#: annotation-plugin.php:249 annotation-plugin.php:655
+#: annotation-plugin.php:870
 msgid "Type"
 msgstr "Typ"
 
-#: annotation-plugin.php:248
+#: annotation-plugin.php:250
 msgid "No annotations selected"
 msgstr "Keine Annotation(en) ausgewählt"
 
-#: annotation-plugin.php:250
+#: annotation-plugin.php:252
 msgid ""
 "Would you really like to delete this annotation/these annotations "
 "permanently?"
 msgstr "Möchten sie diese Annotation(en) wirklich löschen?"
 
-#: annotation-plugin.php:251
+#: annotation-plugin.php:253
 msgid "Annotated successfully! Please make sure to save the post."
 msgstr ""
 "Der Beitrag wurde erfolgreich annotiert! Bitte speichern sie den Beitrag."
 
-#: annotation-plugin.php:325 annotation-plugin.php:326
+#: annotation-plugin.php:327 annotation-plugin.php:328
 msgid "Annotation Plugin Options"
 msgstr "Annotation Plugin-Einstellungen"
 
-#: annotation-plugin.php:433 annotation-plugin.php:816
+#: annotation-plugin.php:435 annotation-plugin.php:818
 msgid "You do not have sufficient permissions to access this page."
 msgstr "Sie sind nicht berechtigt, diese Seite zu sehen."
 
-#: annotation-plugin.php:442
+#: annotation-plugin.php:444
 msgid "Annotation Plugin Settings"
 msgstr "Annotation Plugin-Einstellungen"
 
-#: annotation-plugin.php:451
+#: annotation-plugin.php:453
 msgid "Add links to posts?"
 msgstr "Sollen Beiträgen Links hinzugefügt werden?"
 
-#: annotation-plugin.php:458
+#: annotation-plugin.php:460
 msgid "Links to annotations will be added to all posts if this is selected."
 msgstr "Links zu der Annotation werden hinzugefügt."
 
-#: annotation-plugin.php:466
+#: annotation-plugin.php:468
 msgid "Add schema.org microdata?"
 msgstr "schema.org Mikrodaten hinzufügen?"
 
-#: annotation-plugin.php:473
+#: annotation-plugin.php:475
 msgid "Microdata will be added to all annotations if this is selected."
 msgstr "Mikrodaten werden allen Annotierungen hinzugefügt."
 
-#: annotation-plugin.php:479
+#: annotation-plugin.php:481
 msgid "Show list of annotations below posts?"
 msgstr "Liste der Annotationen unter Beitrag anzeigen?"
 
-#: annotation-plugin.php:486
+#: annotation-plugin.php:488
 msgid ""
 "A brief list of the annotations in the post will be shown below each post."
 msgstr ""
 "Eine Liste mit den jeweiligen Annotationen eines Beitrags wird unter jedem "
 "Beitrag gezeigt."
 
-#: annotation-plugin.php:492
+#: annotation-plugin.php:494
 msgid "Select an annotation language"
 msgstr "Wählen sie eine Annotations-Sprache aus"
 
-#: annotation-plugin.php:500
+#: annotation-plugin.php:502
 msgid "German"
 msgstr "Deutsch"
 
-#: annotation-plugin.php:507
+#: annotation-plugin.php:509
 msgid "French"
 msgstr "Französisch"
 
-#: annotation-plugin.php:515
+#: annotation-plugin.php:517
 msgid "Enter annotations to skip"
 msgstr "Welche Annotation URIs sollen ausgeschlossen werden?"
 
-#: annotation-plugin.php:517
+#: annotation-plugin.php:519
 msgid "e.g."
 msgstr "z.B."
 
-#: annotation-plugin.php:524
+#: annotation-plugin.php:526
 msgid "(multiple entries should be separated by \"|\")"
 msgstr "(mehrere Einträge müssen mit einem \"|\" getrennt werden)"
 
-#: annotation-plugin.php:589
+#: annotation-plugin.php:591
 msgid "Search"
 msgstr "Suche"
 
-#: annotation-plugin.php:598
+#: annotation-plugin.php:600
 msgid "Please add annotations to your posts."
 msgstr "Bitte annotieren sie Ihre Beiträge."
 
-#: annotation-plugin.php:643
+#: annotation-plugin.php:645
 msgid "Annotation"
 msgstr "Annotation"
 
-#: annotation-plugin.php:697 annotation-plugin.php:952
+#: annotation-plugin.php:699 annotation-plugin.php:954
 msgid "Delete"
 msgstr "Löschen"
 
-#: annotation-plugin.php:742
+#: annotation-plugin.php:744
 msgid "Edit"
 msgstr "Bearbeiten"
 
-#: annotation-plugin.php:748 annotation-plugin.php:859
+#: annotation-plugin.php:750 annotation-plugin.php:861
 msgid "No picture available"
 msgstr "Kein Bild verfügbar"
 
-#: annotation-plugin.php:760 annotation-plugin.php:898
+#: annotation-plugin.php:762 annotation-plugin.php:900
 msgid "Posts"
 msgstr "Beiträge"
 
-#: annotation-plugin.php:776 annotation-plugin.php:912
+#: annotation-plugin.php:778 annotation-plugin.php:914
 msgid "No posts found with this annotation."
 msgstr "Keine Beiträge mit dieser Annotation gefunden."
 
-#: annotation-plugin.php:785 annotation-plugin.php:921
+#: annotation-plugin.php:787 annotation-plugin.php:923
 msgid "Post does not exist"
 msgstr "Post existiert nicht"
 
-#: annotation-plugin.php:787 annotation-plugin.php:923
+#: annotation-plugin.php:789 annotation-plugin.php:925
 msgid "Error when reading from database"
 msgstr "Fehler beim Lesen der Datenbank"
 
-#: annotation-plugin.php:851
+#: annotation-plugin.php:853
 msgid "Saved annotation"
 msgstr "Annotation gespeichert"
 
-#: annotation-plugin.php:869
+#: annotation-plugin.php:871
 msgid "Please add a type"
 msgstr "Bitte einen Typ hinzufügen"
 
-#: annotation-plugin.php:875
+#: annotation-plugin.php:877
 msgid "URL"
 msgstr "URL"
 
-#: annotation-plugin.php:876
+#: annotation-plugin.php:878
 msgid "Please add a URL"
 msgstr "Bitte eine URL hinzufügen"
 
-#: annotation-plugin.php:882
+#: annotation-plugin.php:884
 msgid "Image URL"
 msgstr "Bild-URL"
 
-#: annotation-plugin.php:884
+#: annotation-plugin.php:886
 msgid "Please add an image URL"
 msgstr "Bitte eine Bild-URL hinzufügen"
 
-#: annotation-plugin.php:890
+#: annotation-plugin.php:892
 msgid "Description"
 msgstr "Beschreibung"
 
-#: annotation-plugin.php:892
+#: annotation-plugin.php:894
 msgid "Please add a description"
 msgstr "Bitte eine Beschreibung hinzufügen"
 
-#: annotation-plugin.php:945
+#: annotation-plugin.php:947
 msgid "Save"
 msgstr "Speichern"
 
-#: annotation-plugin.php:954
+#: annotation-plugin.php:956
 msgid "Delete this annotation"
 msgstr "Diese Annotation löschen"
 
-#: annotation-plugin.php:967
+#: annotation-plugin.php:969
 msgid "Search results for:"
 msgstr "Suchergebnisse für:"
 
-#: annotation-plugin.php:971
+#: annotation-plugin.php:973
 msgid "No annotations found!"
 msgstr "Keine Annotationen gefunden!"
 
-#: annotation-plugin.php:1022
+#: annotation-plugin.php:1024
 msgid "Annotations in this post"
 msgstr "Annotationen in diesem Beitrag"
 
