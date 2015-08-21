@@ -1023,7 +1023,7 @@ class Annotation_Plugin {
 				
 				$content .= '<br>';
 				$content .= '<h3>' . __( 'Annotations in this post', 'annotation-plugin' ) . '</h3>
-					<ul>';
+					 <ul class="anno_inner_list">';
 				
 				foreach ( $annotations as $annotation ) { 
 					$content .= '<li><a href="' . get_site_url() . '/annotations/' . urlencode( $annotation->name ) 
