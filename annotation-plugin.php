@@ -141,14 +141,16 @@ class Annotation_Plugin {
 		);
 		
 		// find id of 'annotations' page for post_parent
-		$annotationPageID = $wpdb->get_col( 
+		$ids = $wpdb->get_col( 
 			"
 			SELECT p.ID 
 			FROM $wpdb->posts p 
 			WHERE p.post_type = 'page' 
 			AND p.post_name = 'annotations'
 			" 
-		)[0];
+		);
+		
+		$annotationPageID = $ids[0];
 		
 		foreach ( $annotations as $annotation ) {	
 			// check if annotation page already exists

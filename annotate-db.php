@@ -1,6 +1,7 @@
 <?php
 
-$path = $_SERVER['DOCUMENT_ROOT'] . "/" . explode('wp-content' , $_SERVER['REQUEST_URI'])[0];
+$temp = explode('wp-content' , $_SERVER['REQUEST_URI']);
+$path = $_SERVER['DOCUMENT_ROOT'] . "/" . $temp[0];
 
 // needed to enable the use of the $wpdb connection
 include_once $path . '/wp-config.php';
@@ -74,14 +75,16 @@ if ( 'add' === $_POST['function'] ) {
 		
 		if ( 0 == $results_num ) {
 			// find id of 'annotations' page for post_parent
-			$annotationPageID = $wpdb->get_col( 
+			$ids = $wpdb->get_col( 
 				"
 				SELECT p.ID 
 				FROM $wpdb->posts p 
 				WHERE p.post_type = 'page' 
 				AND p.post_name = 'annotations'
 				" 
-			)[0];
+			);
+			
+			$annotationPageID = $ids[0];
 			
 			// add annotation page to database
 			$annotation_page = array(
